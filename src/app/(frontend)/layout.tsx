@@ -1,8 +1,6 @@
 import { Fraunces, IBM_Plex_Sans } from 'next/font/google'
 import React from 'react'
 
-import { Shell } from '@/components/stakeholder/Shell'
-
 import './styles.css'
 
 const display = Fraunces({
@@ -17,22 +15,12 @@ const body = IBM_Plex_Sans({
   weight: ['400', '500', '600'],
 })
 
-export const metadata = {
-  title: 'Stanton Group · PIMMS — Platform Overview',
-  description:
-    'Executive overview of the integrated operations platform for Stanton Group and PIMMS.',
-}
-
-export default function RootLayout(props: { children: React.ReactNode }) {
+export default function FrontendRootLayout(props: { children: React.ReactNode }) {
   const { children } = props
 
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
-      <body>
-        <Shell>
-          <main>{children}</main>
-        </Shell>
-      </body>
+      <body>{children}</body>
     </html>
   )
 }

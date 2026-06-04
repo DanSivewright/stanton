@@ -107,7 +107,7 @@ Define Payload-native collections and manual/import paths first. Scope integrati
 
 - **Payload Admin** is the primary operational UI.
 - **Custom admin views** for workflow-heavy screens (rounds, gates, review queues) — phased.
-- **Stakeholder overview website** — client-facing executive site at `/` (and `/ecosystem`, `/modules`, `/roadmap`, `/investment`); omits implementation stack detail.
+- **Stakeholder overview website** — client-facing executive site at `/` (and `/ecosystem`, `/modules`, `/roadmap`, `/investment`); omits implementation stack detail. **Team reference** at `/team` (not linked from client site; `robots: noindex`).
 
 ### 3.6 Access control
 
