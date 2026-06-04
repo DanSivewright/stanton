@@ -1,0 +1,97 @@
+# Module: HR (Performance & Organogram)
+
+People performance hub — **not** a full HRIS.
+
+**Delivery phase:** 2 (client deferred per intake — do not initiate without Trevor green light)  
+**Prior art:** [stanton-global-hr-platform-handoff](../intake/stanton-global-hr-platform-handoff.md) — reference only
+
+---
+
+## Purpose
+
+Organogram, performance contracts, scorecards, quarterly reviews, 1-on-1 rollups, and employee status visibility. Manufacturing (and later Sales) feed **operational metrics** by Employee ID; HR owns **composite performance view** while preserving source contributions.
+
+---
+
+## Global
+
+| Slug | Settings |
+|------|----------|
+| `hr-settings` | Review cadence, rating band labels, default contract period |
+
+---
+
+## Collection cards
+
+### `contract-templates`
+
+| | |
+|--|--|
+| **Purpose** | Reusable contract/scorecard templates by role/company |
+| **Field groups** | name, company, KPA/KPI structure (nested blocks), branding refs |
+| **Admin** | Template library |
+
+### `performance-contracts` (on Employee tab)
+
+| | |
+|--|--|
+| **Purpose** | Employee-specific contract for a period |
+| **Relationships** | → `employee`, → `contract-template`, → `documents` |
+| **Field groups** | period, status (draft/submitted/approved/…), KPAs/KPIs (from template + overrides) |
+| **Workflow** | Status fields + activity events; drafts optional for document content |
+
+### `quarterly-reviews`
+
+| | |
+|--|--|
+| **Purpose** | Manager review per employee per period |
+| **Field groups** | scores 1–3 per KPI, weighted total, rating, AI summary (later) |
+| **Status** | not_started → … → signed_off |
+
+### `one-on-one-sessions`
+
+| | |
+|--|--|
+| **Purpose** | Weekly Accuracy / Runs (may overlap Manufacturing collection — single source: decide at implement) |
+| **Note** | Prefer one canonical `one-on-one-scores` in Manufacturing or HR — link HR rollup via Employee ID |
+
+### `performance-summaries` (Phase 2+)
+
+| | |
+|--|--|
+| **Purpose** | AI-generated review summary text |
+| **Deferred** | Schema placeholder only in scope |
+
+---
+
+## Simplified model (scoping decision)
+
+- **Contract Templates** collection + **Employee** admin tab to select template and fill fields
+- Avoid separate KPA Template / KPI Template collections unless template complexity requires
+- SharePoint filing via jobs — metadata on `documents`
+
+---
+
+## Out of scope (v1)
+
+- Payroll, leave, benefits, recruitment
+- SimplePay integration (Phase 2 nice-to-have)
+- Bulk 300-employee generation (Phase 4 in intake)
+- Full HRIS sync
+
+---
+
+## Source evidence
+
+- [PIMMS HR Platform — Project Brief](../intake/PIMMS%20HR%20Platform%20%E2%80%94%20Project%20Brief.md)
+- [HR handoff](../intake/stanton-global-hr-platform-handoff.md)
+- [Manufacturing brief](../intake/Manufacturing%20Automation%20%E2%80%94%20Project%20Brief.md) — 1-on-1 scores
+
+---
+
+## Open questions
+
+- Trevor green light
+- SharePoint paths and naming
+- Organogram source system vs manual import
+- Single home for 1-on-1 scores (HR vs Manufacturing collection)
