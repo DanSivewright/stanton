@@ -106,6 +106,14 @@ Profitability, Debtors Aging, Creditors Aging, Invoice vs Target, Wages & Salari
 
 ---
 
+## Assumptions (full-platform build 2026-06-09)
+
+- **Shipped:** `finance-reporting-periods` (with embedded `sections[]`), `finance-report-lines`, `financial-metrics`, `finance-settings` global.
+- Aging rows use `lineType: aging` + `agingBucket` on report lines (per ADR-0001).
+- Manual entry + CSV import path; no Odoo sync.
+- Report type list uses intake defaults (Profitability, Debtors Aging) until client confirms FIN-008.
+- `finance-targets` deferred — not in MVP slice.
+
 ## Out of scope (v1)
 
 - Full journal/ledger/payment model

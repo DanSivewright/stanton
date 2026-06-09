@@ -17,6 +17,7 @@ Use this checklist after a successful Vercel deploy. Tick each item as you go. F
 | 0.2 | Navigate to `/admin` and log in with your Payload user. | ☐ |
 | 0.3 | Confirm your user has **Admin** role: **Users** → your record → `roles` includes `admin`. If missing, add it (or ask another admin). | ☐ |
 | 0.4 | Confirm seed data exists: **Companies** → `PIMMS Group JHB` (code `PIMMS`); **Employees** → `EMP-001`..`EMP-003`. | ☐ |
+| 0.5 | Confirm synthetic SPD template seeded: **SPD Process Templates** → `Stanton Product Development (Synthetic v1)` (`1.0-synthetic`, published); **SPD Settings** → default template set; **SPD Projects** → `SPD Demo — Sample Opportunity` (optional). | ☐ |
 
 ---
 
@@ -84,17 +85,19 @@ Reference: [spd.md](../modules/spd.md). Mirrors `scripts/verify/spd-wave3.ts`.
 
 ### Process template & settings
 
+> **Boot seed:** Synthetic template `Stanton Product Development (Synthetic v1)` (`1.0-synthetic`) is published on init. Steps 4.1–4.3 can verify the seed **or** create a separate "QA Template v1" for mutation tests.
+
 | # | Step | Expected | Pass? |
 |---|------|----------|-------|
-| 4.1 | **SPD Process Templates** → create template "QA Template v1" | Add ≥2 phases; phase 1 has a stage with a **gate** (`gateId`, name) | ☐ |
-| 4.2 | Publish template (`_status` = published) | Version saved | ☐ |
-| 4.3 | **SPD Settings** (global) → set **Default Template** to your template | Saves | ☐ |
+| 4.1 | **SPD Process Templates** → open synthetic template (or create "QA Template v1") | 6 phases × 3 stages; gates on phase 1–5 final stages (`gate-1`…`gate-5`) | ☐ |
+| 4.2 | Confirm template is published (`_status` = published) | Version `1.0-synthetic` (or your QA version) | ☐ |
+| 4.3 | **SPD Settings** (global) → **Default Template** | Points at synthetic template (or your QA template) | ☐ |
 
 ### Project + snapshot immutability
 
 | # | Step | Expected | Pass? |
 |---|------|----------|-------|
-| 4.4 | **SPD Projects** → create "QA Demo Project" | Company = PIMMS; customer = test customer; `currentPhase` = first phase | ☐ |
+| 4.4 | **SPD Projects** → create "QA Demo Project" (or open seeded `SPD Demo — Sample Opportunity`) | Company = PIMMS; customer linked; `currentPhase` = `phase-1` | ☐ |
 | 4.5 | Open project → inspect **Process Snapshot** | Embedded copy of template phases/stages/gates; `templateVersion` matches template | ☐ |
 | 4.6 | Edit template (change version to "v2-mutated") | Template updates | ☐ |
 | 4.7 | Re-open project | Snapshot **unchanged** (still v1 structure) | ☐ |
@@ -117,14 +120,38 @@ Reference: [spd.md](../modules/spd.md). Mirrors `scripts/verify/spd-wave3.ts`.
 
 ---
 
-## Part 5 — Blocked / client-dependent (do not fail QA)
+## Part 5 — Conrad POC (Option A — synthetic template)
 
-These are **out of scope** for implementation QA until client delivers inputs:
+**Decision (2026-06-09):** Schedule Conrad review **now** on the synthetic template. Do not wait for `SPD_ProcessFlow.docx`. Feedback informs reconciliation (BUI-288).
 
-| Item | Linear | Blocker |
-|------|--------|---------|
-| Import `SPD_ProcessFlow.docx` → published template (~75% match) | BUI-288 (SPD-002) | Client docx |
-| Conrad POC review | BUI-289 (SPD-011) | Schedule review meeting |
+**POC pack:** [conrad-review-2026.md](../poc/conrad-review-2026.md)
+
+### Pre-meeting (facilitator)
+
+| # | Step | Expected | Pass? |
+|---|------|----------|-------|
+| 5.1 | Complete Parts 0–4 on production | Admin demo-ready; synthetic template + demo project visible | ☐ |
+| 5.2 | Confirm Vercel Deployment Protection access plan | Conrad can reach `/admin` or screen-share fallback documented | ☐ |
+| 5.3 | Book meeting with Conrad Eksteen (before end of June) | Calendar invite sent; POC pack link shared | ☐ |
+| 5.4 | Optional: pre-walk gate sign-off on demo project | `SPD Demo — Sample Opportunity` advanced past gate 1 | ☐ |
+
+### During meeting
+
+| # | Step | Expected | Pass? |
+|---|------|----------|-------|
+| 5.5 | Demo synthetic template structure | Conrad validates ~75% phase/stage/gate accuracy | ☐ |
+| 5.6 | Walk demo project + snapshot immutability | Conrad understands frozen snapshot vs live template | ☐ |
+| 5.7 | Demo gate sign-off → phase advance (live or pre-done) | Workflow accepted | ☐ |
+| 5.8 | Capture feedback using POC pack template | Notes on BUI-289 or attached to issue | ☐ |
+
+### Post-meeting (still client-dependent)
+
+| Item | Linear | Status |
+|------|--------|--------|
+| Reconcile template vs `SPD_ProcessFlow.docx` (~75% match) | BUI-288 (SPD-002) | `blocked:client` for docx file; **informed by Conrad feedback** from BUI-289 |
+| Apply template corrections from review | BUI-288 / follow-ups | After meeting notes |
+
+> Part 5 pre-meeting failures **do** block Conrad scheduling. Post-meeting docx reconciliation does **not** block marking BUI-289 complete once the review is held and feedback captured.
 
 ---
 

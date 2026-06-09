@@ -136,15 +136,15 @@ Minimum collections before SPD ships:
 | **Purpose** | Lightweight classification |
 | **Field groups** | label, module hint |
 
-### `activity-events` *(deferred phase — Phase 1.5+)*
+### `activity-events`
 
 | | |
 |--|--|
 | **Purpose** | Cross-module business audit trail |
-| **Key relationships** | → actor `user`/`employee`, polymorphic source ref |
-| **Field groups** | eventType, module, `sourceCollection`, `sourceId`, summary, timestamp |
-| **Phase 1** | Use native `createdAt`/`updatedBy` and domain event collections (e.g. gate sign-offs) |
-| **Gate** | Ship only after polymorphic contract is specified in automation.md |
+| **Key relationships** | → actor `users`; polymorphic source via `collectionSlug` + `documentId` |
+| **Field groups** | summary, eventType, module, collectionSlug, documentId, metadata (json) |
+| **Access** | Authenticated read; append-only (no update/delete); writes via hooks with `overrideAccess` |
+| **Hooks (Wave 2)** | Gate sign-off, snapshot submit, maintenance complete, period lock, contract approved — `src/hooks/platform/recordActivityOnChange.ts` |
 
 ### `documents`
 
@@ -174,6 +174,15 @@ Minimum collections before SPD ships:
 - Ecosystem scoping session — Employee vs User, org hierarchy, Customers/Contacts
 
 ---
+
+## Assumptions (full-platform build 2026-06-09)
+
+- `groups` collection deferred — single `companies` record sufficient; no top-level Group entity yet.
+- `sites` / `departments` / `teams` / `products` / `machines` / `moulds` / `tags` / `activity-events` **shipped** as thin collections (`src/collections/`).
+- `companies.logo` upload field added for branding; no multi-company doc-gen yet.
+- `employees` extended with optional `site`, `department`, `team`, `manager` relationships.
+- Demo seed: 3 sites, 9 machines (3 per site), 3 products, 3 moulds — `src/seed/platformDemo.ts`.
+- `activity-events` is append-only audit log; polymorphic source uses `collectionSlug` + `documentId` text fields.
 
 ## Open questions
 

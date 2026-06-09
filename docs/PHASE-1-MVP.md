@@ -3,6 +3,8 @@
 **Status:** Agreed after dual-persona grill + reconciliation (2026-06-09)  
 **Canonical references:** [MASTER-SPEC.md](./MASTER-SPEC.md), [reconciliation matrix](./reviews/reconciliation-matrix-2026-06-09.md)
 
+> **2026-06-09 platform shift:** Active implementation now follows [PLATFORM-ROADMAP.md](./PLATFORM-ROADMAP.md) — all intake modules ship as thin collections with demo seed data. POC/client review gates (Conrad, Trevor) are no longer build blockers. This document remains the historical Phase 1a/1b plan.
+
 Phase 1 is split into **1a** (ship SPD POC by end of June 2026) and **1b** (one operational module — Finance **or** Manufacturing — client choice after POC). This replaces the prior "everything in parallel" Phase 1 shape (~88 issues).
 
 ---
@@ -26,8 +28,8 @@ Phase 1 is split into **1a** (ship SPD POC by end of June 2026) and **1b** (one 
 | 1 | Platform minimum | PLAT-001, 002, 003, 005, 006 | MongoDB replica set, Vercel, `users`, `documents`, import-export + cron |
 | 2 | Foundations slice | FND-003, FND-004 (+ partial FND-001) | `companies`, `employees`, `customers`, `contacts` |
 | 3 | SPD core | SPD-001–007 | `spd-process-templates`, `spd-projects`, `spd-gate-sign-offs`, `spd-change-requests`, `tooling-assets`, `spd-settings` |
-| 4 | POC content | SPD-002 | Import SPD_ProcessFlow.docx → published template; 1–2 demo projects |
-| 5 | Milestone gate | SPD-011 | Conrad POC review (~75% process accuracy) |
+| 4 | POC content | SPD-002 | **Synthetic template shipped** (`1.0-synthetic` from intake brief); reconcile when `SPD_ProcessFlow.docx` arrives; demo project seeded on boot |
+| 5 | Milestone gate | SPD-011 | Conrad POC review on **synthetic template** (~75% process accuracy); feedback informs docx reconciliation (SPD-002) — do not wait for client docx |
 
 ### Collections in 1a (complete list)
 
@@ -64,11 +66,12 @@ Phase 1 is split into **1a** (ship SPD POC by end of June 2026) and **1b** (one 
 
 ### 1a success criteria
 
-- [ ] Published process template matches SPD_ProcessFlow.docx structure (~75%)
-- [ ] Demo project progresses through at least one gate sign-off
+- [x] Published process template available (synthetic `1.0-synthetic` — 6 phases × 18 stages × 5 gates from intake brief)
+- [ ] **Conrad POC review completed on synthetic template** (SPD-011 / BUI-289) — ~75% structural/process accuracy validated; corrections captured for template update
+- [ ] Reconcile template against `SPD_ProcessFlow.docx` when client doc arrives (SPD-002 / BUI-288) — informed by Conrad feedback; ~75% target
+- [ ] Demo project progresses through at least one gate sign-off (walk during or before Conrad review)
 - [ ] Change request can be created and linked to project/tooling asset
 - [ ] Template update does **not** mutate in-flight project snapshot
-- [ ] Conrad POC review completed (SPD-011)
 
 ---
 
@@ -178,3 +181,4 @@ Do **not** bulk-create ~88 Linear issues. Epic-level approval checklist:
 | [scope-map.md](./linear/scope-map.md) | Trimmed issue labels |
 | [adr/0001-finance-sections-on-period.md](./adr/0001-finance-sections-on-period.md) | Finance sections decision |
 | [adr/0002-one-on-one-scores-manufacturing.md](./adr/0002-one-on-one-scores-manufacturing.md) | One-on-one canonical home |
+| [poc/conrad-review-2026.md](./poc/conrad-review-2026.md) | Conrad POC agenda, demo paths, feedback template |

@@ -21,6 +21,12 @@ export const Companies: CollectionConfig = {
       index: true,
     },
     {
+      name: 'logo',
+      type: 'upload',
+      relationTo: 'media',
+      admin: { description: 'Company branding for documents and reports' },
+    },
+    {
       name: 'active',
       type: 'checkbox',
       defaultValue: true,

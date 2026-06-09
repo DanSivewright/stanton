@@ -42,5 +42,11 @@ export const ToolingAssets: CollectionConfig = {
         description: 'SPD project this tooling asset belongs to',
       },
     },
+    {
+      name: 'previousVersion',
+      type: 'relationship',
+      relationTo: 'tooling-assets',
+      admin: { description: 'Prior version in the lineage chain' },
+    },
   ],
 }

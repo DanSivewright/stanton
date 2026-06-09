@@ -152,6 +152,14 @@ _Avoid_: correction entry (informal)
 An intake capability scheduled after the current milestone; still in product backlog, not rejected.
 _Avoid_: out of scope (when intake still requires it)
 
+**Intake Brief**:
+An immutable source document in `docs/intake/` capturing what a client/stakeholder asked for. It is **spec evidence**, not canonical product spec and not CMS content — Payload never stores it as a record.
+_Avoid_: requirement (alone), spec (it is evidence the spec is derived from)
+
+**Operational Requirement**:
+A concrete capability the Payload app must implement to satisfy an Intake Brief (a collection, hook, workflow, or report). The audit measures these — not whether the brief itself is stored anywhere.
+_Avoid_: brief, feature (vague)
+
 **POC Gate**:
 Conrad review validating SPD process template accuracy (~75%) before custom UI or integration investment.
 _Avoid_: go-live (generic)

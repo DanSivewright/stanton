@@ -74,6 +74,14 @@ Organogram, performance contracts, scorecards, quarterly reviews, 1-on-1 rollups
 
 ---
 
+## Assumptions (full-platform build 2026-06-09)
+
+- **Shipped despite Trevor gate:** `contract-templates`, `performance-contracts`, `quarterly-reviews`, `hr-settings` global.
+- KPA/KPI structure as nested arrays on templates and contracts (no separate KPA collections).
+- `one-on-one-scores` read from Manufacturing module; no HR-owned session collection.
+- SharePoint filing and AI summary fields stubbed (`aiSummary` on reviews); jobs not built.
+- Organogram via employee `manager` chain + department/team relationships on foundations.
+
 ## Out of scope (v1)
 
 - Payroll, leave, benefits, recruitment

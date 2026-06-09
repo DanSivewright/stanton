@@ -52,6 +52,14 @@ export const processPhasesFields: Field[] = [
             min: 1,
           },
           {
+            name: 'optional',
+            type: 'checkbox',
+            defaultValue: false,
+            admin: {
+              description: 'Optional stages can be excluded at project creation',
+            },
+          },
+          {
             name: 'checklistItems',
             type: 'array',
             labels: {

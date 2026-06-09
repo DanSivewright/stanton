@@ -51,7 +51,12 @@ async function main() {
               stageId: 'stage-1-1',
               name: 'Stage 1',
               order: 1,
-              gate: { gateId: 'gate-1', name: 'Gate 1' },
+              checklistItems: [{ item: 'Complete feasibility review' }],
+              gate: {
+                gateId: 'gate-1',
+                name: 'Gate 1',
+                requiredRoles: ['pdm'],
+              },
             },
           ],
         },
@@ -59,7 +64,14 @@ async function main() {
           phaseId: 'phase-2',
           name: 'Phase 2',
           order: 2,
-          stages: [{ stageId: 'stage-2-1', name: 'Stage 1', order: 1 }],
+          stages: [
+            {
+              stageId: 'stage-2-1',
+              name: 'Stage 1',
+              order: 1,
+              checklistItems: [{ item: 'Future phase task' }],
+            },
+          ],
         },
       ],
     },
@@ -104,6 +116,50 @@ async function main() {
   if (projectAfterTemplateEdit.processSnapshot?.templateVersion !== '1.0-verify') {
     throw new Error('Template edit mutated project snapshot')
   }
+
+  try {
+    await payload.create({
+      collection: 'spd-gate-sign-offs',
+      data: {
+        project: project.id,
+        gateId: 'gate-1',
+        approver: approverId,
+        role: 'pdm',
+        decision: 'approved',
+        comments: 'Should fail — checklist incomplete',
+      },
+    })
+    throw new Error('Sign-off without checklist completion should be blocked')
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    if (!message.includes('checklist')) {
+      throw err
+    }
+  }
+
+  try {
+    await payload.update({
+      collection: 'spd-projects',
+      id: project.id,
+      data: {
+        checklistCompletion: [{ stageId: 'stage-2-1', itemIndex: 0, done: true }],
+      },
+    })
+    throw new Error('Phase-2 checklist edit should be blocked while on phase-1')
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    if (!message.includes('locked')) {
+      throw err
+    }
+  }
+
+  await payload.update({
+    collection: 'spd-projects',
+    id: project.id,
+    data: {
+      checklistCompletion: [{ stageId: 'stage-1-1', itemIndex: 0, done: true }],
+    },
+  })
 
   const tooling = await payload.create({
     collection: 'tooling-assets',

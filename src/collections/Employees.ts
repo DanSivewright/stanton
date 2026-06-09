@@ -31,6 +31,26 @@ export const Employees: CollectionConfig = {
       required: true,
     },
     {
+      name: 'site',
+      type: 'relationship',
+      relationTo: 'sites',
+    },
+    {
+      name: 'department',
+      type: 'relationship',
+      relationTo: 'departments',
+    },
+    {
+      name: 'team',
+      type: 'relationship',
+      relationTo: 'teams',
+    },
+    {
+      name: 'manager',
+      type: 'relationship',
+      relationTo: 'employees',
+    },
+    {
       name: 'user',
       type: 'relationship',
       relationTo: 'users',

@@ -15,14 +15,36 @@ Digitise SPD process; gate-enforced progression; data hub for document generatio
 
 | Collection | Required for POC | Status |
 |------------|------------------|--------|
-| `spd-process-templates` | Yes — import SPD_ProcessFlow.docx | Done (SPD-001) |
+| `spd-process-templates` | Yes — synthetic stand-in seeded; reconcile docx later | Done (SPD-001); content stand-in (SPD-002) |
 | `spd-projects` | Yes — with embedded process snapshot at create | Done (SPD-003) |
 | `spd-gate-sign-offs` | Yes — append-only event records | Done (SPD-004) |
 | `spd-change-requests` | Yes | Done (SPD-005) |
 | `tooling-assets` | Yes — minimal (name + version) | Done (SPD-006) |
 | `spd-settings` | Yes | Done (SPD-007) |
 
-**UI:** Default Payload admin only. **Deferred phase:** custom dashboards (SPD-008–009), client forms (SPD-010), AI validation, Product/Mould links to Manufacturing.
+**UI:** Default Payload admin + Wave 2 lightweight views: `beforeList` workflow summary on `spd-projects`; custom `/workflow` pipeline table (`src/components/admin/SpdProjectWorkflowView.tsx`). **Deferred:** full management dashboard (SPD-008–009), client forms (SPD-010), AI validation.
+
+### Known gaps (remaining)
+
+- **`gate.requiredRoles` quorum simplified** — sign-off `role` must match one of the gate's `requiredRoles` when defined; a **single** approved sign-off unlocks the next phase (not one approval per required role).
+- **Document generation, client forms, full management dashboard** — deferred (see PLATFORM-ROADMAP.md).
+
+### Gate enforcement (Wave 3 — 2026-06-09)
+
+| Rule | Implementation |
+|------|----------------|
+| Checklist completion before approve | `src/hooks/spd/validateGateSignOff.ts` — blocks `decision: approved` when any checklist item in `currentPhase` is incomplete |
+| Phase edit lock | `src/hooks/spd/lockPhaseEdits.ts` — blocks `checklistCompletion` edits for stages outside `currentPhase` |
+| Role authorization | Approver `role` must be listed on the gate's `requiredRoles` when that list is non-empty |
+| Quorum | **Simplified:** one approved sign-off unlocks; full multi-role quorum deferred |
+
+### Assumptions (full-platform build 2026-06-09)
+
+- Synthetic `1.0-synthetic` template is canonical until `SPD_ProcessFlow.docx` arrives; Conrad review is not a build gate.
+- Optional stages: `optional` flag on template stages; `includedOptionalStages` on project at create filters snapshot.
+- Checklist: per-project `checklistCompletion` array with `stageId`, `itemIndex`, `done`, `completedBy`, `completedAt`.
+- Tooling: `previousVersion` relationship for lineage; CR links remain on change requests.
+- Out-of-scope CR costing: `estimatedCost` fields only; no finance integration logic.
 
 ---
 
@@ -65,7 +87,7 @@ Digitise SPD process; gate-enforced progression; data hub for document generatio
 | **Purpose** | Approval event unlocking next phase |
 | **Field groups** | gateId, approver, role, decision, comments, evidence documents |
 | **Hooks** | Update project phase lock state on approve; activity event writes deferred phase |
-| **Implementation** | `src/collections/SpdGateSignOffs.ts`, `src/hooks/spd/unlockPhaseOnApprove.ts` — append-only (no update/delete); advances `currentPhase` on approve |
+| **Implementation** | `src/collections/SpdGateSignOffs.ts`, `src/hooks/spd/validateGateSignOff.ts`, `src/hooks/spd/unlockPhaseOnApprove.ts` — append-only (no update/delete); validates checklist + role before approve; advances `currentPhase` on approve |
 
 ### `spd-change-requests`
 
@@ -123,8 +145,18 @@ Business Lead, PDM, Product Director, Design Lead, Quality Lead, Manufacturing L
 
 ---
 
+## Synthetic template stand-in (SPD-002 / BUI-288)
+
+Until `SPD_ProcessFlow.docx` is delivered, boot seed publishes **`Stanton Product Development (Synthetic v1)`** (`version: 1.0-synthetic`) from the intake brief and [PHASE-1-MVP](../PHASE-1-MVP.md) structure: 6 phases, 18 stages, 5 gates, checklist items, deliverables, and gate RASCI. `spd-settings.defaultTemplate` points at this record; demo project **`SPD Demo — Sample Opportunity`** is created idempotently on first boot.
+
+**Reconcile when docx arrives** — update the published template (or publish a new version) to match Conrad's source document; do not mutate in-flight project snapshots.
+
+Implementation: `src/seed/spdSyntheticTemplate.data.ts`, `src/seed/spdProcessTemplate.ts`, wired in `payload.config.ts` `onInit`.
+
+---
+
 ## Open questions
 
 - Costing logic for out-of-scope change requests
 - Volume of concurrent active projects
-- Conrad POC feedback on process template accuracy
+- Conrad POC feedback on process template accuracy (synthetic template unblocks demo; docx reconciliation still pending)

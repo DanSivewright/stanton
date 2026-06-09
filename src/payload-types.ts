@@ -69,16 +69,41 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    tags: Tag;
+    'activity-events': ActivityEvent;
+    'llm-prompts': LlmPrompt;
     companies: Company;
+    sites: Site;
+    departments: Department;
+    teams: Team;
     employees: Employee;
     customers: Customer;
     contacts: Contact;
+    products: Product;
+    machines: Machine;
+    moulds: Mould;
     documents: Document;
     'spd-process-templates': SpdProcessTemplate;
     'spd-projects': SpdProject;
     'spd-gate-sign-offs': SpdGateSignOff;
     'spd-change-requests': SpdChangeRequest;
     'tooling-assets': ToolingAsset;
+    'manufacturing-orders': ManufacturingOrder;
+    'production-snapshots': ProductionSnapshot;
+    'one-on-one-scores': OneOnOneScore;
+    parts: Part;
+    'maintenance-jobs': MaintenanceJob;
+    'maintenance-pos': MaintenancePo;
+    'finance-reporting-periods': FinanceReportingPeriod;
+    'finance-report-lines': FinanceReportLine;
+    'financial-metrics': FinancialMetric;
+    'sales-performance-periods': SalesPerformancePeriod;
+    'sales-targets': SalesTarget;
+    'sales-actuals': SalesActual;
+    'sales-activities': SalesActivity;
+    'contract-templates': ContractTemplate;
+    'performance-contracts': PerformanceContract;
+    'quarterly-reviews': QuarterlyReview;
     exports: Export;
     imports: Import;
     'payload-kv': PayloadKv;
@@ -91,16 +116,41 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    tags: TagsSelect<false> | TagsSelect<true>;
+    'activity-events': ActivityEventsSelect<false> | ActivityEventsSelect<true>;
+    'llm-prompts': LlmPromptsSelect<false> | LlmPromptsSelect<true>;
     companies: CompaniesSelect<false> | CompaniesSelect<true>;
+    sites: SitesSelect<false> | SitesSelect<true>;
+    departments: DepartmentsSelect<false> | DepartmentsSelect<true>;
+    teams: TeamsSelect<false> | TeamsSelect<true>;
     employees: EmployeesSelect<false> | EmployeesSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
     contacts: ContactsSelect<false> | ContactsSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    machines: MachinesSelect<false> | MachinesSelect<true>;
+    moulds: MouldsSelect<false> | MouldsSelect<true>;
     documents: DocumentsSelect<false> | DocumentsSelect<true>;
     'spd-process-templates': SpdProcessTemplatesSelect<false> | SpdProcessTemplatesSelect<true>;
     'spd-projects': SpdProjectsSelect<false> | SpdProjectsSelect<true>;
     'spd-gate-sign-offs': SpdGateSignOffsSelect<false> | SpdGateSignOffsSelect<true>;
     'spd-change-requests': SpdChangeRequestsSelect<false> | SpdChangeRequestsSelect<true>;
     'tooling-assets': ToolingAssetsSelect<false> | ToolingAssetsSelect<true>;
+    'manufacturing-orders': ManufacturingOrdersSelect<false> | ManufacturingOrdersSelect<true>;
+    'production-snapshots': ProductionSnapshotsSelect<false> | ProductionSnapshotsSelect<true>;
+    'one-on-one-scores': OneOnOneScoresSelect<false> | OneOnOneScoresSelect<true>;
+    parts: PartsSelect<false> | PartsSelect<true>;
+    'maintenance-jobs': MaintenanceJobsSelect<false> | MaintenanceJobsSelect<true>;
+    'maintenance-pos': MaintenancePosSelect<false> | MaintenancePosSelect<true>;
+    'finance-reporting-periods': FinanceReportingPeriodsSelect<false> | FinanceReportingPeriodsSelect<true>;
+    'finance-report-lines': FinanceReportLinesSelect<false> | FinanceReportLinesSelect<true>;
+    'financial-metrics': FinancialMetricsSelect<false> | FinancialMetricsSelect<true>;
+    'sales-performance-periods': SalesPerformancePeriodsSelect<false> | SalesPerformancePeriodsSelect<true>;
+    'sales-targets': SalesTargetsSelect<false> | SalesTargetsSelect<true>;
+    'sales-actuals': SalesActualsSelect<false> | SalesActualsSelect<true>;
+    'sales-activities': SalesActivitiesSelect<false> | SalesActivitiesSelect<true>;
+    'contract-templates': ContractTemplatesSelect<false> | ContractTemplatesSelect<true>;
+    'performance-contracts': PerformanceContractsSelect<false> | PerformanceContractsSelect<true>;
+    'quarterly-reviews': QuarterlyReviewsSelect<false> | QuarterlyReviewsSelect<true>;
     exports: ExportsSelect<false> | ExportsSelect<true>;
     imports: ImportsSelect<false> | ImportsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -115,9 +165,21 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     'spd-settings': SpdSetting;
+    'manufacturing-settings': ManufacturingSetting;
+    'maintenance-settings': MaintenanceSetting;
+    'finance-settings': FinanceSetting;
+    'sales-settings': SalesSetting;
+    'hr-settings': HrSetting;
+    'llm-settings': LlmSetting;
   };
   globalsSelect: {
     'spd-settings': SpdSettingsSelect<false> | SpdSettingsSelect<true>;
+    'manufacturing-settings': ManufacturingSettingsSelect<false> | ManufacturingSettingsSelect<true>;
+    'maintenance-settings': MaintenanceSettingsSelect<false> | MaintenanceSettingsSelect<true>;
+    'finance-settings': FinanceSettingsSelect<false> | FinanceSettingsSelect<true>;
+    'sales-settings': SalesSettingsSelect<false> | SalesSettingsSelect<true>;
+    'hr-settings': HrSettingsSelect<false> | HrSettingsSelect<true>;
+    'llm-settings': LlmSettingsSelect<false> | LlmSettingsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -198,6 +260,10 @@ export interface Employee {
   name: string;
   jobTitle?: string | null;
   company: string | Company;
+  site?: (string | null) | Site;
+  department?: (string | null) | Department;
+  team?: (string | null) | Team;
+  manager?: (string | null) | Employee;
   /**
    * Optional link to Payload user account (e.g. SPD gate approvers)
    */
@@ -214,6 +280,10 @@ export interface Company {
   id: string;
   name: string;
   code: string;
+  /**
+   * Company branding for documents and reports
+   */
+  logo?: (string | null) | Media;
   active?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -236,6 +306,113 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sites".
+ */
+export interface Site {
+  id: string;
+  name: string;
+  code: string;
+  company: string | Company;
+  address?: string | null;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "departments".
+ */
+export interface Department {
+  id: string;
+  name: string;
+  company: string | Company;
+  site?: (string | null) | Site;
+  parentDepartment?: (string | null) | Department;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teams".
+ */
+export interface Team {
+  id: string;
+  name: string;
+  company: string | Company;
+  department?: (string | null) | Department;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+  module?: ('foundations' | 'spd' | 'manufacturing' | 'maintenance' | 'finance' | 'sales' | 'hr') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Cross-module audit trail for significant actions
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activity-events".
+ */
+export interface ActivityEvent {
+  id: string;
+  summary: string;
+  /**
+   * e.g. gate-approved, snapshot-submitted, period-locked
+   */
+  eventType: string;
+  module?: ('spd' | 'manufacturing' | 'maintenance' | 'finance' | 'sales' | 'hr' | 'platform') | null;
+  collectionSlug?: string | null;
+  documentId?: string | null;
+  actor?: (string | null) | User;
+  metadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Reusable prompt templates for future MCP/agent layer
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "llm-prompts".
+ */
+export interface LlmPrompt {
+  id: string;
+  name: string;
+  module?: ('cross' | 'spd' | 'manufacturing' | 'finance' | 'sales' | 'hr') | null;
+  systemPrompt: string;
+  /**
+   * Use {{placeholders}} for runtime substitution
+   */
+  userPromptTemplate?: string | null;
+  allowedCollections?:
+    | {
+        slug: string;
+        id?: string | null;
+      }[]
+    | null;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -265,6 +442,56 @@ export interface Contact {
    * Optional internal company context
    */
   company?: (string | null) | Company;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: string;
+  name: string;
+  stockCode?: string | null;
+  description?: string | null;
+  company: string | Company;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "machines".
+ */
+export interface Machine {
+  id: string;
+  name: string;
+  code: string;
+  site: string | Site;
+  status?: ('running' | 'stopped' | 'maintenance' | 'offline') | null;
+  /**
+   * Target OEE % (default 70)
+   */
+  oeeTarget?: number | null;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "moulds".
+ */
+export interface Mould {
+  id: string;
+  name: string;
+  code: string;
+  product?: (string | null) | Product;
+  /**
+   * Cumulative shots; service at 20k
+   */
+  shotCount?: number | null;
+  lastServiceAt?: string | null;
+  active?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -304,20 +531,18 @@ export interface SpdProcessTemplate {
   effectiveDate?: string | null;
   phases?:
     | {
-        /**
-         * Stable identifier (e.g. phase-1)
-         */
         phaseId: string;
         name: string;
         order: number;
         stages?:
           | {
-              /**
-               * Stable identifier (e.g. stage-1-1)
-               */
               stageId: string;
               name: string;
               order: number;
+              /**
+               * Optional stages can be excluded at project creation
+               */
+              optional?: boolean | null;
               checklistItems?:
                 | {
                     item: string;
@@ -331,9 +556,6 @@ export interface SpdProcessTemplate {
                   }[]
                 | null;
               gate?: {
-                /**
-                 * Set when this stage ends with a gate (e.g. gate-1)
-                 */
                 gateId?: string | null;
                 name?: string | null;
                 description?: string | null;
@@ -394,6 +616,23 @@ export interface SpdProject {
    */
   processTemplate?: (string | null) | SpdProcessTemplate;
   /**
+   * Optional stage IDs selected at creation (non-optional stages always included)
+   */
+  includedOptionalStages?: string[] | null;
+  /**
+   * Per-project checklist tick-off state
+   */
+  checklistCompletion?:
+    | {
+        stageId: string;
+        itemIndex: number;
+        done?: boolean | null;
+        completedBy?: (string | null) | Employee;
+        completedAt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Active phase ID from the embedded process snapshot
    */
   currentPhase?: string | null;
@@ -418,6 +657,10 @@ export interface SpdProject {
                 stageId: string;
                 name: string;
                 order: number;
+                /**
+                 * Optional stages can be excluded at project creation
+                 */
+                optional?: boolean | null;
                 checklistItems?:
                   | {
                       item: string;
@@ -488,6 +731,10 @@ export interface ToolingAsset {
    * SPD project this tooling asset belongs to
    */
   project?: (string | null) | SpdProject;
+  /**
+   * Prior version in the lineage chain
+   */
+  previousVersion?: (string | null) | ToolingAsset;
   updatedAt: string;
   createdAt: string;
 }
@@ -548,6 +795,363 @@ export interface SpdChangeRequest {
     clientSignOffNotes?: string | null;
   };
   documents?: (string | Document)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manufacturing-orders".
+ */
+export interface ManufacturingOrder {
+  id: string;
+  moNumber: string;
+  machine: string | Machine;
+  product: string | Product;
+  site?: (string | null) | Site;
+  mould?: (string | null) | Mould;
+  orderQty: number;
+  remainQty?: number | null;
+  /**
+   * Planned cycle time in seconds
+   */
+  cycleTimePlanned?: number | null;
+  status: 'planned' | 'active' | 'complete' | 'cancelled';
+  plannedStart?: string | null;
+  plannedEnd?: string | null;
+  /**
+   * Actual OEE %
+   */
+  oeeActual?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Operator round entries — immutable after submit
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "production-snapshots".
+ */
+export interface ProductionSnapshot {
+  id: string;
+  machine: string | Machine;
+  manufacturingOrder: string | ManufacturingOrder;
+  employee: string | Employee;
+  /**
+   * Denormalized Employee ID for cross-module joins
+   */
+  employeeId?: string | null;
+  status: 'draft' | 'submitted';
+  /**
+   * Actual cycle time in seconds
+   */
+  actualCycleTime?: number | null;
+  unitsProduced?: number | null;
+  rejects?: number | null;
+  stoppage?: {
+    occurred?: boolean | null;
+    reason?: string | null;
+    durationMinutes?: number | null;
+  };
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Weekly Accuracy/Runs scores — canonical home for HR rollup
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "one-on-one-scores".
+ */
+export interface OneOnOneScore {
+  id: string;
+  employee: string | Employee;
+  employeeId?: string | null;
+  manager?: (string | null) | Employee;
+  weekStart: string;
+  /**
+   * Accuracy score 0–100
+   */
+  accuracy?: number | null;
+  /**
+   * Runs completed count
+   */
+  runs?: number | null;
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "parts".
+ */
+export interface Part {
+  id: string;
+  name: string;
+  partNumber?: string | null;
+  description?: string | null;
+  supplier?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "maintenance-jobs".
+ */
+export interface MaintenanceJob {
+  id: string;
+  title: string;
+  machine: string | Machine;
+  mould?: (string | null) | Mould;
+  technician?: (string | null) | Employee;
+  status: 'open' | 'in_progress' | 'completed' | 'cancelled';
+  trigger?: ('manual' | 'shot_count' | 'machine_stopped') | null;
+  scheduledAt?: string | null;
+  completedAt?: string | null;
+  downtimeMinutes?: number | null;
+  notes?: string | null;
+  partsUsed?:
+    | {
+        part: string | Part;
+        quantity: number;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "maintenance-pos".
+ */
+export interface MaintenancePo {
+  id: string;
+  poNumber: string;
+  maintenanceJob: string | MaintenanceJob;
+  machine?: (string | null) | Machine;
+  document: string | Document;
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "finance-reporting-periods".
+ */
+export interface FinanceReportingPeriod {
+  id: string;
+  /**
+   * e.g. June 2026
+   */
+  label: string;
+  company: string | Company;
+  periodType: 'monthly' | 'weekly' | 'custom';
+  periodStart: string;
+  periodEnd: string;
+  status: 'open' | 'locked';
+  sections?:
+    | {
+        sectionKey: string;
+        name: string;
+        order?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  lockedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "finance-report-lines".
+ */
+export interface FinanceReportLine {
+  id: string;
+  period: string | FinanceReportingPeriod;
+  company: string | Company;
+  sectionKey: string;
+  lineType?: ('standard' | 'aging') | null;
+  label: string;
+  amount: number;
+  priorPeriodAmount?: number | null;
+  samePeriodLastYear?: number | null;
+  division?: string | null;
+  agingBucket?: ('current' | '30' | '60' | '90' | '120plus') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "financial-metrics".
+ */
+export interface FinancialMetric {
+  id: string;
+  period: string | FinanceReportingPeriod;
+  company: string | Company;
+  /**
+   * e.g. gross-margin-pct, current-ratio
+   */
+  metricKey: string;
+  value: number;
+  priorValue?: number | null;
+  /**
+   * Set when parent period is locked
+   */
+  frozen?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales-performance-periods".
+ */
+export interface SalesPerformancePeriod {
+  id: string;
+  label: string;
+  company: string | Company;
+  month: number;
+  year: number;
+  status?: ('open' | 'closed') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales-targets".
+ */
+export interface SalesTarget {
+  id: string;
+  period: string | SalesPerformancePeriod;
+  employee?: (string | null) | Employee;
+  team?: (string | null) | Team;
+  department?: (string | null) | Department;
+  revenueTarget?: number | null;
+  newBusinessTarget?: number | null;
+  huntVisitsTarget?: number | null;
+  careVisitsTarget?: number | null;
+  conversionTargetPercent?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales-actuals".
+ */
+export interface SalesActual {
+  id: string;
+  period: string | SalesPerformancePeriod;
+  employee: string | Employee;
+  customer?: (string | null) | Customer;
+  product?: (string | null) | Product;
+  actualAmount: number;
+  source?: ('manual' | 'odoo' | 'import') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales-activities".
+ */
+export interface SalesActivity {
+  id: string;
+  period: string | SalesPerformancePeriod;
+  employee: string | Employee;
+  activityType: 'hunt' | 'care';
+  careVisits?: number | null;
+  conversions?: number | null;
+  satisfactionScore?: number | null;
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contract-templates".
+ */
+export interface ContractTemplate {
+  id: string;
+  name: string;
+  company?: (string | null) | Company;
+  description?: string | null;
+  active?: boolean | null;
+  kpas?:
+    | {
+        name: string;
+        weight?: number | null;
+        kpis?:
+          | {
+              name: string;
+              target?: string | null;
+              weight?: number | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "performance-contracts".
+ */
+export interface PerformanceContract {
+  id: string;
+  employee: string | Employee;
+  template?: (string | null) | ContractTemplate;
+  /**
+   * e.g. FY2026
+   */
+  periodLabel: string;
+  status: 'draft' | 'submitted' | 'approved' | 'archived';
+  documents?: (string | Document)[] | null;
+  kpas?:
+    | {
+        name: string;
+        weight?: number | null;
+        kpis?:
+          | {
+              name: string;
+              target?: string | null;
+              actual?: string | null;
+              weight?: number | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quarterly-reviews".
+ */
+export interface QuarterlyReview {
+  id: string;
+  employee: string | Employee;
+  manager?: (string | null) | Employee;
+  performanceContract?: (string | null) | PerformanceContract;
+  quarter: number;
+  year: number;
+  status?: ('not_started' | 'in_progress' | 'manager_review' | 'signed_off') | null;
+  scores?:
+    | {
+        kpiName: string;
+        score?: number | null;
+        weight?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  weightedTotal?: number | null;
+  rating?: ('1' | '2' | '3') | null;
+  managerComments?: string | null;
+  /**
+   * Optional AI-generated summary (Phase 3)
+   */
+  aiSummary?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -750,8 +1354,32 @@ export interface PayloadLockedDocument {
         value: string | Media;
       } | null)
     | ({
+        relationTo: 'tags';
+        value: string | Tag;
+      } | null)
+    | ({
+        relationTo: 'activity-events';
+        value: string | ActivityEvent;
+      } | null)
+    | ({
+        relationTo: 'llm-prompts';
+        value: string | LlmPrompt;
+      } | null)
+    | ({
         relationTo: 'companies';
         value: string | Company;
+      } | null)
+    | ({
+        relationTo: 'sites';
+        value: string | Site;
+      } | null)
+    | ({
+        relationTo: 'departments';
+        value: string | Department;
+      } | null)
+    | ({
+        relationTo: 'teams';
+        value: string | Team;
       } | null)
     | ({
         relationTo: 'employees';
@@ -764,6 +1392,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'contacts';
         value: string | Contact;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: string | Product;
+      } | null)
+    | ({
+        relationTo: 'machines';
+        value: string | Machine;
+      } | null)
+    | ({
+        relationTo: 'moulds';
+        value: string | Mould;
       } | null)
     | ({
         relationTo: 'documents';
@@ -788,6 +1428,70 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'tooling-assets';
         value: string | ToolingAsset;
+      } | null)
+    | ({
+        relationTo: 'manufacturing-orders';
+        value: string | ManufacturingOrder;
+      } | null)
+    | ({
+        relationTo: 'production-snapshots';
+        value: string | ProductionSnapshot;
+      } | null)
+    | ({
+        relationTo: 'one-on-one-scores';
+        value: string | OneOnOneScore;
+      } | null)
+    | ({
+        relationTo: 'parts';
+        value: string | Part;
+      } | null)
+    | ({
+        relationTo: 'maintenance-jobs';
+        value: string | MaintenanceJob;
+      } | null)
+    | ({
+        relationTo: 'maintenance-pos';
+        value: string | MaintenancePo;
+      } | null)
+    | ({
+        relationTo: 'finance-reporting-periods';
+        value: string | FinanceReportingPeriod;
+      } | null)
+    | ({
+        relationTo: 'finance-report-lines';
+        value: string | FinanceReportLine;
+      } | null)
+    | ({
+        relationTo: 'financial-metrics';
+        value: string | FinancialMetric;
+      } | null)
+    | ({
+        relationTo: 'sales-performance-periods';
+        value: string | SalesPerformancePeriod;
+      } | null)
+    | ({
+        relationTo: 'sales-targets';
+        value: string | SalesTarget;
+      } | null)
+    | ({
+        relationTo: 'sales-actuals';
+        value: string | SalesActual;
+      } | null)
+    | ({
+        relationTo: 'sales-activities';
+        value: string | SalesActivity;
+      } | null)
+    | ({
+        relationTo: 'contract-templates';
+        value: string | ContractTemplate;
+      } | null)
+    | ({
+        relationTo: 'performance-contracts';
+        value: string | PerformanceContract;
+      } | null)
+    | ({
+        relationTo: 'quarterly-reviews';
+        value: string | QuarterlyReview;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -876,11 +1580,95 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  module?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activity-events_select".
+ */
+export interface ActivityEventsSelect<T extends boolean = true> {
+  summary?: T;
+  eventType?: T;
+  module?: T;
+  collectionSlug?: T;
+  documentId?: T;
+  actor?: T;
+  metadata?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "llm-prompts_select".
+ */
+export interface LlmPromptsSelect<T extends boolean = true> {
+  name?: T;
+  module?: T;
+  systemPrompt?: T;
+  userPromptTemplate?: T;
+  allowedCollections?:
+    | T
+    | {
+        slug?: T;
+        id?: T;
+      };
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "companies_select".
  */
 export interface CompaniesSelect<T extends boolean = true> {
   name?: T;
   code?: T;
+  logo?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sites_select".
+ */
+export interface SitesSelect<T extends boolean = true> {
+  name?: T;
+  code?: T;
+  company?: T;
+  address?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "departments_select".
+ */
+export interface DepartmentsSelect<T extends boolean = true> {
+  name?: T;
+  company?: T;
+  site?: T;
+  parentDepartment?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teams_select".
+ */
+export interface TeamsSelect<T extends boolean = true> {
+  name?: T;
+  company?: T;
+  department?: T;
   active?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -894,6 +1682,10 @@ export interface EmployeesSelect<T extends boolean = true> {
   name?: T;
   jobTitle?: T;
   company?: T;
+  site?: T;
+  department?: T;
+  team?: T;
+  manager?: T;
   user?: T;
   active?: T;
   updatedAt?: T;
@@ -922,6 +1714,47 @@ export interface ContactsSelect<T extends boolean = true> {
   roleTitle?: T;
   customer?: T;
   company?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  name?: T;
+  stockCode?: T;
+  description?: T;
+  company?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "machines_select".
+ */
+export interface MachinesSelect<T extends boolean = true> {
+  name?: T;
+  code?: T;
+  site?: T;
+  status?: T;
+  oeeTarget?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "moulds_select".
+ */
+export interface MouldsSelect<T extends boolean = true> {
+  name?: T;
+  code?: T;
+  product?: T;
+  shotCount?: T;
+  lastServiceAt?: T;
+  active?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -966,6 +1799,7 @@ export interface SpdProcessTemplatesSelect<T extends boolean = true> {
               stageId?: T;
               name?: T;
               order?: T;
+              optional?: T;
               checklistItems?:
                 | T
                 | {
@@ -1012,6 +1846,17 @@ export interface SpdProjectsSelect<T extends boolean = true> {
   contacts?: T;
   toolingAsset?: T;
   processTemplate?: T;
+  includedOptionalStages?: T;
+  checklistCompletion?:
+    | T
+    | {
+        stageId?: T;
+        itemIndex?: T;
+        done?: T;
+        completedBy?: T;
+        completedAt?: T;
+        id?: T;
+      };
   currentPhase?: T;
   onTrack?: T;
   startDate?: T;
@@ -1035,6 +1880,7 @@ export interface SpdProjectsSelect<T extends boolean = true> {
                     stageId?: T;
                     name?: T;
                     order?: T;
+                    optional?: T;
                     checklistItems?:
                       | T
                       | {
@@ -1117,6 +1963,313 @@ export interface ToolingAssetsSelect<T extends boolean = true> {
   version?: T;
   status?: T;
   project?: T;
+  previousVersion?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manufacturing-orders_select".
+ */
+export interface ManufacturingOrdersSelect<T extends boolean = true> {
+  moNumber?: T;
+  machine?: T;
+  product?: T;
+  site?: T;
+  mould?: T;
+  orderQty?: T;
+  remainQty?: T;
+  cycleTimePlanned?: T;
+  status?: T;
+  plannedStart?: T;
+  plannedEnd?: T;
+  oeeActual?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "production-snapshots_select".
+ */
+export interface ProductionSnapshotsSelect<T extends boolean = true> {
+  machine?: T;
+  manufacturingOrder?: T;
+  employee?: T;
+  employeeId?: T;
+  status?: T;
+  actualCycleTime?: T;
+  unitsProduced?: T;
+  rejects?: T;
+  stoppage?:
+    | T
+    | {
+        occurred?: T;
+        reason?: T;
+        durationMinutes?: T;
+      };
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "one-on-one-scores_select".
+ */
+export interface OneOnOneScoresSelect<T extends boolean = true> {
+  employee?: T;
+  employeeId?: T;
+  manager?: T;
+  weekStart?: T;
+  accuracy?: T;
+  runs?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "parts_select".
+ */
+export interface PartsSelect<T extends boolean = true> {
+  name?: T;
+  partNumber?: T;
+  description?: T;
+  supplier?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "maintenance-jobs_select".
+ */
+export interface MaintenanceJobsSelect<T extends boolean = true> {
+  title?: T;
+  machine?: T;
+  mould?: T;
+  technician?: T;
+  status?: T;
+  trigger?: T;
+  scheduledAt?: T;
+  completedAt?: T;
+  downtimeMinutes?: T;
+  notes?: T;
+  partsUsed?:
+    | T
+    | {
+        part?: T;
+        quantity?: T;
+        notes?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "maintenance-pos_select".
+ */
+export interface MaintenancePosSelect<T extends boolean = true> {
+  poNumber?: T;
+  maintenanceJob?: T;
+  machine?: T;
+  document?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "finance-reporting-periods_select".
+ */
+export interface FinanceReportingPeriodsSelect<T extends boolean = true> {
+  label?: T;
+  company?: T;
+  periodType?: T;
+  periodStart?: T;
+  periodEnd?: T;
+  status?: T;
+  sections?:
+    | T
+    | {
+        sectionKey?: T;
+        name?: T;
+        order?: T;
+        id?: T;
+      };
+  lockedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "finance-report-lines_select".
+ */
+export interface FinanceReportLinesSelect<T extends boolean = true> {
+  period?: T;
+  company?: T;
+  sectionKey?: T;
+  lineType?: T;
+  label?: T;
+  amount?: T;
+  priorPeriodAmount?: T;
+  samePeriodLastYear?: T;
+  division?: T;
+  agingBucket?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "financial-metrics_select".
+ */
+export interface FinancialMetricsSelect<T extends boolean = true> {
+  period?: T;
+  company?: T;
+  metricKey?: T;
+  value?: T;
+  priorValue?: T;
+  frozen?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales-performance-periods_select".
+ */
+export interface SalesPerformancePeriodsSelect<T extends boolean = true> {
+  label?: T;
+  company?: T;
+  month?: T;
+  year?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales-targets_select".
+ */
+export interface SalesTargetsSelect<T extends boolean = true> {
+  period?: T;
+  employee?: T;
+  team?: T;
+  department?: T;
+  revenueTarget?: T;
+  newBusinessTarget?: T;
+  huntVisitsTarget?: T;
+  careVisitsTarget?: T;
+  conversionTargetPercent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales-actuals_select".
+ */
+export interface SalesActualsSelect<T extends boolean = true> {
+  period?: T;
+  employee?: T;
+  customer?: T;
+  product?: T;
+  actualAmount?: T;
+  source?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales-activities_select".
+ */
+export interface SalesActivitiesSelect<T extends boolean = true> {
+  period?: T;
+  employee?: T;
+  activityType?: T;
+  careVisits?: T;
+  conversions?: T;
+  satisfactionScore?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contract-templates_select".
+ */
+export interface ContractTemplatesSelect<T extends boolean = true> {
+  name?: T;
+  company?: T;
+  description?: T;
+  active?: T;
+  kpas?:
+    | T
+    | {
+        name?: T;
+        weight?: T;
+        kpis?:
+          | T
+          | {
+              name?: T;
+              target?: T;
+              weight?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "performance-contracts_select".
+ */
+export interface PerformanceContractsSelect<T extends boolean = true> {
+  employee?: T;
+  template?: T;
+  periodLabel?: T;
+  status?: T;
+  documents?: T;
+  kpas?:
+    | T
+    | {
+        name?: T;
+        weight?: T;
+        kpis?:
+          | T
+          | {
+              name?: T;
+              target?: T;
+              actual?: T;
+              weight?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quarterly-reviews_select".
+ */
+export interface QuarterlyReviewsSelect<T extends boolean = true> {
+  employee?: T;
+  manager?: T;
+  performanceContract?: T;
+  quarter?: T;
+  year?: T;
+  status?: T;
+  scores?:
+    | T
+    | {
+        kpiName?: T;
+        score?: T;
+        weight?: T;
+        id?: T;
+      };
+  weightedTotal?: T;
+  rating?: T;
+  managerComments?: T;
+  aiSummary?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1264,10 +2417,187 @@ export interface SpdSetting {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manufacturing-settings".
+ */
+export interface ManufacturingSetting {
+  id: string;
+  /**
+   * Target OEE %
+   */
+  oeeBenchmark?: number | null;
+  rejectThresholdPercent?: number | null;
+  snapshotIntervalHours?: number | null;
+  mouldWarningShotCount?: number | null;
+  mouldServiceShotCount?: number | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "maintenance-settings".
+ */
+export interface MaintenanceSetting {
+  id: string;
+  serviceIntervalShots?: number | null;
+  warningShotCount?: number | null;
+  /**
+   * Comma-separated emails for machine-down alerts
+   */
+  notificationChain?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "finance-settings".
+ */
+export interface FinanceSetting {
+  id: string;
+  defaultCompanies?: (string | Company)[] | null;
+  periodCadence?: ('monthly' | 'weekly') | null;
+  /**
+   * Comma-separated emails for board pack delivery (downstream)
+   */
+  defaultRecipients?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales-settings".
+ */
+export interface SalesSetting {
+  id: string;
+  defaultHuntVisitsTarget?: number | null;
+  defaultCareVisitsTarget?: number | null;
+  defaultConversionPercent?: number | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hr-settings".
+ */
+export interface HrSetting {
+  id: string;
+  reviewCadence?: ('quarterly' | 'annual') | null;
+  defaultContractPeriod?: string | null;
+  ratingBandLabels?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "llm-settings".
+ */
+export interface LlmSetting {
+  id: string;
+  /**
+   * MCP plugin not installed yet — config placeholder
+   */
+  enabled?: boolean | null;
+  provider?: ('anthropic' | 'openai') | null;
+  /**
+   * Model slug when provider is configured
+   */
+  defaultModel?: string | null;
+  mcpAllowedCollections?:
+    | {
+        slug: string;
+        id?: string | null;
+      }[]
+    | null;
+  rateLimitPerMinute?: number | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "spd-settings_select".
  */
 export interface SpdSettingsSelect<T extends boolean = true> {
   defaultTemplate?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manufacturing-settings_select".
+ */
+export interface ManufacturingSettingsSelect<T extends boolean = true> {
+  oeeBenchmark?: T;
+  rejectThresholdPercent?: T;
+  snapshotIntervalHours?: T;
+  mouldWarningShotCount?: T;
+  mouldServiceShotCount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "maintenance-settings_select".
+ */
+export interface MaintenanceSettingsSelect<T extends boolean = true> {
+  serviceIntervalShots?: T;
+  warningShotCount?: T;
+  notificationChain?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "finance-settings_select".
+ */
+export interface FinanceSettingsSelect<T extends boolean = true> {
+  defaultCompanies?: T;
+  periodCadence?: T;
+  defaultRecipients?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sales-settings_select".
+ */
+export interface SalesSettingsSelect<T extends boolean = true> {
+  defaultHuntVisitsTarget?: T;
+  defaultCareVisitsTarget?: T;
+  defaultConversionPercent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hr-settings_select".
+ */
+export interface HrSettingsSelect<T extends boolean = true> {
+  reviewCadence?: T;
+  defaultContractPeriod?: T;
+  ratingBandLabels?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "llm-settings_select".
+ */
+export interface LlmSettingsSelect<T extends boolean = true> {
+  enabled?: T;
+  provider?: T;
+  defaultModel?: T;
+  mcpAllowedCollections?:
+    | T
+    | {
+        slug?: T;
+        id?: T;
+      };
+  rateLimitPerMinute?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1294,16 +2624,41 @@ export interface TaskCreateCollectionExport {
     collectionSlug:
       | 'users'
       | 'media'
+      | 'tags'
+      | 'activity-events'
+      | 'llm-prompts'
       | 'companies'
+      | 'sites'
+      | 'departments'
+      | 'teams'
       | 'employees'
       | 'customers'
       | 'contacts'
+      | 'products'
+      | 'machines'
+      | 'moulds'
       | 'documents'
       | 'spd-process-templates'
       | 'spd-projects'
       | 'spd-gate-sign-offs'
       | 'spd-change-requests'
       | 'tooling-assets'
+      | 'manufacturing-orders'
+      | 'production-snapshots'
+      | 'one-on-one-scores'
+      | 'parts'
+      | 'maintenance-jobs'
+      | 'maintenance-pos'
+      | 'finance-reporting-periods'
+      | 'finance-report-lines'
+      | 'financial-metrics'
+      | 'sales-performance-periods'
+      | 'sales-targets'
+      | 'sales-actuals'
+      | 'sales-activities'
+      | 'contract-templates'
+      | 'performance-contracts'
+      | 'quarterly-reviews'
       | 'exports'
       | 'imports';
     drafts?: ('yes' | 'no') | null;

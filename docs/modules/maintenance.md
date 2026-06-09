@@ -65,6 +65,14 @@ Track service history, parts used, PO attachments, and machine-down workflows. R
 
 ---
 
+## Assumptions (full-platform build 2026-06-09)
+
+- **Shipped:** `parts`, `maintenance-jobs` (with embedded `partsUsed[]`), `maintenance-pos`, `maintenance-settings` global.
+- Standalone module (not embedded in Manufacturing admin).
+- Shot-count → auto job hook wired (`src/hooks/manufacturing/flagMaintenanceOnShotThreshold.ts`) — creates open `shot_count` job when mould shot count reaches `serviceIntervalShots`; logs warning at `warningShotCount` (notification chain text only, no Jobs Queue worker).
+- Machine-down notification chain stored as text in settings; no Jobs Queue worker yet.
+- No inventory/stock tracking.
+
 ## Out of scope (v1)
 
 - Predictive maintenance

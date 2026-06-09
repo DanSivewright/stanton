@@ -74,6 +74,17 @@ Payload owns normalized **Sales Targets**, **Sales Actuals**, **Sales Activities
 
 ---
 
+## Assumptions (full-platform build 2026-06-09)
+
+- **Shipped:** `sales-performance-periods`, `sales-targets`, `sales-actuals`, `sales-activities`, `sales-settings` global.
+- Pipedrive/Odoo field mapping not built; `source` enum on actuals supports future import.
+- Discrepancy rollups computed at read time (no snapshot collection).
+- Hunt/Care targets use defaults from `sales-settings` global.
+
+### Admin view (SAL-007 — lightweight, 2026-06-09)
+
+`beforeList` summary on `sales-performance-periods` (`src/components/admin/SalesDashboardBeforeList.tsx`): latest period label, revenue target vs actual, gap, attainment %, Hunt/Care visit counts, reps tracked. Full discrepancy dashboard UI remains deferred.
+
 ## Payload-native notes
 
 - Import-export on targets/actuals/activities

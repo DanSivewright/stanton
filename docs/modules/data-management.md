@@ -23,18 +23,27 @@ Enable bulk load and export of Payload collections without making "Import Batch"
 
 ---
 
-## Collections enabled for import/export (initial recommendation)
+## Collections enabled for import/export
 
-| Collection | Priority | Notes |
-|------------|----------|-------|
-| `employees` | High | Organogram onboarding |
-| `machines` | High | Factory setup |
-| `manufacturing-orders` | High | Planning sheet |
-| `finance-report-lines` | Medium | Manual finance load |
-| `sales-targets`, `sales-actuals` | Medium | Phase 2 |
-| `parts` | Low | Maintenance catalog |
+| Collection | Status | Notes |
+|------------|--------|-------|
+| `employees` | Enabled | Organogram onboarding |
+| `users`, `media` | Enabled | Admin verify export |
+| `products`, `machines`, `moulds` | Enabled | Factory setup |
+| `parts` | Enabled | Maintenance catalog |
+| `manufacturing-orders` | Enabled | Planning sheet |
+| `production-snapshots` | Enabled | Round entry bulk load |
+| `one-on-one-scores` | Enabled | HR rollup path |
+| `maintenance-jobs` | Enabled | Job history import |
+| `finance-reporting-periods` | Enabled | Period headers |
+| `finance-report-lines` | Enabled | Manual finance load |
+| `financial-metrics` | Enabled | Derived metrics |
+| `sales-targets`, `sales-actuals`, `sales-activities` | Enabled | Sales performance |
+| `spd-projects`, `spd-gate-sign-offs`, `spd-change-requests` | Enabled | SPD fixtures |
 
-Governance: privileged import roles — **deferred** with access control pass.
+Configured in `src/payload.config.ts` → `importExportCollections`.
+
+Governance: privileged import roles — **deferred** (admin-only write on finance/HR applies; import still uses authenticated user).
 
 ---
 
@@ -48,13 +57,9 @@ Governance: privileged import roles — **deferred** with access control pass.
 - `jobsCollectionOverrides` exposes `payload-jobs` in admin for debugging
 - Local dev: set `ENABLE_PAYLOAD_AUTORUN=true` to process jobs in-process (optional)
 
-### Initial import-export collections (Phase 1a)
+### Verification
 
-| Collection | Status |
-|------------|--------|
-| `employees` | Enabled |
-| `users` | Enabled (verify export) |
-| `media` | Enabled (verify export) |
+`pnpm tsx scripts/verify/platform-smoke.ts` — asserts demo seed records exist across modules after `onInit`.
 
 ---
 

@@ -128,6 +128,15 @@ Minimum shippable slice when client selects Manufacturing after SPD POC:
 
 ---
 
+## Assumptions (full-platform build 2026-06-09)
+
+- **Shipped:** `manufacturing-orders`, `production-snapshots`, `one-on-one-scores`, `manufacturing-settings` global.
+- Rejects/stoppage embedded on snapshots (not separate collections).
+- Mould `shotCount` increments on snapshot submit via hook (`validateProductionSnapshot.ts`).
+- `one-on-one-scores` included for HR rollup path despite prior 1.5 deferral.
+- Wave 2: `beforeList` manufacturing summary on `production-snapshots` (`ManufacturingDashboardBeforeList`). No tablet/TV custom views (MFG-009–010 deferred).
+- Planning import: collection wired to import-export plugin; Excel mapping script not built.
+
 ## Open questions
 
 - Excel access pattern (upload vs shared drive)

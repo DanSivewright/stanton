@@ -59,6 +59,13 @@ Enable staff to query ecosystem data in plain language with answers grounded in 
 
 ---
 
+## Assumptions (full-platform build 2026-06-09)
+
+- **Shipped stubs:** `llm-prompts` collection + `llm-settings` global (`enabled: false`).
+- `@payloadcms/plugin-mcp` **not installed** — config placeholders only.
+- Default provider assumed Anthropic; client can switch via settings.
+- Allowed collections list maintained manually until MCP plugin ships.
+
 ## Open questions
 
 - Base LLM vendor (Claude vs OpenAI)

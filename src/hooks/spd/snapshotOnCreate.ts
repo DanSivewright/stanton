@@ -49,7 +49,18 @@ export const snapshotOnCreate: CollectionBeforeChangeHook = async ({
     throw new Error('Only published process templates can be used for new SPD projects.')
   }
 
-  const phases = structuredClone(template.phases ?? [])
+  const allPhases = structuredClone(template.phases ?? []) as Array<{
+    stages?: Array<{ stageId?: string; optional?: boolean | null }> | null
+  }>
+  const includedOptional = new Set(data.includedOptionalStages ?? [])
+
+  const phases = allPhases.map((phase) => ({
+    ...phase,
+    stages: (phase.stages ?? []).filter((stage) => {
+      if (!stage.optional) return true
+      return stage.stageId ? includedOptional.has(stage.stageId) : false
+    }),
+  }))
 
   data.processSnapshot = {
     templateId: String(template.id),

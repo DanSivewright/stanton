@@ -1,6 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
+import { activityOnGateSignOff } from '@/hooks/platform/recordActivityOnChange'
 import { unlockPhaseOnApprove } from '@/hooks/spd/unlockPhaseOnApprove'
+import { validateGateSignOff } from '@/hooks/spd/validateGateSignOff'
 import { spdRoleOptions } from '@/lib/spd/constants'
 
 const decisionOptions = [
@@ -21,7 +23,8 @@ export const SpdGateSignOffs: CollectionConfig = {
     delete: () => false,
   },
   hooks: {
-    afterChange: [unlockPhaseOnApprove],
+    beforeChange: [validateGateSignOff],
+    afterChange: [unlockPhaseOnApprove, activityOnGateSignOff],
   },
   fields: [
     {
