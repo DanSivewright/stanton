@@ -6,7 +6,6 @@ export const testUser = {
   password: 'test',
   roles: ['staff'] as ('admin' | 'staff')[],
 }
-
 /**
  * Seeds a test user for e2e admin tests.
  */
