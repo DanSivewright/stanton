@@ -29,7 +29,6 @@ export async function seedTestUser(): Promise<void> {
     data: testUser,
   })
 }
-
 /**
  * Cleans up test user after tests
  */
