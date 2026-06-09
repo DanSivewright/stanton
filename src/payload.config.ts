@@ -1,7 +1,9 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { importExportPlugin } from '@payloadcms/plugin-import-export'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
+import type { PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
@@ -58,6 +60,39 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URL || '',
   }),
+  jobs: {
+    access: {
+      run: ({ req }: { req: PayloadRequest }): boolean => {
+        if (req.user) return true
+
+        const secret = process.env.CRON_SECRET
+        if (!secret) return false
+
+        const authHeader = req.headers.get('authorization')
+        return authHeader === `Bearer ${secret}`
+      },
+    },
+    // Serverless (Vercel): use vercel.json cron → /api/payload-jobs/run — not in-process autoRun.
+    autoRun:
+      process.env.ENABLE_PAYLOAD_AUTORUN === 'true'
+        ? [{ cron: '*/5 * * * *', limit: 50, queue: 'default' }]
+        : undefined,
+    jobsCollectionOverrides: ({ defaultJobsCollection }) => ({
+      ...defaultJobsCollection,
+      admin: {
+        ...defaultJobsCollection.admin,
+        hidden: false,
+      },
+    }),
+  },
   sharp,
-  plugins: [],
+  plugins: [
+    importExportPlugin({
+      collections: [
+        { slug: 'employees' },
+        { slug: 'users' },
+        { slug: 'media' },
+      ],
+    }),
+  ],
 })

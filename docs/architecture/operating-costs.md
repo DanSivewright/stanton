@@ -2,7 +2,7 @@
 
 **Audience:** Buildmore / technical provider (internal). Includes markup guidance for client-facing allowances. **Not** stored in Payload.
 
-**Last updated:** 2026-06-04  
+**Last updated:** 2026-06-09  
 **Currency:** USD unless noted; ranges are rough — validate against actual usage.
 
 ---
@@ -78,10 +78,14 @@ Some services (AI usage, storage overages) may use **managed-service fee** rathe
 
 ### Vercel deploy checklist (PLAT-002)
 
-1. Import `DanSivewright/stanton` in Vercel (Next.js framework preset).
-2. Set **Preview** and **Production** env vars: `DATABASE_URL`, `PAYLOAD_SECRET` (same values as local `.env.example` shape).
-3. Add deployment IP to Atlas Network Access (or use `0.0.0.0/0` for POC).
-4. Push branch → confirm preview `/admin` loads and can log in.
+1. Import `DanSivewright/stanton` in Vercel (Next.js framework preset). **Done** (user-linked).
+2. Set **Preview** and **Production** env vars: `DATABASE_URL`, `PAYLOAD_SECRET` (same values as local `.env.example` shape). **Done** (user-configured).
+3. Add deployment IP to Atlas Network Access (or use `0.0.0.0/0` for POC). **Done** (user-whitelisted).
+4. Push branch → confirm preview `/admin` loads and can log in. **Pending user confirmation** on live preview URL.
+5. Local verification (2026-06-09): `pnpm run build` passes; TypeScript clean after `seedUser.ts` roles fix.
+6. Add `CRON_SECRET` to Preview + Production env (PLAT-003 cron auth). See `.env.example`.
+
+**User should confirm:** preview deploy succeeds, `/admin` login works, creating a record on preview appears in Atlas.
 | Odoo integration user setup | Internal time | Per handoff checklist |
 | Spike: Pipedrive field mapping | Internal time | Before Sales Phase 2 |
 
