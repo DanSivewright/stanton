@@ -44,6 +44,8 @@ Digitise SPD process; gate-enforced progression; data hub for document generatio
 - Optional stages: `optional` flag on template stages; `includedOptionalStages` on project at create filters snapshot.
 - Checklist: per-project `checklistCompletion` array with `stageId`, `itemIndex`, `done`, `completedBy`, `completedAt`.
 - Tooling: `previousVersion` relationship for lineage; CR links remain on change requests.
+- Optional `relatedMould` → `moulds` when SPD tooling and floor mould are the same physical tool (nullable bridge; collections stay split until client confirms).
+- `externalRefs` on `tooling-assets` (same hub pattern as foundations collections).
 - Out-of-scope CR costing: `estimatedCost` fields only; no finance integration logic.
 
 ---
@@ -104,8 +106,8 @@ Digitise SPD process; gate-enforced progression; data hub for document generatio
 |--|--|
 | **Business term** | Tooling Asset |
 | **Purpose** | Project output / tool with version history |
-| **Relationships** | ↔ `product`, `mould` (phased); ← change requests |
-| **Implementation** | `src/collections/ToolingAssets.ts` — name, version, status, optional `project` link |
+| **Relationships** | → optional `relatedMould` (`moulds`); ↔ `product` (phased); ← change requests |
+| **Implementation** | `src/collections/ToolingAssets.ts` — name, version, status, optional `project`, `relatedMould`, `externalRefs` |
 
 ### `spd-client-form-submissions` (optional)
 

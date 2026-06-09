@@ -51,7 +51,7 @@ Factory equipment that runs production (injection moulding lines, etc.).
 _Avoid_: asset (when meaning machine only)
 
 **Mould**:
-Injection moulding tooling; shot counts and service thresholds attach to the Mould.
+Manufacturing-floor injection moulding tool; shot counts and service thresholds attach here (Maintenance, production snapshots).
 _Avoid_: tool (unless SPD tooling context)
 
 **Product**:
@@ -63,8 +63,10 @@ Broad umbrella term only when a generic cross-module label is required.
 _Avoid_: using Asset instead of Machine, Mould, Product, or Tooling Asset
 
 **Tooling Asset**:
-SPD’s long-lived project output (tool/product asset) with version history — not the same as Machine or Mould.
+SPD project deliverable — versioned tool/product output with change-request lineage; distinct lifecycle from floor **Mould** (project versioning vs shot-count maintenance).
 _Avoid_: asset (alone), project (when meaning the physical tool)
+
+When the same physical tool is both an SPD deliverable and a floor mould, link via optional `tooling-assets.relatedMould` → `moulds` (nullable, single-direction). Do not merge collections until client confirms sameness.
 
 ### Customers and documents
 
@@ -234,6 +236,14 @@ _Avoid_: period data (generic)
 
 ### System
 
+**Canonical Record**:
+The authoritative Payload document for a business entity (Employee, Product, Customer, etc.). Integrations read/write through this record — they do not create parallel copies.
+_Avoid_: mirror record, shadow copy
+
+**External Reference**:
+A row in `externalRefs` linking a Canonical Record to an ID in Odoo, Pipedrive, SharePoint, or a legacy manual source. Carries `syncStatus` and `lastSyncedAt` for future connector jobs.
+_Avoid_: duplicate entity, integration-only record
+
 **Ecosystem**:
 The single Payload application housing all modules and shared foundations.
 _Avoid_: ERP (unless client-facing), platform (generic)
@@ -247,6 +257,7 @@ _Avoid_: ERP (unless client-facing), platform (generic)
 - A **Machine** belongs to a **Site**; a **Mould** may relate to one or more **Products** (cardinality TBD from client data)
 - A **Maintenance Job** belongs to a **Machine** and may reference **Parts** and **Documents**
 - An **SPD Project** snapshots an **SPD Process Template** and may link **Customers**, **Contacts**, and **Tooling Assets**
+- A **Tooling Asset** may optionally link to a **Mould** (`relatedMould`) when SPD tooling and floor tooling are the same physical tool
 - **Finance Reporting Period** and **Sales Performance Period** are module-specific — not one universal Period entity
 
 ## Example dialogue
@@ -255,7 +266,7 @@ _Avoid_: ERP (unless client-facing), platform (generic)
 > **Domain expert:** "No — it feeds **Operational Metrics** by **Employee ID**. HR rolls those into the quarterly composite alongside the formal **Review Period** scores."
 
 > **Dev:** "Is the **Tooling Asset** the same as the **Mould** on the factory floor?"
-> **Domain expert:** "No — **Tooling Asset** is the SPD project output with version history. **Mould** is what we track shots and service on in Manufacturing and Maintenance."
+> **Domain expert:** "Usually different things — **Tooling Asset** is the SPD deliverable with version history; **Mould** is what we track shots and service on. When it's the same physical tool, we link them; we haven't merged the records yet."
 
 ## Flagged ambiguities
 

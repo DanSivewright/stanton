@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { externalRefsField } from '@/lib/integration/externalRefsField'
+
 const sourceOptions = [
   { label: 'Manual', value: 'manual' },
   { label: 'Odoo Import', value: 'odoo' },
@@ -47,5 +49,6 @@ export const SalesActuals: CollectionConfig = {
       defaultValue: 'manual',
       options: [...sourceOptions],
     },
+    externalRefsField,
   ],
 }

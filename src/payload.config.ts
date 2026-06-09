@@ -16,6 +16,7 @@ import { Departments } from './collections/Departments'
 import { Documents } from './collections/Documents'
 import { Employees } from './collections/Employees'
 import { FinanceReportLines } from './collections/FinanceReportLines'
+import { IntegrationSyncEvents } from './collections/IntegrationSyncEvents'
 import { FinanceReportingPeriods } from './collections/FinanceReportingPeriods'
 import { FinancialMetrics } from './collections/FinancialMetrics'
 import { LlmPrompts } from './collections/LlmPrompts'
@@ -45,6 +46,7 @@ import { Teams } from './collections/Teams'
 import { ToolingAssets } from './collections/ToolingAssets'
 import { Users } from './collections/Users'
 import { FinanceSettings } from './globals/FinanceSettings'
+import { IntegrationSettings } from './globals/IntegrationSettings'
 import { HrSettings } from './globals/HrSettings'
 import { LlmSettings } from './globals/LlmSettings'
 import { MaintenanceSettings } from './globals/MaintenanceSettings'
@@ -53,6 +55,7 @@ import { SalesSettings } from './globals/SalesSettings'
 import { SpdSettings } from './globals/SpdSettings'
 import { seedCompanies } from './seed/companies'
 import { seedEmployees } from './seed/employees'
+import { seedIntegration } from './seed/integration'
 import { seedPlatformDemo } from './seed/platformDemo'
 import { seedSpdProcessTemplate } from './seed/spdProcessTemplate'
 
@@ -95,6 +98,7 @@ export default buildConfig({
     Media,
     Tags,
     ActivityEvents,
+    IntegrationSyncEvents,
     LlmPrompts,
     // Foundations
     Companies,
@@ -143,12 +147,14 @@ export default buildConfig({
     FinanceSettings,
     SalesSettings,
     HrSettings,
+    IntegrationSettings,
     LlmSettings,
   ],
   onInit: async (payload) => {
     await seedCompanies(payload)
     await seedEmployees(payload)
     await seedSpdProcessTemplate(payload)
+    await seedIntegration(payload)
     await seedPlatformDemo(payload)
   },
   editor: lexicalEditor(),

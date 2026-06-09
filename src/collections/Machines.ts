@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { externalRefsField } from '@/lib/integration/externalRefsField'
+
 const statusOptions = [
   { label: 'Running', value: 'running' },
   { label: 'Stopped', value: 'stopped' },
@@ -50,5 +52,6 @@ export const Machines: CollectionConfig = {
       type: 'checkbox',
       defaultValue: true,
     },
+    externalRefsField,
   ],
 }

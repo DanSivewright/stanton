@@ -5,6 +5,7 @@ import {
   sensitiveModuleDelete,
   sensitiveModuleWrite,
 } from '@/lib/access/roles'
+import { externalRefsField } from '@/lib/integration/externalRefsField'
 
 export const FinancialMetrics: CollectionConfig = {
   slug: 'financial-metrics',
@@ -53,5 +54,6 @@ export const FinancialMetrics: CollectionConfig = {
       defaultValue: false,
       admin: { description: 'Set when parent period is locked' },
     },
+    externalRefsField,
   ],
 }

@@ -32,6 +32,13 @@ const assertions: Assertion[] = [
   { label: 'Performance contract', collection: 'performance-contracts', minDocs: 1 },
   { label: 'LLM prompt', collection: 'llm-prompts', minDocs: 1 },
   { label: 'SPD process template', collection: 'spd-process-templates', minDocs: 1 },
+  { label: 'Integration sync event', collection: 'integration-sync-events', minDocs: 1 },
+  { label: 'Demo MO 002', collection: 'manufacturing-orders', where: { moNumber: { equals: 'MO-DEMO-002' } } },
+  { label: 'Finance aging line', collection: 'finance-report-lines', where: { lineType: { equals: 'aging' } } },
+  { label: 'Hunt activity', collection: 'sales-activities', where: { activityType: { equals: 'hunt' } } },
+  { label: 'Care activity', collection: 'sales-activities', where: { activityType: { equals: 'care' } } },
+  { label: 'Demo customer', collection: 'customers', where: { code: { equals: 'CUST-NESTLE' } } },
+  { label: 'Production snapshots', collection: 'production-snapshots', minDocs: 3 },
 ]
 
 async function verifySpdGateEnforcement(
@@ -212,10 +219,63 @@ async function main() {
     process.exit(1)
   }
 
+  const integrationSettings = await payload.findGlobal({ slug: 'integration-settings' })
+  if (!integrationSettings?.odoo || integrationSettings.odoo.enabled !== false) {
+    failures.push('integration-settings: odoo.enabled should default to false')
+  } else {
+    console.log('✓ Integration settings global')
+  }
+
+  const productWithRef = await payload.find({
+    collection: 'products',
+    where: { stockCode: { equals: 'WGT-A' } },
+    limit: 1,
+  })
+  const refs = productWithRef.docs[0]?.externalRefs
+  if (!refs?.length || refs[0]?.system !== 'odoo') {
+    failures.push('products: expected demo externalRefs on WGT-A')
+  } else {
+    console.log('✓ Product external refs')
+  }
+
+  const demoTooling = await payload.find({
+    collection: 'tooling-assets',
+    where: { name: { equals: 'Demo Tool — Sample Opportunity' } },
+    limit: 1,
+  })
+  const toolingAsset = demoTooling.docs[0]
+  const relatedMouldId =
+    toolingAsset?.relatedMould &&
+    (typeof toolingAsset.relatedMould === 'object'
+      ? toolingAsset.relatedMould.id
+      : toolingAsset.relatedMould)
+  if (!toolingAsset || !relatedMouldId) {
+    failures.push('tooling-assets: expected demo relatedMould bridge')
+  } else {
+    const linkedMould = await payload.findByID({
+      collection: 'moulds',
+      id: relatedMouldId,
+      depth: 0,
+    })
+    if (linkedMould?.code !== 'MLD-CL-500') {
+      failures.push('tooling-assets: relatedMould should link to MLD-CL-500')
+    } else {
+      console.log('✓ Tooling asset ↔ mould bridge')
+    }
+  }
+
+  if (failures.length > 0) {
+    console.error('\nPlatform smoke FAILED:')
+    for (const failure of failures) {
+      console.error(`  ✗ ${failure}`)
+    }
+    process.exit(1)
+  }
+
   await verifySpdGateEnforcement(payload)
   await verifyMaintenanceShotTrigger(payload)
 
-  console.log(`\nPlatform smoke passed (${assertions.length + 2} checks).`)
+  console.log(`\nPlatform smoke passed (${assertions.length + 5} checks).`)
   process.exit(0)
 }
 

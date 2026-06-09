@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { externalRefsField } from '@/lib/integration/externalRefsField'
+
 const moduleOptions = [
   { label: 'Foundations', value: 'foundations' },
   { label: 'SPD', value: 'spd' },
@@ -65,5 +67,6 @@ export const Documents: CollectionConfig = {
       defaultValue: 'internal',
       options: [...confidentialityOptions],
     },
+    externalRefsField,
   ],
 }

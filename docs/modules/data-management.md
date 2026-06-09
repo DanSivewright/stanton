@@ -10,6 +10,31 @@ Operational data movement: import, export, jobs, and integration plumbing.
 
 Enable bulk load and export of Payload collections without making "Import Batch" a primary business domain concept. Provide admin visibility into jobs and plugin-managed import/export artifacts.
 
+Payload is the **canonical operational hub** — external systems (Odoo, Pipedrive, SharePoint) attach via metadata, not duplicate entities. Connectors are **not built** in the current phase; the schema is integration-ready.
+
+---
+
+## Hub pattern — canonical records + external refs
+
+**Pattern chosen:** Option A — `externalRefs` array on hub collections (see `src/lib/integration/externalRefsField.ts`).
+
+Each row links one canonical Payload document to an external system:
+
+| Field | Purpose |
+|-------|---------|
+| `system` | `odoo` \| `pipedrive` \| `sharepoint` \| `manual` |
+| `externalId` | ID in the external system |
+| `lastSyncedAt` | Last successful sync timestamp (future jobs) |
+| `syncStatus` | `synced` \| `pending` \| `error` \| `stale` |
+
+**Collections with `externalRefs`:** `employees`, `customers`, `contacts`, `products`, `machines`, `moulds`, `documents`, `finance-report-lines`, `financial-metrics`, `sales-targets`, `sales-actuals`, `parts`, `manufacturing-orders`, `production-snapshots`.
+
+**Integration settings global** (`integration-settings`): per-system stubs — `enabled: false`, `notes`, `baseUrlPlaceholder`, empty `fieldMapping` JSON. No secrets in repo.
+
+**Sync audit** (`integration-sync-events`): append-only log for future jobs — `system`, `direction`, `entityType`, `entityId`, `status`, `message`, `occurredAt`.
+
+Assumptions documented here only; connector implementation is deferred per [PLATFORM-ROADMAP.md](../PLATFORM-ROADMAP.md).
+
 ---
 
 ## Payload components

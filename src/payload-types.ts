@@ -71,6 +71,7 @@ export interface Config {
     media: Media;
     tags: Tag;
     'activity-events': ActivityEvent;
+    'integration-sync-events': IntegrationSyncEvent;
     'llm-prompts': LlmPrompt;
     companies: Company;
     sites: Site;
@@ -118,6 +119,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     'activity-events': ActivityEventsSelect<false> | ActivityEventsSelect<true>;
+    'integration-sync-events': IntegrationSyncEventsSelect<false> | IntegrationSyncEventsSelect<true>;
     'llm-prompts': LlmPromptsSelect<false> | LlmPromptsSelect<true>;
     companies: CompaniesSelect<false> | CompaniesSelect<true>;
     sites: SitesSelect<false> | SitesSelect<true>;
@@ -170,6 +172,7 @@ export interface Config {
     'finance-settings': FinanceSetting;
     'sales-settings': SalesSetting;
     'hr-settings': HrSetting;
+    'integration-settings': IntegrationSetting;
     'llm-settings': LlmSetting;
   };
   globalsSelect: {
@@ -179,6 +182,7 @@ export interface Config {
     'finance-settings': FinanceSettingsSelect<false> | FinanceSettingsSelect<true>;
     'sales-settings': SalesSettingsSelect<false> | SalesSettingsSelect<true>;
     'hr-settings': HrSettingsSelect<false> | HrSettingsSelect<true>;
+    'integration-settings': IntegrationSettingsSelect<false> | IntegrationSettingsSelect<true>;
     'llm-settings': LlmSettingsSelect<false> | LlmSettingsSelect<true>;
   };
   locale: null;
@@ -269,6 +273,22 @@ export interface Employee {
    */
   user?: (string | null) | User;
   active?: boolean | null;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -390,6 +410,31 @@ export interface ActivityEvent {
   createdAt: string;
 }
 /**
+ * Append-only audit log for future integration jobs
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "integration-sync-events".
+ */
+export interface IntegrationSyncEvent {
+  id: string;
+  system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+  direction: 'inbound' | 'outbound';
+  /**
+   * Payload collection slug, e.g. products
+   */
+  entityType: string;
+  /**
+   * Payload document ID
+   */
+  entityId: string;
+  status: 'success' | 'partial' | 'failed' | 'skipped';
+  message: string;
+  externalId?: string | null;
+  occurredAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Reusable prompt templates for future MCP/agent layer
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -424,6 +469,22 @@ export interface Customer {
   code: string;
   company: string | Company;
   active?: boolean | null;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -442,6 +503,22 @@ export interface Contact {
    * Optional internal company context
    */
   company?: (string | null) | Company;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -456,6 +533,22 @@ export interface Product {
   description?: string | null;
   company: string | Company;
   active?: boolean | null;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -474,6 +567,22 @@ export interface Machine {
    */
   oeeTarget?: number | null;
   active?: boolean | null;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -492,6 +601,22 @@ export interface Mould {
   shotCount?: number | null;
   lastServiceAt?: string | null;
   active?: boolean | null;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -505,6 +630,22 @@ export interface Document {
   description?: string | null;
   module: 'foundations' | 'spd' | 'finance' | 'manufacturing' | 'maintenance' | 'hr' | 'sales';
   confidentiality: 'public' | 'internal' | 'confidential' | 'restricted';
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -735,6 +876,26 @@ export interface ToolingAsset {
    * Prior version in the lineage chain
    */
   previousVersion?: (string | null) | ToolingAsset;
+  /**
+   * Optional link to the manufacturing-floor mould when this SPD tooling asset is the same physical tool
+   */
+  relatedMould?: (string | null) | Mould;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -822,6 +983,22 @@ export interface ManufacturingOrder {
    * Actual OEE %
    */
   oeeActual?: number | null;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -853,6 +1030,22 @@ export interface ProductionSnapshot {
     durationMinutes?: number | null;
   };
   notes?: string | null;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -890,6 +1083,22 @@ export interface Part {
   partNumber?: string | null;
   description?: string | null;
   supplier?: string | null;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -977,6 +1186,22 @@ export interface FinanceReportLine {
   samePeriodLastYear?: number | null;
   division?: string | null;
   agingBucket?: ('current' | '30' | '60' | '90' | '120plus') | null;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -998,6 +1223,22 @@ export interface FinancialMetric {
    * Set when parent period is locked
    */
   frozen?: boolean | null;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1030,6 +1271,22 @@ export interface SalesTarget {
   huntVisitsTarget?: number | null;
   careVisitsTarget?: number | null;
   conversionTargetPercent?: number | null;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1045,6 +1302,22 @@ export interface SalesActual {
   product?: (string | null) | Product;
   actualAmount: number;
   source?: ('manual' | 'odoo' | 'import') | null;
+  /**
+   * Links to external systems (Odoo, Pipedrive, SharePoint). Canonical data lives on this record.
+   */
+  externalRefs?:
+    | {
+        system: 'odoo' | 'pipedrive' | 'sharepoint' | 'manual';
+        /**
+         * ID in the external system
+         */
+        externalId: string;
+        lastSyncedAt?: string | null;
+        syncStatus?: ('synced' | 'pending' | 'error' | 'stale') | null;
+        notes?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1362,6 +1635,10 @@ export interface PayloadLockedDocument {
         value: string | ActivityEvent;
       } | null)
     | ({
+        relationTo: 'integration-sync-events';
+        value: string | IntegrationSyncEvent;
+      } | null)
+    | ({
         relationTo: 'llm-prompts';
         value: string | LlmPrompt;
       } | null)
@@ -1606,6 +1883,22 @@ export interface ActivityEventsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "integration-sync-events_select".
+ */
+export interface IntegrationSyncEventsSelect<T extends boolean = true> {
+  system?: T;
+  direction?: T;
+  entityType?: T;
+  entityId?: T;
+  status?: T;
+  message?: T;
+  externalId?: T;
+  occurredAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "llm-prompts_select".
  */
 export interface LlmPromptsSelect<T extends boolean = true> {
@@ -1688,6 +1981,16 @@ export interface EmployeesSelect<T extends boolean = true> {
   manager?: T;
   user?: T;
   active?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1700,6 +2003,16 @@ export interface CustomersSelect<T extends boolean = true> {
   code?: T;
   company?: T;
   active?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1714,6 +2027,16 @@ export interface ContactsSelect<T extends boolean = true> {
   roleTitle?: T;
   customer?: T;
   company?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1727,6 +2050,16 @@ export interface ProductsSelect<T extends boolean = true> {
   description?: T;
   company?: T;
   active?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1741,6 +2074,16 @@ export interface MachinesSelect<T extends boolean = true> {
   status?: T;
   oeeTarget?: T;
   active?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1755,6 +2098,16 @@ export interface MouldsSelect<T extends boolean = true> {
   shotCount?: T;
   lastServiceAt?: T;
   active?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1767,6 +2120,16 @@ export interface DocumentsSelect<T extends boolean = true> {
   description?: T;
   module?: T;
   confidentiality?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -1964,6 +2327,17 @@ export interface ToolingAssetsSelect<T extends boolean = true> {
   status?: T;
   project?: T;
   previousVersion?: T;
+  relatedMould?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1984,6 +2358,16 @@ export interface ManufacturingOrdersSelect<T extends boolean = true> {
   plannedStart?: T;
   plannedEnd?: T;
   oeeActual?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2008,6 +2392,16 @@ export interface ProductionSnapshotsSelect<T extends boolean = true> {
         durationMinutes?: T;
       };
   notes?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2035,6 +2429,16 @@ export interface PartsSelect<T extends boolean = true> {
   partNumber?: T;
   description?: T;
   supplier?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2115,6 +2519,16 @@ export interface FinanceReportLinesSelect<T extends boolean = true> {
   samePeriodLastYear?: T;
   division?: T;
   agingBucket?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2129,6 +2543,16 @@ export interface FinancialMetricsSelect<T extends boolean = true> {
   value?: T;
   priorValue?: T;
   frozen?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2159,6 +2583,16 @@ export interface SalesTargetsSelect<T extends boolean = true> {
   huntVisitsTarget?: T;
   careVisitsTarget?: T;
   conversionTargetPercent?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2173,6 +2607,16 @@ export interface SalesActualsSelect<T extends boolean = true> {
   product?: T;
   actualAmount?: T;
   source?: T;
+  externalRefs?:
+    | T
+    | {
+        system?: T;
+        externalId?: T;
+        lastSyncedAt?: T;
+        syncStatus?: T;
+        notes?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2487,6 +2931,95 @@ export interface HrSetting {
   createdAt?: string | null;
 }
 /**
+ * Per-system stubs for future Odoo / Pipedrive / SharePoint connectors
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "integration-settings".
+ */
+export interface IntegrationSetting {
+  id: string;
+  odoo?: {
+    /**
+     * Connector not built — placeholder for future enablement
+     */
+    enabled?: boolean | null;
+    /**
+     * Assumptions, scope notes, client decisions
+     */
+    notes?: string | null;
+    /**
+     * Instance URL hint only — no secrets stored here
+     */
+    baseUrlPlaceholder?: string | null;
+    /**
+     * Empty object by default; future jobs map external ↔ Payload fields
+     */
+    fieldMapping?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  pipedrive?: {
+    /**
+     * Connector not built — placeholder for future enablement
+     */
+    enabled?: boolean | null;
+    /**
+     * Assumptions, scope notes, client decisions
+     */
+    notes?: string | null;
+    /**
+     * Instance URL hint only — no secrets stored here
+     */
+    baseUrlPlaceholder?: string | null;
+    /**
+     * Empty object by default; future jobs map external ↔ Payload fields
+     */
+    fieldMapping?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  sharepoint?: {
+    /**
+     * Connector not built — placeholder for future enablement
+     */
+    enabled?: boolean | null;
+    /**
+     * Assumptions, scope notes, client decisions
+     */
+    notes?: string | null;
+    /**
+     * Instance URL hint only — no secrets stored here
+     */
+    baseUrlPlaceholder?: string | null;
+    /**
+     * Empty object by default; future jobs map external ↔ Payload fields
+     */
+    fieldMapping?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "llm-settings".
  */
@@ -2585,6 +3118,39 @@ export interface HrSettingsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "integration-settings_select".
+ */
+export interface IntegrationSettingsSelect<T extends boolean = true> {
+  odoo?:
+    | T
+    | {
+        enabled?: T;
+        notes?: T;
+        baseUrlPlaceholder?: T;
+        fieldMapping?: T;
+      };
+  pipedrive?:
+    | T
+    | {
+        enabled?: T;
+        notes?: T;
+        baseUrlPlaceholder?: T;
+        fieldMapping?: T;
+      };
+  sharepoint?:
+    | T
+    | {
+        enabled?: T;
+        notes?: T;
+        baseUrlPlaceholder?: T;
+        fieldMapping?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "llm-settings_select".
  */
 export interface LlmSettingsSelect<T extends boolean = true> {
@@ -2626,6 +3192,7 @@ export interface TaskCreateCollectionExport {
       | 'media'
       | 'tags'
       | 'activity-events'
+      | 'integration-sync-events'
       | 'llm-prompts'
       | 'companies'
       | 'sites'

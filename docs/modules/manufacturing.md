@@ -136,6 +136,7 @@ Minimum shippable slice when client selects Manufacturing after SPD POC:
 - `one-on-one-scores` included for HR rollup path despite prior 1.5 deferral.
 - Wave 2: `beforeList` manufacturing summary on `production-snapshots` (`ManufacturingDashboardBeforeList`). No tablet/TV custom views (MFG-009–010 deferred).
 - Planning import: collection wired to import-export plugin; Excel mapping script not built.
+- SPD `tooling-assets` may optionally link to `moulds` via `relatedMould` when the same physical tool exists in both modules; no inverse field on `moulds` (single-direction bridge, easy to remove).
 
 ## Open questions
 

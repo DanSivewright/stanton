@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { externalRefsField } from '@/lib/integration/externalRefsField'
+
 const statusOptions = [
   { label: 'Draft', value: 'draft' },
   { label: 'Active', value: 'active' },
@@ -10,7 +12,7 @@ export const ToolingAssets: CollectionConfig = {
   slug: 'tooling-assets',
   admin: {
     useAsTitle: 'name',
-    defaultColumns: ['name', 'version', 'status', 'project'],
+    defaultColumns: ['name', 'version', 'status', 'project', 'relatedMould'],
     group: 'SPD',
   },
   fields: [
@@ -48,5 +50,16 @@ export const ToolingAssets: CollectionConfig = {
       relationTo: 'tooling-assets',
       admin: { description: 'Prior version in the lineage chain' },
     },
+    {
+      name: 'relatedMould',
+      type: 'relationship',
+      relationTo: 'moulds',
+      admin: {
+        description:
+          'Optional link to the manufacturing-floor mould when this SPD tooling asset is the same physical tool',
+        position: 'sidebar',
+      },
+    },
+    externalRefsField,
   ],
 }

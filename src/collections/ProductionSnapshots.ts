@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { flagMaintenanceOnShotThreshold } from '@/hooks/manufacturing/flagMaintenanceOnShotThreshold'
+import { externalRefsField } from '@/lib/integration/externalRefsField'
 import { validateProductionSnapshot } from '@/hooks/manufacturing/validateProductionSnapshot'
 import { activityOnSnapshotSubmit } from '@/hooks/platform/recordActivityOnChange'
 
@@ -95,5 +96,6 @@ export const ProductionSnapshots: CollectionConfig = {
       name: 'notes',
       type: 'textarea',
     },
+    externalRefsField,
   ],
 }

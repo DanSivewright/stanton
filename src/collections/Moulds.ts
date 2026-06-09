@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { externalRefsField } from '@/lib/integration/externalRefsField'
+
 export const Moulds: CollectionConfig = {
   slug: 'moulds',
   admin: {
@@ -41,5 +43,6 @@ export const Moulds: CollectionConfig = {
       type: 'checkbox',
       defaultValue: true,
     },
+    externalRefsField,
   ],
 }

@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { externalRefsField } from '@/lib/integration/externalRefsField'
+
 export const Parts: CollectionConfig = {
   slug: 'parts',
   admin: {
@@ -26,5 +28,6 @@ export const Parts: CollectionConfig = {
       name: 'supplier',
       type: 'text',
     },
+    externalRefsField,
   ],
 }

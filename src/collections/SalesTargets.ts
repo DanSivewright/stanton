@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { externalRefsField } from '@/lib/integration/externalRefsField'
+
 export const SalesTargets: CollectionConfig = {
   slug: 'sales-targets',
   admin: {
@@ -52,5 +54,6 @@ export const SalesTargets: CollectionConfig = {
       type: 'number',
       defaultValue: 30,
     },
+    externalRefsField,
   ],
 }

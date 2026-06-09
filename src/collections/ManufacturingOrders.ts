@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { externalRefsField } from '@/lib/integration/externalRefsField'
+
 const statusOptions = [
   { label: 'Planned', value: 'planned' },
   { label: 'Active', value: 'active' },
@@ -80,5 +82,6 @@ export const ManufacturingOrders: CollectionConfig = {
       type: 'number',
       admin: { description: 'Actual OEE %' },
     },
+    externalRefsField,
   ],
 }

@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { externalRefsField } from '@/lib/integration/externalRefsField'
+
 export const Products: CollectionConfig = {
   slug: 'products',
   admin: {
@@ -33,5 +35,6 @@ export const Products: CollectionConfig = {
       type: 'checkbox',
       defaultValue: true,
     },
+    externalRefsField,
   ],
 }

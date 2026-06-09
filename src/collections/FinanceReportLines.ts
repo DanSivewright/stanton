@@ -5,6 +5,7 @@ import {
   sensitiveModuleDelete,
   sensitiveModuleWrite,
 } from '@/lib/access/roles'
+import { externalRefsField } from '@/lib/integration/externalRefsField'
 
 const lineTypeOptions = [
   { label: 'Standard', value: 'standard' },
@@ -86,5 +87,6 @@ export const FinanceReportLines: CollectionConfig = {
         condition: (_, siblingData) => siblingData?.lineType === 'aging',
       },
     },
+    externalRefsField,
   ],
 }

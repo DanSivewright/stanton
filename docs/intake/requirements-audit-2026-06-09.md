@@ -24,7 +24,7 @@
 
 | Lens | Completeness |
 |------|--------------|
-| **vs. full intake** (8 product lines + foundations) | **~70%** — all modules have thin working collections + demo seed; custom UI, integrations, and automation hooks remain thin |
+| **vs. full intake** (8 product lines + foundations) | **~75%** — all modules have thin working collections + rich demo seed; integration-ready hub layer shipped; connectors and custom UI remain thin |
 | **vs. Phase 1a SPD slice** | **~95%** — checklist state, optional stages, demo gate sign-off, tooling lineage added; soft phase lock + Conrad review deprioritized |
 | **Active build surface** | **All modules** per [PLATFORM-ROADMAP.md](../PLATFORM-ROADMAP.md) |
 
@@ -69,67 +69,68 @@
 | 2.2 | Durable cross-module **Employee ID** | ✅ | `Employees.employeeId` unique + indexed | — | 1a |
 | 2.3 | Access skeleton — `users.roles` (Admin/Staff), optional `companyScope` | ✅ | `Users.ts` roles enum + `companyScope` reln (enforcement deferred to PLAT-007) | — | 1a |
 | 2.4 | Bulk import (Excel/CSV) via import-export plugin + jobs/cron | ✅ | `importExportPlugin` on employees/users/media; jobs `access` w/ `CRON_SECRET`, `autoRun` env-gated | Add `documents`/SPD collections to import set when needed | 1a |
-| 2.5 | `groups`, `sites`, `departments`, `teams` | 🕒 | Not built | Deferred until multi-site / HR | 1.5 |
-| 2.6 | `products`, `machines`, `moulds` | 🕒 | Not built | Deferred to Manufacturing path | 1b |
-| 2.7 | `tags`, `activity-events` | 🕒 | Not built; native `createdAt`/domain events suffice for POC | Deferred (needs polymorphic contract) | 1.5+ |
+| 2.5 | `sites`, `departments`, `teams` | ✅ | Collections + demo org tree in `platformDemo.ts`; manager chain via `employees.manager` | `groups` still deferred | 1a |
+| 2.6 | `products`, `machines`, `moulds` | ✅ | Foundations collections + demo seed (3 sites × 3 machines, 4 products, 4 moulds) | — | 1a |
+| 2.7 | `tags`, `activity-events` | 🟡 | `Tags.ts`, `ActivityEvents.ts` + `recordActivityEvent` hooks shipped | Polymorphic contract still thin | 1.5+ |
+| 2.9 | Integration-ready hub (`externalRefs`, settings, sync log) | ✅ | Option A `externalRefs` on 15 hub collections; `integration-settings` global; `integration-sync-events` | Connectors deferred | 1a |
 | 2.8 | Branding refs (company logo media) for multi-company docs | ⛔ | `Companies.ts` has no media/branding field (spec'd in foundations.md card) | Add when HR/doc-gen needs per-company branding | 2 |
 
 ---
 
 ## 3. Manufacturing Automation — `Manufacturing Automation — Project Brief.md` (+ Developer Brief 2026-05-15)
 
-**Phase:** 1b option (client choice). **Nothing is implemented in Payload** — the live MVP at `pimms-dashboard-mvp.vercel.app` is a **separate prior build** (reference only, per MASTER-SPEC §3.7).
+**Phase:** Thin slice shipped in full-platform build. Custom UI (TV/tablet) still deferred.
 
 | # | Requirement | Status | Phase |
 |---|-------------|--------|-------|
-| 3.1 | Machine grid / OEE / status (3 factories, 40 machines) | 🕒 (needs `sites`/`machines`/`products`/`moulds`) | 1b |
-| 3.2 | Planning import (Excel → orders) | 🕒 `manufacturing-orders` + import mapping (MFG-001) | 1b |
-| 3.3 | Operator/round entry (cycle time, output, stoppage, rejects) | 🕒 `production-snapshots` immutable on submit (MFG-003) | 1b |
-| 3.4 | Stoppage + reason; rejects threshold | 🕒 embedded on snapshots (reconciliation matrix) | 1b |
-| 3.5 | `manufacturing-settings` global (thresholds) | 🕒 MFG-008 | 1b |
-| 3.6 | Mould shot count (warn 15k / service 20k) | 🕒 `shotCount` on mould, increments on snapshot | 1b |
+| 3.1 | Machine grid / OEE / status (3 factories, 40 machines) | 🟡 | 3 sites × 9 machines demo; 40-machine scale + grid UI deferred | 1b / 1.5 |
+| 3.2 | Planning import (Excel → orders) | 🟡 | `manufacturing-orders` + import-export enabled; 3 demo MOs seeded | 1b |
+| 3.3 | Operator/round entry (cycle time, output, stoppage, rejects) | 🟡 | `production-snapshots` immutable on submit; 4 demo snapshots | 1b |
+| 3.4 | Stoppage + reason; rejects threshold | 🟡 | Embedded on snapshots; reject threshold in `manufacturing-settings` | 1b |
+| 3.5 | `manufacturing-settings` global (thresholds) | ✅ | Global shipped | 1b |
+| 3.6 | Mould shot count (warn 15k / service 20k) | 🟡 | `shotCount` on mould + auto-job hook (MTN-005 stub) | 1b |
 | 3.7 | TV display mode, list/card toggle, filters | 🕒 custom admin (MFG-009/010) | 1.5 |
 | 3.8 | CR 2026-06-01: tool change, cycle counter, quality checklist, setter sign-off+photos, machine-stopped button | 🕒 (MFG-005/006) | 1.5 (after WhatsApp milestone) |
 | 3.9 | 1-on-1 scorecards (Accuracy/Runs) → HR via Employee ID | 🕒 `one-on-one-scores` (Manufacturing-owned, ADR-0002) | 1.5/2 |
 | 3.10 | Planning snapshot archive | 🕒 deferred; MVP uses re-import + Document | 1.5 |
 
-**Verdict:** 0% in Payload, **100% deferred-by-design**. This is the single largest "missing vs intake" block, and it is intentional (Phase 1b fork).
+**Verdict:** Thin collections + demo seed shipped; custom operator UI and scale (40 machines) remain deferred.
 
 ---
 
 ## 4. Odoo Financial Reporting — `Odoo Financial Reporting — Project Brief.md` (+ handoff excerpt)
 
-**Phase:** 1b option. Nothing implemented. Odoo remains system of record; Payload owns normalized report data (MASTER-SPEC §6).
+**Phase:** Thin slice shipped. Odoo remains system of record; Payload owns normalized report data (MASTER-SPEC §6).
 
 | # | Requirement | Status | Phase |
 |---|-------------|--------|-------|
-| 4.1 | Reporting periods w/ lock | 🕒 `finance-reporting-periods` (FIN-001) | 1b |
-| 4.2 | Normalized report lines (8 report types, aging buckets) | 🕒 `finance-report-lines` typed (FIN-002/004) | 1b |
-| 4.3 | Financial metrics (margins, ratios) frozen on lock | 🕒 `financial-metrics` (FIN-003) | 1b |
-| 4.4 | `finance-settings` global | 🕒 FIN-006 | 1b |
-| 4.5 | CSV import | 🕒 import-export mapping | 1b |
+| 4.1 | Reporting periods w/ lock | ✅ | `finance-reporting-periods` + period lock hook | 1b |
+| 4.2 | Normalized report lines (8 report types, aging buckets) | 🟡 | P&L + aging demo lines; full 8-report catalog pending client (FIN-008) | 1b |
+| 4.3 | Financial metrics (margins, ratios) frozen on lock | ✅ | `financial-metrics` + freeze on lock | 1b |
+| 4.4 | `finance-settings` global | ✅ | FIN-006 shipped | 1b |
+| 4.5 | CSV import | ✅ | import-export enabled | 1b |
 | 4.6 | Full report list confirmation | 🔒 expected 2026-06-02 (FIN-008) | blocked:client |
 | 4.7 | PPT/PDF board-pack generation, scheduled email | 🕒 downstream consumer (FIN-007) | 2 |
-| 4.8 | Odoo automated sync (XML-RPC) | 🕒 integration set (FIN-INT-*) | 2/3 |
+| 4.8 | Odoo automated sync (XML-RPC) | 🟡 | `externalRefs` + `integration-settings` stub; connector deferred | 2/3 |
 
-**Verdict:** 0% in Payload, deferred-by-design.
+**Verdict:** Normalized store + demo period shipped; Odoo connector and board-pack generation deferred.
 
 ---
 
 ## 5. Machine Maintenance Tracker — `Machine Maintenance Tracker — Project Brief.md`
 
-**Phase:** 1.5 (after Manufacturing). Nothing implemented.
+**Phase:** Thin slice shipped with Manufacturing foundations.
 
 | # | Requirement | Status | Phase |
 |---|-------------|--------|-------|
-| 5.1 | Machine list from Manufacturing (no dup entry) | 🕒 depends on `machines` (1b) | 1.5 |
-| 5.2 | Service history per machine | 🕒 `maintenance-jobs` (MTN-002) | 1.5 |
-| 5.3 | Shot-count → service trigger at 20k | 🕒 idempotent hook + `Service Cycle` (MTN-005) | 1.5 |
-| 5.4 | Parts + PO attachment (no inventory) | 🕒 `partsUsed[]` on job + `maintenance-pos` (MTN-001/003) | 1.5 |
+| 5.1 | Machine list from Manufacturing (no dup entry) | ✅ | Shared `machines` collection | 1.5 |
+| 5.2 | Service history per machine | 🟡 | `maintenance-jobs` — 3 demo jobs (open/in_progress/completed) | 1.5 |
+| 5.3 | Shot-count → service trigger at 20k | 🟡 | MTN-005 stub hook shipped; verified in smoke | 1.5 |
+| 5.4 | Parts + PO attachment (no inventory) | 🟡 | `parts` catalog (3 parts) + `partsUsed[]`; PO collection exists, no demo PO (requires upload) | 1.5 |
 | 5.5 | Machine-down notification chain | 🔒🕒 chain TBD (MTN-006) | 1.5, blocked:client |
 | 5.6 | Standalone vs module-in-Manufacturing | 🔒 architecture decision pending | blocked:client |
 
-**Verdict:** 0% in Payload, deferred-by-design.
+**Verdict:** Thin collections + demo seed shipped; notification chain and PO demo deferred.
 
 ---
 
@@ -153,16 +154,16 @@
 
 ## 7. Sales Performance Dashboard — `Sales Performance Dashboard — Project Brief.md`
 
-**Phase:** 2. Nothing implemented.
+**Phase:** Thin slice shipped; dashboard UI deferred.
 
 | # | Requirement | Status | Phase |
 |---|-------------|--------|-------|
-| 7.1 | Target vs Planned vs Actual per rep/team/dept | 🕒 `sales-targets`/`sales-actuals`/periods (SAL-001/002/004) | 2 |
-| 7.2 | Hunt/Care activity tracking | 🕒 `sales-activities` (SAL-003) | 2 |
-| 7.3 | Discrepancy rollups | 🕒 compute at read time (no snapshot collection) | 2 |
-| 7.4 | Pipedrive + Odoo sources | 🔒🕒 field-mapping spike (SAL-006) | 2, blocked:client |
+| 7.1 | Target vs Planned vs Actual per rep/team/dept | 🟡 | Demo period + targets/actuals for EMP-005; rollup UI deferred | 2 |
+| 7.2 | Hunt/Care activity tracking | 🟡 | `sales-activities` — Hunt + Care demo rows seeded | 2 |
+| 7.3 | Discrepancy rollups | 🟡 | `beforeList` summary on periods (SAL-007 lightweight) | 2 |
+| 7.4 | Pipedrive + Odoo sources | 🟡 | `externalRefs` + `integration-settings` stub; connectors deferred | 2 |
 
-**Verdict:** 0% in Payload, deferred-by-design.
+**Verdict:** Normalized store + demo Hunt/Care seed shipped; Pipedrive/Odoo connectors and full dashboard deferred.
 
 ---
 

@@ -60,6 +60,7 @@ async function seedDemoProject(payload: Payload, templateId: string): Promise<vo
   })
 
   if (existingProject.totalDocs > 0) {
+    await seedDemoChecklistCompletion(payload, String(existingProject.docs[0]!.id))
     return
   }
 
@@ -122,7 +123,31 @@ async function seedDemoProject(payload: Payload, templateId: string): Promise<vo
     })
   }
 
+  await seedDemoChecklistCompletion(payload, String(project.id))
   await seedDemoGateSignOff(payload, String(project.id))
+}
+
+async function seedDemoChecklistCompletion(payload: Payload, projectId: string): Promise<void> {
+  const project = await payload.findByID({
+    collection: 'spd-projects',
+    id: projectId,
+    depth: 0,
+  })
+  if (project.checklistCompletion?.length) return
+
+  await payload.update({
+    collection: 'spd-projects',
+    id: projectId,
+    data: {
+      checklistCompletion: [
+        { stageId: 'stage-1-1', itemIndex: 0, done: true },
+        { stageId: 'stage-1-1', itemIndex: 1, done: true },
+        { stageId: 'stage-1-1', itemIndex: 2, done: false },
+        { stageId: 'stage-1-2', itemIndex: 0, done: true },
+        { stageId: 'stage-1-2', itemIndex: 1, done: false },
+      ],
+    },
+  })
 }
 
 async function seedDemoGateSignOff(payload: Payload, projectId: string): Promise<void> {
