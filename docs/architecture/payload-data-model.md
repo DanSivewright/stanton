@@ -46,7 +46,7 @@ See [foundations.md](../modules/foundations.md) for collection cards.
 | `machines` | Machine |
 | `moulds` | Mould |
 | `tags` | Tag |
-| `activity-events` | Activity Event |
+| `activity-events` | Activity Event *(deferred phase — Phase 1.5+)* |
 | `media` | Media (existing) |
 | `documents` | Document |
 
@@ -65,18 +65,19 @@ See [foundations.md](../modules/foundations.md) for collection cards.
 
 ---
 
-## Nested Docs plugin
+## Nested Docs plugin *(deferred phase — not installed in Phase 1a)*
 
 Use [@payloadcms/plugin-nested-docs](https://payloadcms.com/docs/plugins/nested-docs) when:
 
 - Documents in the **same collection** form a parent/child tree
 - Breadcrumbs and cascade updates are valuable
 
-**Candidates (evaluate at implementation):**
+**Candidates (evaluate when plugin ships):**
 
 - `document-categories` (if taxonomy tree needed)
 - `product-categories` (if hierarchical product taxonomy needed)
-- `finance-report-sections` (only if sections are same-collection tree — else nested blocks on period)
+
+**Resolved — do not use Nested Docs for Finance sections:** report sections are **`sections[]` blocks on `finance-reporting-periods`** — see [ADR 0001](../adr/0001-finance-sections-on-period.md).
 
 **Do not use** for Employee→Manager, Machine→Mould, Project→Gate — use **relationships** or **embedded blocks**.
 

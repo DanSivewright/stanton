@@ -1,7 +1,7 @@
 # Stanton / PIMMS Payload Ecosystem — Master Specification
 
-**Version:** 0.1 (documentation pass)  
-**Last updated:** 2026-06-04  
+**Version:** 0.2 (Phase 1 MVP reconciliation)  
+**Last updated:** 2026-06-09  
 **Repository:** `stanton` — Payload 3 + MongoDB (blank slate)
 
 This document is the executive agreement for what we are building, how modules relate, and what principles govern modeling and delivery. Detailed collection inventories live in [module specs](./modules/). Glossary terms live in [CONTEXT.md](../CONTEXT.md).
@@ -23,10 +23,10 @@ Payload is the **source of truth for the ecosystem data model**, operational wor
 | Module | Purpose | Delivery posture | Spec |
 |--------|---------|------------------|------|
 | **Foundations** | Shared org, people, customers, assets, files, tags, activity | Phase 0 — scope everything | [foundations.md](./modules/foundations.md) |
-| **Manufacturing** | Real-time factory monitoring, operator input, OEE, planning | Phase 1 — active | [manufacturing.md](./modules/manufacturing.md) |
-| **Maintenance** | Machine service, parts catalog, POs, triggers from Manufacturing | Phase 1 | [maintenance.md](./modules/maintenance.md) |
-| **Finance** | Normalized finance reporting data (Odoo-shaped, Payload-owned) | Phase 1 — active | [finance.md](./modules/finance.md) |
-| **SPD** | Product development waterfall, gates, change requests | Phase 1 — POC pressure | [spd.md](./modules/spd.md) |
+| **Manufacturing** | Real-time factory monitoring, operator input, OEE, planning | Phase 1b option (client choice) | [manufacturing.md](./modules/manufacturing.md) |
+| **Maintenance** | Machine service, parts catalog, POs, triggers from Manufacturing | Phase 1b/2 (after Manufacturing) | [maintenance.md](./modules/maintenance.md) |
+| **Finance** | Normalized finance reporting data (Odoo-shaped, Payload-owned) | Phase 1b option (client choice) | [finance.md](./modules/finance.md) |
+| **SPD** | Product development waterfall, gates, change requests | **Phase 1a — POC (June 2026)** | [spd.md](./modules/spd.md) |
 | **Sales** | Target / planned / actual performance by rep and team | Phase 2 | [sales.md](./modules/sales.md) |
 | **HR** | Performance & organogram hub (not full HRIS) | Phase 2 — client deferred | [hr.md](./modules/hr.md) |
 | **Internal LLM / MCP** | Future agent access over Payload data | Phase 3 | [llm-mcp.md](./modules/llm-mcp.md) |
@@ -106,12 +106,12 @@ Define Payload-native collections and manual/import paths first. Scope integrati
 ### 3.5 UI
 
 - **Payload Admin** is the primary operational UI.
-- **Custom admin views** for workflow-heavy screens (rounds, gates, review queues) — phased.
+- **Custom admin views** for workflow-heavy screens (rounds, gates, review queues) — **deferred phase** after SPD POC and Manufacturing WhatsApp MVP; default Payload admin for Phase 1a/1b.
 - **Stakeholder overview website** — client-facing executive site at `/` (and `/ecosystem`, `/modules`, `/roadmap`, `/investment`); omits implementation stack detail. **Team reference** at `/team` (not linked from client site; `robots: noindex`).
 
 ### 3.6 Access control
 
-Deferred in detail. Direction: simple visible roles (Admin / Manager / Staff) with **hidden scopes** (company, site, project team, direct reports, module permissions). LLM/MCP must inherit the same access model when implemented.
+**Phase 1a skeleton:** `users.roles` (Admin / Staff minimum; Manager when matrix ships), optional `companyScope` relationship, hooks use `overrideAccess: false`. **Full matrix deferred:** manager/direct-report scopes, site/project team filters, module permissions — see [PHASE-1-MVP.md](./PHASE-1-MVP.md). LLM/MCP must inherit the same access model when implemented.
 
 ### 3.7 Prior builds
 
@@ -157,7 +157,8 @@ No separate LLM data model. Store complete normalized data in Payload; later exp
 | This file | Executive agreement |
 | [docs/architecture/](./architecture/) | Modeling, integrations, costs |
 | [docs/modules/](./modules/) | Module collection cards + evidence |
-| [docs/linear/scope-map.md](./linear/scope-map.md) | Linear hierarchy — **markdown only until approved** |
+| [docs/PHASE-1-MVP.md](./PHASE-1-MVP.md) | Phase 1a/1b delivery plan (post-grill) |
+| [docs/linear/scope-map.md](./linear/scope-map.md) | Linear hierarchy — **markdown only until epic approval** |
 
 **Linear:** Markdown is canonical for product/spec. Create/update Linear issues **only after** scope map review and explicit approval. Operating rule: feature changes update relevant markdown and Linear together.
 
@@ -174,11 +175,13 @@ Internal/provider-facing estimates with vendor cost, client allowance, and marku
 | Phase | Focus |
 |-------|--------|
 | **0** | Documentation, glossary, intake archive, collection scope, Linear scope map |
-| **1** | Foundations + Manufacturing + Maintenance + Finance model + SPD POC foundations |
+| **1a** | Platform minimum + Foundations slice + **SPD POC** (June 2026) — see [PHASE-1-MVP.md](./PHASE-1-MVP.md) |
+| **1b** | Client picks **one:** Finance data hub **or** Manufacturing WhatsApp MVP (not parallel) |
+| **1.5** | Maintenance module, `activity-events`, custom admin views, remaining deferred Phase 1 items |
 | **2** | Sales + HR performance workflows |
 | **3** | Internal LLM/MCP + deeper integrations (Odoo sync, Pipedrive, SharePoint) |
 
-All modules are **scoped in backlog** from Phase 0; implementation order follows phases above.
+All modules are **scoped in backlog** from Phase 0; implementation order follows [PHASE-1-MVP.md](./PHASE-1-MVP.md).
 
 ---
 
@@ -187,12 +190,14 @@ All modules are **scoped in backlog** from Phase 0; implementation order follows
 | Topic | Status |
 |-------|--------|
 | Mould ↔ Product cardinality | Unresolved — needs client data |
-| Access control matrix | Deferred |
+| Access control matrix | Skeleton in 1a; full matrix deferred |
+| Phase 1b module choice (Finance vs Manufacturing) | Client decision after SPD POC |
 | Import/export governance per collection | Deferred — plugin-first |
-| Payload admin collection grouping | Deferred |
+| Payload admin collection grouping | Deferred (PLAT-008) |
 | Finance full report list | Client confirmation pending per intake |
 | Maintenance notification chains | TBD with client |
 | Pipedrive field mapping | TBD before Sales build |
+| Collection forks (one-on-one, finance sections, etc.) | Resolved — see [PHASE-1-MVP.md](./PHASE-1-MVP.md) |
 
 ---
 

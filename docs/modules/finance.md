@@ -2,7 +2,7 @@
 
 Normalized finance reporting data center (Odoo-shaped, Payload-owned).
 
-**Delivery phase:** 1  
+**Delivery phase:** 1b option (client choice after SPD POC)  
 **Status (intake):** Active
 
 ---
@@ -10,6 +10,17 @@ Normalized finance reporting data center (Odoo-shaped, Payload-owned).
 ## Purpose
 
 Store report-ready financial data in Payload for dashboards, APIs, and downstream PPT/PDF generators. **Not** to rebuild full accounting or render board packs inside Payload core.
+
+### Payload data hub MVP (Phase 1b — Finance path)
+
+Minimum when client selects Finance after SPD POC:
+
+- `finance-reporting-periods` with `sections[]` blocks and `status: open | locked`
+- `finance-report-lines` with `sectionKey`; aging rows as typed lines (`lineType: aging`)
+- `financial-metrics` recomputed when period open; frozen on lock
+- CSV import via import-export plugin
+
+**Intake tension (documented):** Finance brief says "all data from Odoo — no manual inputs." Ecosystem v1 uses **manual/import-first**; automated Odoo sync and zero-manual-entry are **deferred phase** target state. PPT generation and scheduled email are **downstream consumers**, not Payload core (FIN-007 deferred).
 
 ---
 
@@ -32,13 +43,13 @@ Store report-ready financial data in Payload for dashboards, APIs, and downstrea
 | **Relationships** | → `company`; ← lines, metrics |
 | **Field groups** | periodStart, periodEnd, periodType (monthly/weekly), status (open/locked) |
 
-### `finance-report-sections`
+### Report sections *(embedded — not a collection)*
 
 | | |
 |--|--|
 | **Purpose** | Report section (Profitability, Debtors Aging, …) |
-| **Structure** | Nested blocks on period OR separate collection — prefer **blocks on period snapshot** for v1 simplicity |
-| **Alternative** | `finance-period-snapshots` parent with sections[] blocks |
+| **Structure** | **`sections[]` blocks on `finance-reporting-periods`** — resolved; see [ADR 0001](../adr/0001-finance-sections-on-period.md) |
+| **Lines** | `finance-report-lines` reference `period` + `sectionKey` string |
 
 ### `finance-report-lines`
 
@@ -56,12 +67,13 @@ Store report-ready financial data in Payload for dashboards, APIs, and downstrea
 | **Purpose** | Computed ratios (margin %, current ratio, …) |
 | **Field groups** | metricKey, value, comparison values |
 
-### `debtors-aging` / `creditors-aging`
+### Aging rows *(typed lines in MVP)*
 
 | | |
 |--|--|
-| **Purpose** | Bucketed aging rows |
-| **Field groups** | bucket (30/60/90/120+), amount, party ref (text or customer link) |
+| **Purpose** | Bucketed aging rows (Debtors / Creditors) |
+| **MVP** | `finance-report-lines` with `lineType: aging` and bucket enum |
+| **Deferred** | Standalone `debtors-aging` / `creditors-aging` collections only if query volume requires split |
 
 ### `finance-targets`
 
@@ -110,8 +122,15 @@ Profitability, Debtors Aging, Creditors Aging, Invoice vs Target, Wages & Salari
 
 ---
 
+## Period lock
+
+When `finance-reporting-periods.status = locked`:
+
+- `finance-report-lines` and `financial-metrics` are **immutable** (hook-enforced)
+- Corrections via **adjustment lines** in an open period, or Admin unlock with audit reason
+- Metrics recomputed on line changes only while period is `open`
+
 ## Open questions
 
-- Final report list (expected client confirmation)
-- Whether to use single `finance-period-snapshots` with nested sections vs many collections
+- Final report list (expected client confirmation — FIN-008)
 - CRM-from-Odoo feasibility (flagged in intake)

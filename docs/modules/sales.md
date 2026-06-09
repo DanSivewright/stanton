@@ -56,7 +56,7 @@ Payload owns normalized **Sales Targets**, **Sales Actuals**, **Sales Activities
 | **Relationships** | → `employee`, `period` |
 | **Field groups** | activityType (hunt/care), careVisits, conversions, satisfaction |
 
-### `sales-performance-snapshots` (optional)
+### `sales-performance-snapshots` *(deferred phase)*
 
 | | |
 |--|--|

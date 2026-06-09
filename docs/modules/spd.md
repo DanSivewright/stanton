@@ -2,7 +2,7 @@
 
 Waterfall product development: 6 phases, 18 stages, 5 gates, change requests, tooling assets.
 
-**Delivery phase:** 1 (POC due end of June 2026 per intake)  
+**Delivery phase:** 1a (POC due end of June 2026 per intake)  
 **Note:** Intake says standalone — **ecosystem decision** overrides: shared Payload app with bounded module and phased integrations.
 
 ---
@@ -11,13 +11,26 @@ Waterfall product development: 6 phases, 18 stages, 5 gates, change requests, to
 
 Digitise SPD process; gate-enforced progression; data hub for document generation; management dashboards and analytics.
 
+### POC minimum (June 2026 — Phase 1a)
+
+| Collection | Required for POC | Status |
+|------------|------------------|--------|
+| `spd-process-templates` | Yes — import SPD_ProcessFlow.docx | Done (SPD-001) |
+| `spd-projects` | Yes — with embedded process snapshot at create | Done (SPD-003) |
+| `spd-gate-sign-offs` | Yes — append-only event records | Done (SPD-004) |
+| `spd-change-requests` | Yes | Done (SPD-005) |
+| `tooling-assets` | Yes — minimal (name + version) | Done (SPD-006) |
+| `spd-settings` | Yes | Done (SPD-007) |
+
+**UI:** Default Payload admin only. **Deferred phase:** custom dashboards (SPD-008–009), client forms (SPD-010), AI validation, Product/Mould links to Manufacturing.
+
 ---
 
 ## Global
 
 | Slug | Settings |
 |------|----------|
-| `spd-settings` | Pointer to default `spd-process-templates` record |
+| `spd-settings` | Pointer to default `spd-process-templates` record (`src/globals/SpdSettings.ts`) |
 
 ---
 
@@ -28,9 +41,11 @@ Digitise SPD process; gate-enforced progression; data hub for document generatio
 | | |
 |--|--|
 | **Purpose** | Versioned canonical process (6 phases × 3 stages, gates, RASCI) |
-| **Structure** | Nested **blocks/arrays**: phases → stages → checklist items, deliverables, gate definitions, role responsibilities |
+| **Structure** | Nested arrays: `phases[]` → `stages[]` → checklist items, deliverables, gate group, RASCI assignments |
 | **Nested Docs** | Only if same-collection phase tree needed — prefer blocks for v1 |
-| **Field groups** | version, status (draft/published), effectiveDate |
+| **Field groups (1a)** | name, version, effectiveDate, `_status` (draft/published via Payload versions) |
+| **Gate fields** | `gateId`, name, description, `requiredRoles` (SPD role enum) |
+| **RASCI** | Per-stage array: role + responsibility (R/A/S/C/I) |
 
 ### `spd-projects`
 
@@ -40,6 +55,7 @@ Digitise SPD process; gate-enforced progression; data hub for document generatio
 | **Relationships** | → `company`, `customer`, `contacts`, `tooling-asset`, `product` (optional); → template ref |
 | **Field groups** | name, currentPhase, onTrack, dates |
 | **Snapshot** | Embedded copy of template structure at creation — **do not mutate** when template updates |
+| **Implementation** | `src/collections/SpdProjects.ts`, `src/hooks/spd/snapshotOnCreate.ts` — deep-copy on create; defaults template from `spd-settings` |
 
 ### `spd-gate-sign-offs`
 
@@ -48,7 +64,8 @@ Digitise SPD process; gate-enforced progression; data hub for document generatio
 | **Business term** | Gate Sign-Off |
 | **Purpose** | Approval event unlocking next phase |
 | **Field groups** | gateId, approver, role, decision, comments, evidence documents |
-| **Hooks** | Update project phase lock state; activity event |
+| **Hooks** | Update project phase lock state on approve; activity event writes deferred phase |
+| **Implementation** | `src/collections/SpdGateSignOffs.ts`, `src/hooks/spd/unlockPhaseOnApprove.ts` — append-only (no update/delete); advances `currentPhase` on approve |
 
 ### `spd-change-requests`
 
@@ -57,6 +74,7 @@ Digitise SPD process; gate-enforced progression; data hub for document generatio
 | **Purpose** | In-scope redo vs out-of-scope (costed, client sign-off) |
 | **Relationships** | → `spd-project`, `tooling-asset`, documents |
 | **Field groups** | classification, impact, cost fields, approval status |
+| **Implementation** | `src/collections/SpdChangeRequests.ts` — `in-scope-redo` / `out-of-scope-costed`; conditional cost + client sign-off group |
 
 ### `tooling-assets`
 
@@ -65,6 +83,7 @@ Digitise SPD process; gate-enforced progression; data hub for document generatio
 | **Business term** | Tooling Asset |
 | **Purpose** | Project output / tool with version history |
 | **Relationships** | ↔ `product`, `mould` (phased); ← change requests |
+| **Implementation** | `src/collections/ToolingAssets.ts` — name, version, status, optional `project` link |
 
 ### `spd-client-form-submissions` (optional)
 

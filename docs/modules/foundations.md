@@ -11,6 +11,14 @@ Shared master data and cross-cutting records used by all modules.
 
 Provide canonical **organisation**, **people**, **customers**, **production assets**, **files**, and **audit** anchors so Manufacturing, Maintenance, Finance, Sales, HR, and SPD do not duplicate core entities.
 
+### SPD POC foundation slice (Phase 1a)
+
+Minimum collections before SPD ships:
+
+- `companies`, `employees`, `customers`, `contacts`, `users`, `documents`
+
+**Deferred phase:** `groups`, `sites`, `departments`, `teams`, `products`, `machines`, `moulds`, `tags`, `activity-events` — expand when Manufacturing, HR, or multi-site reporting starts.
+
 ---
 
 ## Globals
@@ -66,10 +74,11 @@ Provide canonical **organisation**, **people**, **customers**, **production asse
 |--|--|
 | **Business term** | Employee |
 | **Purpose** | Business person record; HR-owned master |
-| **Key relationships** | → `company`, `site`, `department`, `team`, `manager` (employee); ← manufacturing, sales, HR records |
-| **Field groups** | employeeId (unique), name, job title, manager, managerMor, active |
+| **Key relationships** | → `company`, optional `user`; `site`, `department`, `team`, `manager` deferred phase |
+| **Field groups (1a)** | employeeId (unique), name, jobTitle, active |
 | **Admin** | Tabs: profile, contracts (HR), performance summary (read-only rollup later) |
-| **Plugin notes** | Import/export for organogram (~300 rows) |
+| **Plugin notes** | CSV template: `scripts/seed/employees-template.csv`; import-export in PLAT-003 |
+| **Seed** | Three sample approver employees on boot (`src/seed/employees.ts`) |
 
 ### `users`
 
@@ -78,23 +87,23 @@ Provide canonical **organisation**, **people**, **customers**, **production asse
 | **Business term** | User |
 | **Purpose** | Payload auth account |
 | **Key relationships** | → optional `employee` |
-| **Field groups** | roles (Admin/Manager/Staff + scopes TBD), company scope |
+| **Field groups** | roles (Admin/Staff in 1a; Manager when matrix ships), `companyScope` (relationship array, optional in 1a) |
 
 ### `customers`
 
 | | |
 |--|--|
 | **Purpose** | Lightweight external org for SPD/Sales/Finance |
-| **Key relationships** | ← `contacts`, SPD projects |
-| **Field groups** | name, type, company link optional |
+| **Key relationships** | → `company`; ← `contacts`, SPD projects |
+| **Field groups (1a)** | name, code (unique), active |
 
 ### `contacts`
 
 | | |
 |--|--|
 | **Purpose** | External people |
-| **Key relationships** | → `customer` and/or `company` |
-| **Field groups** | name, email, role label |
+| **Key relationships** | → `customer`, optional `company` |
+| **Field groups (1a)** | name, email, phone, roleTitle |
 
 ### `products`
 
@@ -127,21 +136,31 @@ Provide canonical **organisation**, **people**, **customers**, **production asse
 | **Purpose** | Lightweight classification |
 | **Field groups** | label, module hint |
 
-### `activity-events`
+### `activity-events` *(deferred phase — Phase 1.5+)*
 
 | | |
 |--|--|
 | **Purpose** | Cross-module business audit trail |
 | **Key relationships** | → actor `user`/`employee`, polymorphic source ref |
-| **Field groups** | eventType, module, summary, timestamp |
-| **Hooks** | Written by other modules' afterChange |
+| **Field groups** | eventType, module, `sourceCollection`, `sourceId`, summary, timestamp |
+| **Phase 1** | Use native `createdAt`/`updatedBy` and domain event collections (e.g. gate sign-offs) |
+| **Gate** | Ship only after polymorphic contract is specified in automation.md |
 
-### `media` / `documents`
+### `documents`
 
 | | |
 |--|--|
-| **Purpose** | Payload-native uploads (existing `media` + new `documents`) |
-| **Field groups** | module, tags, confidentiality, source link |
+| **Purpose** | PDF, Office, and image uploads with cross-module metadata |
+| **Key relationships** | Polymorphic source link deferred (v1 upload-only) |
+| **Field groups** | title, description, module (enum), confidentiality (public / internal / confidential / restricted) |
+| **Access (1a skeleton)** | Authenticated read/create; delete Admin only until PLAT-007 |
+
+### `media`
+
+| | |
+|--|--|
+| **Purpose** | Images, photos, logos (existing collection) |
+| **Field groups** | alt text |
 
 ---
 

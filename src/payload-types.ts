@@ -69,6 +69,16 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    companies: Company;
+    employees: Employee;
+    customers: Customer;
+    contacts: Contact;
+    documents: Document;
+    'spd-process-templates': SpdProcessTemplate;
+    'spd-projects': SpdProject;
+    'spd-gate-sign-offs': SpdGateSignOff;
+    'spd-change-requests': SpdChangeRequest;
+    'tooling-assets': ToolingAsset;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +88,16 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    companies: CompaniesSelect<false> | CompaniesSelect<true>;
+    employees: EmployeesSelect<false> | EmployeesSelect<true>;
+    customers: CustomersSelect<false> | CustomersSelect<true>;
+    contacts: ContactsSelect<false> | ContactsSelect<true>;
+    documents: DocumentsSelect<false> | DocumentsSelect<true>;
+    'spd-process-templates': SpdProcessTemplatesSelect<false> | SpdProcessTemplatesSelect<true>;
+    'spd-projects': SpdProjectsSelect<false> | SpdProjectsSelect<true>;
+    'spd-gate-sign-offs': SpdGateSignOffsSelect<false> | SpdGateSignOffsSelect<true>;
+    'spd-change-requests': SpdChangeRequestsSelect<false> | SpdChangeRequestsSelect<true>;
+    'tooling-assets': ToolingAssetsSelect<false> | ToolingAssetsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -87,8 +107,12 @@ export interface Config {
     defaultIDType: string;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'spd-settings': SpdSetting;
+  };
+  globalsSelect: {
+    'spd-settings': SpdSettingsSelect<false> | SpdSettingsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -123,6 +147,15 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: string;
+  roles: ('admin' | 'staff')[];
+  /**
+   * Optional link to business person record (FND-003)
+   */
+  employee?: (string | null) | Employee;
+  /**
+   * Optional multi-company access scope (enforced in PLAT-007)
+   */
+  companyScope?: (string | Company)[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -144,6 +177,36 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "employees".
+ */
+export interface Employee {
+  id: string;
+  employeeId: string;
+  name: string;
+  jobTitle?: string | null;
+  company: string | Company;
+  /**
+   * Optional link to Payload user account (e.g. SPD gate approvers)
+   */
+  user?: (string | null) | User;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "companies".
+ */
+export interface Company {
+  id: string;
+  name: string;
+  code: string;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
@@ -160,6 +223,320 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: string;
+  name: string;
+  code: string;
+  company: string | Company;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contacts".
+ */
+export interface Contact {
+  id: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  roleTitle?: string | null;
+  customer: string | Customer;
+  /**
+   * Optional internal company context
+   */
+  company?: (string | null) | Company;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents".
+ */
+export interface Document {
+  id: string;
+  title: string;
+  description?: string | null;
+  module: 'foundations' | 'spd' | 'finance' | 'manufacturing' | 'maintenance' | 'hr' | 'sales';
+  confidentiality: 'public' | 'internal' | 'confidential' | 'restricted';
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "spd-process-templates".
+ */
+export interface SpdProcessTemplate {
+  id: string;
+  name: string;
+  /**
+   * Semantic version label (e.g. 1.0)
+   */
+  version: string;
+  effectiveDate?: string | null;
+  phases?:
+    | {
+        /**
+         * Stable identifier (e.g. phase-1)
+         */
+        phaseId: string;
+        name: string;
+        order: number;
+        stages?:
+          | {
+              /**
+               * Stable identifier (e.g. stage-1-1)
+               */
+              stageId: string;
+              name: string;
+              order: number;
+              checklistItems?:
+                | {
+                    item: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              deliverables?:
+                | {
+                    name: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              gate?: {
+                /**
+                 * Set when this stage ends with a gate (e.g. gate-1)
+                 */
+                gateId?: string | null;
+                name?: string | null;
+                description?: string | null;
+                requiredRoles?:
+                  | (
+                      | 'business-lead'
+                      | 'pdm'
+                      | 'product-director'
+                      | 'design-lead'
+                      | 'quality-lead'
+                      | 'manufacturing-lead'
+                      | 'tooling-lead'
+                      | 'process-lead'
+                    )[]
+                  | null;
+              };
+              rasci?:
+                | {
+                    role:
+                      | 'business-lead'
+                      | 'pdm'
+                      | 'product-director'
+                      | 'design-lead'
+                      | 'quality-lead'
+                      | 'manufacturing-lead'
+                      | 'tooling-lead'
+                      | 'process-lead';
+                    responsibility: 'R' | 'A' | 'S' | 'C' | 'I';
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "spd-projects".
+ */
+export interface SpdProject {
+  id: string;
+  name: string;
+  company: string | Company;
+  customer: string | Customer;
+  /**
+   * Customer contacts associated with this project
+   */
+  contacts?: (string | Contact)[] | null;
+  toolingAsset?: (string | null) | ToolingAsset;
+  /**
+   * Published template used at creation. Defaults from SPD Settings when omitted.
+   */
+  processTemplate?: (string | null) | SpdProcessTemplate;
+  /**
+   * Active phase ID from the embedded process snapshot
+   */
+  currentPhase?: string | null;
+  onTrack?: boolean | null;
+  startDate?: string | null;
+  targetEndDate?: string | null;
+  actualEndDate?: string | null;
+  /**
+   * Immutable copy of the process template at project creation
+   */
+  processSnapshot?: {
+    templateId?: string | null;
+    templateVersion?: string | null;
+    templateName?: string | null;
+    phases?:
+      | {
+          phaseId: string;
+          name: string;
+          order: number;
+          stages?:
+            | {
+                stageId: string;
+                name: string;
+                order: number;
+                checklistItems?:
+                  | {
+                      item: string;
+                      id?: string | null;
+                    }[]
+                  | null;
+                deliverables?:
+                  | {
+                      name: string;
+                      id?: string | null;
+                    }[]
+                  | null;
+                gate?: {
+                  gateId?: string | null;
+                  name?: string | null;
+                  description?: string | null;
+                  requiredRoles?:
+                    | (
+                        | 'business-lead'
+                        | 'pdm'
+                        | 'product-director'
+                        | 'design-lead'
+                        | 'quality-lead'
+                        | 'manufacturing-lead'
+                        | 'tooling-lead'
+                        | 'process-lead'
+                      )[]
+                    | null;
+                };
+                rasci?:
+                  | {
+                      role:
+                        | 'business-lead'
+                        | 'pdm'
+                        | 'product-director'
+                        | 'design-lead'
+                        | 'quality-lead'
+                        | 'manufacturing-lead'
+                        | 'tooling-lead'
+                        | 'process-lead';
+                      responsibility: 'R' | 'A' | 'S' | 'C' | 'I';
+                      id?: string | null;
+                    }[]
+                  | null;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tooling-assets".
+ */
+export interface ToolingAsset {
+  id: string;
+  name: string;
+  /**
+   * Version label (e.g. 1.0)
+   */
+  version: string;
+  status: 'draft' | 'active' | 'archived';
+  /**
+   * SPD project this tooling asset belongs to
+   */
+  project?: (string | null) | SpdProject;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Append-only gate approval events
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "spd-gate-sign-offs".
+ */
+export interface SpdGateSignOff {
+  id: string;
+  project: string | SpdProject;
+  /**
+   * Gate identifier from the project process snapshot (e.g. gate-1)
+   */
+  gateId: string;
+  approver: string | Employee;
+  role:
+    | 'business-lead'
+    | 'pdm'
+    | 'product-director'
+    | 'design-lead'
+    | 'quality-lead'
+    | 'manufacturing-lead'
+    | 'tooling-lead'
+    | 'process-lead';
+  decision: 'approved' | 'rejected';
+  comments?: string | null;
+  evidenceDocuments?: (string | Document)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "spd-change-requests".
+ */
+export interface SpdChangeRequest {
+  id: string;
+  title: string;
+  project: string | SpdProject;
+  toolingAsset?: (string | null) | ToolingAsset;
+  classification: 'in-scope-redo' | 'out-of-scope-costed';
+  /**
+   * Scope and delivery impact summary
+   */
+  impact?: string | null;
+  approvalStatus: 'draft' | 'pending-approval' | 'approved' | 'rejected' | 'pending-client-sign-off';
+  /**
+   * Required for out-of-scope change requests
+   */
+  costFields?: {
+    estimatedCost?: number | null;
+    currency?: ('GBP' | 'USD' | 'ZAR') | null;
+    /**
+     * Manual client sign-off path for POC
+     */
+    clientSignOffStatus?: ('pending' | 'approved' | 'rejected') | null;
+    clientSignOffNotes?: string | null;
+  };
+  documents?: (string | Document)[] | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -192,6 +569,46 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'companies';
+        value: string | Company;
+      } | null)
+    | ({
+        relationTo: 'employees';
+        value: string | Employee;
+      } | null)
+    | ({
+        relationTo: 'customers';
+        value: string | Customer;
+      } | null)
+    | ({
+        relationTo: 'contacts';
+        value: string | Contact;
+      } | null)
+    | ({
+        relationTo: 'documents';
+        value: string | Document;
+      } | null)
+    | ({
+        relationTo: 'spd-process-templates';
+        value: string | SpdProcessTemplate;
+      } | null)
+    | ({
+        relationTo: 'spd-projects';
+        value: string | SpdProject;
+      } | null)
+    | ({
+        relationTo: 'spd-gate-sign-offs';
+        value: string | SpdGateSignOff;
+      } | null)
+    | ({
+        relationTo: 'spd-change-requests';
+        value: string | SpdChangeRequest;
+      } | null)
+    | ({
+        relationTo: 'tooling-assets';
+        value: string | ToolingAsset;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -240,6 +657,9 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  roles?: T;
+  employee?: T;
+  companyScope?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -274,6 +694,252 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "companies_select".
+ */
+export interface CompaniesSelect<T extends boolean = true> {
+  name?: T;
+  code?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "employees_select".
+ */
+export interface EmployeesSelect<T extends boolean = true> {
+  employeeId?: T;
+  name?: T;
+  jobTitle?: T;
+  company?: T;
+  user?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers_select".
+ */
+export interface CustomersSelect<T extends boolean = true> {
+  name?: T;
+  code?: T;
+  company?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contacts_select".
+ */
+export interface ContactsSelect<T extends boolean = true> {
+  name?: T;
+  email?: T;
+  phone?: T;
+  roleTitle?: T;
+  customer?: T;
+  company?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents_select".
+ */
+export interface DocumentsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  module?: T;
+  confidentiality?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "spd-process-templates_select".
+ */
+export interface SpdProcessTemplatesSelect<T extends boolean = true> {
+  name?: T;
+  version?: T;
+  effectiveDate?: T;
+  phases?:
+    | T
+    | {
+        phaseId?: T;
+        name?: T;
+        order?: T;
+        stages?:
+          | T
+          | {
+              stageId?: T;
+              name?: T;
+              order?: T;
+              checklistItems?:
+                | T
+                | {
+                    item?: T;
+                    id?: T;
+                  };
+              deliverables?:
+                | T
+                | {
+                    name?: T;
+                    id?: T;
+                  };
+              gate?:
+                | T
+                | {
+                    gateId?: T;
+                    name?: T;
+                    description?: T;
+                    requiredRoles?: T;
+                  };
+              rasci?:
+                | T
+                | {
+                    role?: T;
+                    responsibility?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "spd-projects_select".
+ */
+export interface SpdProjectsSelect<T extends boolean = true> {
+  name?: T;
+  company?: T;
+  customer?: T;
+  contacts?: T;
+  toolingAsset?: T;
+  processTemplate?: T;
+  currentPhase?: T;
+  onTrack?: T;
+  startDate?: T;
+  targetEndDate?: T;
+  actualEndDate?: T;
+  processSnapshot?:
+    | T
+    | {
+        templateId?: T;
+        templateVersion?: T;
+        templateName?: T;
+        phases?:
+          | T
+          | {
+              phaseId?: T;
+              name?: T;
+              order?: T;
+              stages?:
+                | T
+                | {
+                    stageId?: T;
+                    name?: T;
+                    order?: T;
+                    checklistItems?:
+                      | T
+                      | {
+                          item?: T;
+                          id?: T;
+                        };
+                    deliverables?:
+                      | T
+                      | {
+                          name?: T;
+                          id?: T;
+                        };
+                    gate?:
+                      | T
+                      | {
+                          gateId?: T;
+                          name?: T;
+                          description?: T;
+                          requiredRoles?: T;
+                        };
+                    rasci?:
+                      | T
+                      | {
+                          role?: T;
+                          responsibility?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "spd-gate-sign-offs_select".
+ */
+export interface SpdGateSignOffsSelect<T extends boolean = true> {
+  project?: T;
+  gateId?: T;
+  approver?: T;
+  role?: T;
+  decision?: T;
+  comments?: T;
+  evidenceDocuments?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "spd-change-requests_select".
+ */
+export interface SpdChangeRequestsSelect<T extends boolean = true> {
+  title?: T;
+  project?: T;
+  toolingAsset?: T;
+  classification?: T;
+  impact?: T;
+  approvalStatus?: T;
+  costFields?:
+    | T
+    | {
+        estimatedCost?: T;
+        currency?: T;
+        clientSignOffStatus?: T;
+        clientSignOffNotes?: T;
+      };
+  documents?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tooling-assets_select".
+ */
+export interface ToolingAssetsSelect<T extends boolean = true> {
+  name?: T;
+  version?: T;
+  status?: T;
+  project?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -314,6 +980,29 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "spd-settings".
+ */
+export interface SpdSetting {
+  id: string;
+  /**
+   * Default published process template for new SPD projects
+   */
+  defaultTemplate?: (string | null) | SpdProcessTemplate;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "spd-settings_select".
+ */
+export interface SpdSettingsSelect<T extends boolean = true> {
+  defaultTemplate?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

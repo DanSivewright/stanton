@@ -136,6 +136,34 @@ _Avoid_: inventory item, SKU (unless aligned with Product)
 The time box for normalized finance report lines and metrics in Payload.
 _Avoid_: period (alone)
 
+**Period Lock**:
+Finance Reporting Period status that forbids mutation of child lines and Financial Metrics.
+_Avoid_: closed period (ambiguous with Sales)
+
+**Process Snapshot**:
+The frozen copy of an SPD Process Template embedded on an SPD Project at creation; template updates do not retroactively change active projects.
+_Avoid_: project template
+
+**Adjustment Line**:
+A Finance report line posted to correct locked-period data without rewriting history.
+_Avoid_: correction entry (informal)
+
+**Deferred Phase**:
+An intake capability scheduled after the current milestone; still in product backlog, not rejected.
+_Avoid_: out of scope (when intake still requires it)
+
+**POC Gate**:
+Conrad review validating SPD process template accuracy (~75%) before custom UI or integration investment.
+_Avoid_: go-live (generic)
+
+**WhatsApp Replacement Milestone**:
+Minimum Manufacturing delivery: imported plan + round entry + stoppage capture; excludes TV dashboard and CR 2026-06-01 features.
+_Avoid_: factory MVP (vague)
+
+**Downstream Report Consumer**:
+External app or job that reads Payload finance data to render PPT/PDF; not part of core schema.
+_Avoid_: report generator (ambiguous)
+
 **Sales Performance Period**:
 The monthly (or agreed) window for targets, actuals, and activities per rep/team.
 _Avoid_: period (alone)
@@ -144,9 +172,57 @@ _Avoid_: period (alone)
 The performance contract or quarterly review time box for an Employee.
 _Avoid_: period (alone)
 
-**Manufacturing Production Day** / **Production Snapshot**:
-Operational time boundaries for rounds, 3-hourly snapshots, and planning history.
+**Manufacturing Production Day**:
+Operational time boundary for factory reporting (rounds, 3-hourly snapshots).
 _Avoid_: shift (unless explicitly shift-based)
+
+**Production Snapshot**:
+Immutable operational fact record for a machine/MO at a point in time (round or 3-hourly submission); `submitted` status prevents overwrite.
+_Avoid_: round, hourly entry
+
+**Production Round**:
+One line-manager submission cycle covering assigned machines; maps to Production Snapshot records.
+_Avoid_: shift report
+
+**Planning Import**:
+Bulk load of manufacturing orders from Excel/CSV via import-export plugin; not live Excel-as-database.
+_Avoid_: plan upload (informal)
+
+**Planning Snapshot**:
+Frozen copy of plan/MO state when planning changes — deferred phase collection; MVP uses re-import + Document attachment.
+_Avoid_: plan version
+
+**Company Scope**:
+Access-control dimension limiting User visibility to selected Companies.
+_Avoid_: tenant (generic)
+
+**Composite Performance Score**:
+HR-owned rollup of 1-on-1 scores and quarterly review for a Review Period — Phase 2.
+_Avoid_: overall KPI
+
+**Service Cycle**:
+Ordinal count of mould service completions used for idempotent maintenance triggers.
+_Avoid_: shot reset count
+
+**Trigger Type**:
+Classification of how a Maintenance Job was created (manual, shot_threshold, machine_stopped).
+_Avoid_: source (overloaded)
+
+**Submitted**:
+Operational status indicating an immutable fact record (Production Snapshots, Gate Sign-Offs).
+_Avoid_: final, complete
+
+**In-Scope Change**:
+SPD change request classification: redo without client cost approval.
+_Avoid_: internal change (vague)
+
+**Out-of-Scope Change**:
+SPD change request requiring cost and client sign-off before work proceeds.
+_Avoid_: paid change (informal)
+
+**Reporting Snapshot**:
+A point-in-time finance (or module-specific) data package for one Company and Finance Reporting Period.
+_Avoid_: period data (generic)
 
 ### System
 
@@ -179,4 +255,4 @@ _Avoid_: ERP (unless client-facing), platform (generic)
 - **SPD brief** says standalone with no cross-platform integration — resolved: SPD lives in the shared Payload ecosystem with shared foundations; cross-module workflow automation is phased.
 - **Asset** in SPD brief means project/tool output — resolved: use **Tooling Asset** in glossary; **Machine** / **Mould** / **Product** remain distinct.
 - **Mould ↔ Product** cardinality — unresolved; validate against real tool/mould/product data before locking schema.
-- **Access control** — deferred; simple Admin/Manager/Staff roles with hidden scopes planned for implementation phase.
+- **Access control** — Phase 1a skeleton (`users.roles`, optional `companyScope`); full manager/direct-report matrix deferred to Phase 1.5+.

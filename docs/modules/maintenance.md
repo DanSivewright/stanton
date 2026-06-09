@@ -2,7 +2,7 @@
 
 Machine maintenance and service tracking; replaces legacy "Fix" app.
 
-**Delivery phase:** 1  
+**Delivery phase:** 1b/2 (after Manufacturing WhatsApp MVP)  
 **Boundary:** Separate module; shares `machines`, `moulds`, `employees`, `parts`, `documents`
 
 ---
@@ -40,12 +40,13 @@ Track service history, parts used, PO attachments, and machine-down workflows. R
 | **Triggers** | manual; mould shot threshold; machine stopped (from Manufacturing) |
 | **Field groups** | scheduledAt, completedAt, notes, downtime duration |
 
-### `maintenance-job-parts` (or array on job)
+### Parts used on job *(embedded array — resolved)*
 
 | | |
 |--|--|
 | **Purpose** | Parts used on a job |
-| **Field groups** | part, quantity, notes |
+| **Structure** | **`partsUsed[]` array on `maintenance-jobs`** — no separate `maintenance-job-parts` collection |
+| **Field groups** | part (relationship), quantity, notes |
 
 ### `maintenance-pos`
 

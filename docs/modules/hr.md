@@ -31,14 +31,15 @@ Organogram, performance contracts, scorecards, quarterly reviews, 1-on-1 rollups
 | **Field groups** | name, company, KPA/KPI structure (nested blocks), branding refs |
 | **Admin** | Template library |
 
-### `performance-contracts` (on Employee tab)
+### `performance-contracts`
 
 | | |
 |--|--|
-| **Purpose** | Employee-specific contract for a period |
+| **Purpose** | Employee-specific contract for a period — **separate collection** (not embedded unbounded arrays on Employee) |
 | **Relationships** | → `employee`, → `contract-template`, → `documents` |
 | **Field groups** | period, status (draft/submitted/approved/…), KPAs/KPIs (from template + overrides) |
-| **Workflow** | Status fields + activity events; drafts optional for document content |
+| **Admin** | Employee tab is join UI; contracts query by `employee` |
+| **Workflow** | Status fields; activity events deferred phase |
 
 ### `quarterly-reviews`
 
@@ -48,12 +49,13 @@ Organogram, performance contracts, scorecards, quarterly reviews, 1-on-1 rollups
 | **Field groups** | scores 1–3 per KPI, weighted total, rating, AI summary (later) |
 | **Status** | not_started → … → signed_off |
 
-### `one-on-one-sessions`
+### Weekly 1-on-1 scores *(read-only in HR — canonical home in Manufacturing)*
 
 | | |
 |--|--|
-| **Purpose** | Weekly Accuracy / Runs (may overlap Manufacturing collection — single source: decide at implement) |
-| **Note** | Prefer one canonical `one-on-one-scores` in Manufacturing or HR — link HR rollup via Employee ID |
+| **Purpose** | HR composite rollup reads `one-on-one-scores` by Employee ID |
+| **Resolved** | No `one-on-one-sessions` collection — see [ADR 0002](../adr/0002-one-on-one-scores-manufacturing.md) |
+| **Phase** | Collection ships with Manufacturing path or HR milestone (deferred phase) |
 
 ### `performance-summaries` (Phase 2+)
 

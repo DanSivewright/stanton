@@ -1,0 +1,4 @@
+employeeId,name,jobTitle,companyCode,active
+EMP-001,Jane Approver,Product Director,PIMMS,true
+EMP-002,John Gatekeeper,Quality Lead,PIMMS,true
+EMP-003,Sam Reviewer,Design Lead,PIMMS,true

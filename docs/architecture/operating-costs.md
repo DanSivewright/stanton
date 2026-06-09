@@ -35,7 +35,7 @@ Some services (AI usage, storage overages) may use **managed-service fee** rathe
 |---------|------------|----------------------|-------------------|----------------------------|-------|
 | **Vercel** (Pro team) | $20–40/mo | $25–55/mo | $40–150/mo | $50–195/mo | Hosting Next + Payload; Pro for cron |
 | **Vercel Cron** | Included in Pro limits | Included | May need Pro+ usage | TBD | Jobs: sync, reminders, imports |
-| **MongoDB Atlas** | $0–25/mo (M10) | $0–35/mo | $57–150/mo (M10–M30) | $70–195/mo | Replica set for transactions; scale with snapshot volume |
+| **MongoDB Atlas** | $0 (M0 free) – $57/mo (M10) | $0–70/mo | $57–150/mo (M10–M30) | $70–195/mo | Replica set for transactions; **M0 OK for Phase 1a POC**; scale to M10+ with snapshot volume |
 | **Vercel Blob** | $0–10/mo | $0–15/mo | $20–80/mo | $25–105/mo | Documents, photos, exports |
 | **Vercel Analytics** (optional) | $0–10/mo | $0–15/mo | $10–30/mo | $15–40/mo | Stakeholder site later |
 | **Domain / DNS** | $1–2/mo | $2–5/mo | Same | Same | If custom domain |
@@ -67,6 +67,21 @@ Some services (AI usage, storage overages) may use **managed-service fee** rathe
 | Item | Estimate | Notes |
 |------|----------|-------|
 | MongoDB migration / cluster setup | Internal time | Replica set config |
+
+### Atlas setup checklist (PLAT-001)
+
+1. Create cluster in **af-south-1** (or nearest to users); M0 free tier is sufficient for Phase 1a.
+2. Confirm **replica set** is enabled (default on Atlas shared/dedicated tiers).
+3. Database user with read/write on database `stanton` (or `pimms`).
+4. **Network Access:** add current dev IP or `0.0.0.0/0` for POC (tighten before production).
+5. Copy `DATABASE_URL` (`mongodb+srv://…`) into local `.env` and later Vercel env (PLAT-002).
+
+### Vercel deploy checklist (PLAT-002)
+
+1. Import `DanSivewright/stanton` in Vercel (Next.js framework preset).
+2. Set **Preview** and **Production** env vars: `DATABASE_URL`, `PAYLOAD_SECRET` (same values as local `.env.example` shape).
+3. Add deployment IP to Atlas Network Access (or use `0.0.0.0/0` for POC).
+4. Push branch → confirm preview `/admin` loads and can log in.
 | Odoo integration user setup | Internal time | Per handoff checklist |
 | Spike: Pipedrive field mapping | Internal time | Before Sales Phase 2 |
 
