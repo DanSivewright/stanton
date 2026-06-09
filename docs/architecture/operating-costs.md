@@ -83,7 +83,8 @@ Some services (AI usage, storage overages) may use **managed-service fee** rathe
 3. Add deployment IP to Atlas Network Access (or use `0.0.0.0/0` for POC). **Done** (user-whitelisted).
 4. Push branch → confirm preview `/admin` loads and can log in. **Pending user confirmation** on live preview URL.
 5. Local verification (2026-06-09): `pnpm run build` passes; TypeScript clean after `seedUser.ts` roles fix.
-6. Add `CRON_SECRET` to Preview + Production env (PLAT-003 cron auth). See `.env.example`.
+6. **Cron deferred:** Hobby plan — no `vercel.json` crons (see `vercel.cron.example.json` when upgrading to Pro).
+7. `CRON_SECRET` optional until cron is enabled (Pro).
 
 **User should confirm:** preview deploy succeeds, `/admin` login works, creating a record on preview appears in Atlas.
 | Odoo integration user setup | Internal time | Per handoff checklist |

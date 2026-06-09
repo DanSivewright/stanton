@@ -72,7 +72,7 @@ export default buildConfig({
         return authHeader === `Bearer ${secret}`
       },
     },
-    // Serverless (Vercel): use vercel.json cron → /api/payload-jobs/run — not in-process autoRun.
+    // Serverless (Vercel Pro): restore vercel.json from vercel.cron.example.json — not on Hobby.
     autoRun:
       process.env.ENABLE_PAYLOAD_AUTORUN === 'true'
         ? [{ cron: '*/5 * * * *', limit: 50, queue: 'default' }]

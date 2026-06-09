@@ -41,11 +41,12 @@ Governance: privileged import roles — **deferred** with access control pass.
 ## Jobs Queue setup (Vercel)
 
 - Do **not** rely on in-process `autoRun` alone on serverless
-- Use Vercel Cron → `/api/payload-jobs/run` and `/api/payload-jobs/handle-schedules` per [Payload jobs docs](https://payloadcms.com/docs/jobs-queue/overview)
-- Set `CRON_SECRET` in Vercel env; `jobs.access.run` validates `Authorization: Bearer {CRON_SECRET}` from Vercel Cron
+- **Hobby plan (current):** `vercel.json` crons are **disabled** — Hobby allows [at most one cron per day](https://vercel.com/docs/cron-jobs/usage-and-pricing); our `*/5` and hourly schedules fail deploy. Import/export jobs queue in admin but do not auto-process on Vercel until cron is enabled.
+- **Pro plan (later):** copy `vercel.cron.example.json` → `vercel.json`, set `CRON_SECRET` in Vercel env, redeploy.
+- Cron hits `/api/payload-jobs/run` and `/api/payload-jobs/handle-schedules` per [Payload jobs docs](https://payloadcms.com/docs/jobs-queue/overview)
+- `jobs.access.run` validates `Authorization: Bearer {CRON_SECRET}` for cron/manual job runs
 - `jobsCollectionOverrides` exposes `payload-jobs` in admin for debugging
 - Local dev: set `ENABLE_PAYLOAD_AUTORUN=true` to process jobs in-process (optional)
-- Requires Vercel Pro for cron in most cases — see [operating-costs](../architecture/operating-costs.md)
 
 ### Initial import-export collections (Phase 1a)
 
