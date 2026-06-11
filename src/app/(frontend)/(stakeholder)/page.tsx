@@ -21,7 +21,10 @@ export default function OverviewPage() {
           </h1>
           <p className="hero__lead">{brand.descriptor}</p>
           <div className="hero__cta">
-            <Link href="/ecosystem" className="btn btn--primary">
+            <Link href="/platform" className="btn btn--primary">
+              Open unified platform demo
+            </Link>
+            <Link href="/ecosystem" className="btn btn--ghost">
               See how it connects
             </Link>
             <Link href="/modules" className="btn btn--ghost">
