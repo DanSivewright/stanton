@@ -40,7 +40,7 @@ Build **all intake modules** as thin, working Payload collections now. Client ca
 | Area | Status |
 |------|--------|
 | Activity events | `recordActivityEvent` helper + hooks on gate sign-offs, snapshot submit, maintenance complete, period lock, contract approved |
-| Admin custom views (lightweight) | `beforeList` summaries on production-snapshots + spd-projects; SPD `/workflow` pipeline view |
+| Admin custom views (lightweight) | `beforeList` summaries on production-snapshots + spd-projects; SPD `/workflow` pipeline view; SPD-008 `/management` dashboard |
 | Import-export | Extended to parts, maintenance-jobs, finance periods/lines/metrics, one-on-one-scores |
 | Access control (PLAT-007 basics) | Finance + HR collections/globals: staff read, admin write; `companyScope` read filter on finance |
 | Verification | `scripts/verify/platform-smoke.ts` |
@@ -68,7 +68,7 @@ See [data-management.md](./modules/data-management.md) for hub pattern detail.
 
 ## Still thin / deferred
 
-- Full custom admin views (MFG-009 tablet/TV, SPD-008 management dashboard, SAL-007 full dashboard)
+- Full custom admin views (MFG-009 tablet/TV, SPD-009 analytics dashboard, SAL-007 full dashboard)
 - `@payloadcms/plugin-mcp` install (LLM-001)
 - Odoo / Pipedrive / SharePoint **connectors** (schema ready; jobs not built)
 - Document generation engine

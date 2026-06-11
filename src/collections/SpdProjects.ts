@@ -17,6 +17,16 @@ export const SpdProjects: CollectionConfig = {
           Component: '/components/admin/SpdProjectWorkflowView#SpdProjectWorkflowView',
           path: '/workflow',
         },
+        management: {
+          Component:
+            '/components/admin/SpdManagementDashboard#SpdManagementDashboard',
+          path: '/management',
+        },
+        managementAll: {
+          Component:
+            '/components/admin/SpdManagementDashboard#SpdManagementDashboard',
+          path: '/management/all',
+        },
       },
     },
   },

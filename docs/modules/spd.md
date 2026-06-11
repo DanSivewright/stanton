@@ -22,12 +22,12 @@ Digitise SPD process; gate-enforced progression; data hub for document generatio
 | `tooling-assets` | Yes — minimal (name + version) | Done (SPD-006) |
 | `spd-settings` | Yes | Done (SPD-007) |
 
-**UI:** Default Payload admin + Wave 2 lightweight views: `beforeList` workflow summary on `spd-projects`; custom `/workflow` pipeline table (`src/components/admin/SpdProjectWorkflowView.tsx`). **Deferred:** full management dashboard (SPD-008–009), client forms (SPD-010), AI validation.
+**UI:** Default Payload admin + Wave 2 lightweight views: `beforeList` workflow summary on `spd-projects`; custom `/workflow` pipeline table (`src/components/admin/SpdProjectWorkflowView.tsx`). **SPD-008 (2026-06-09):** management dashboard at `/admin/collections/spd-projects/management` — summary stats, pipeline by phase, project table (name, customer, phase, on-track/behind, gate pending, last sign-off); active vs all filter via `/management` and `/management/all`. **Deferred:** analytics dashboard (SPD-009), client forms (SPD-010), AI validation.
 
 ### Known gaps (remaining)
 
 - **`gate.requiredRoles` quorum simplified** — sign-off `role` must match one of the gate's `requiredRoles` when defined; a **single** approved sign-off unlocks the next phase (not one approval per required role).
-- **Document generation, client forms, full management dashboard** — deferred (see PLATFORM-ROADMAP.md).
+- **Document generation, client forms, analytics dashboard (SPD-009)** — deferred (see PLATFORM-ROADMAP.md).
 
 ### Gate enforcement (Wave 3 — 2026-06-09)
 
@@ -128,7 +128,7 @@ Business Lead, PDM, Product Director, Design Lead, Quality Lead, Manufacturing L
 
 - Gate sign-off = explicit event collection, not checkbox only
 - AI document validation — Phase 2+ hook/job
-- Custom admin: project progress, gate queue, management dashboard views
+- Custom admin: project progress (`/workflow`), management dashboard (`/management`), gate queue column on management view
 - Client-facing forms — API endpoint or public form → `spd-client-form-submissions`
 
 ---
@@ -152,6 +152,18 @@ Business Lead, PDM, Product Director, Design Lead, Quality Lead, Manufacturing L
 Until `SPD_ProcessFlow.docx` is delivered, boot seed publishes **`Stanton Product Development (Synthetic v1)`** (`version: 1.0-synthetic`) from the intake brief and [PHASE-1-MVP](../PHASE-1-MVP.md) structure: 6 phases, 18 stages, 5 gates, checklist items, deliverables, and gate RASCI. `spd-settings.defaultTemplate` points at this record; demo project **`SPD Demo — Sample Opportunity`** is created idempotently on first boot.
 
 **Reconcile when docx arrives** — update the published template (or publish a new version) to match Conrad's source document; do not mutate in-flight project snapshots.
+
+### Management dashboard (SPD-008 / BUI-300)
+
+Custom admin view: `src/components/admin/SpdManagementDashboard.tsx`, registered on `spd-projects` at `/management` (active) and `/management/all`.
+
+| Assumption | Choice |
+|------------|--------|
+| Active project | `actualEndDate` is empty (completed projects filtered on default view) |
+| Gate pending | Current phase has a gate in the process snapshot and no **approved** sign-off exists for that `gateId` |
+| Last sign-off | Most recent `spd-gate-sign-offs.createdAt` for the project (any decision) |
+| Active vs all filter | Two server-rendered routes (no client filter state) — matches existing Payload 3 admin view pattern |
+| Layout | Summary stat cards + phase pipeline chips + project table (aligned with Wave 2 `/workflow` styling) |
 
 Implementation: `src/seed/spdSyntheticTemplate.data.ts`, `src/seed/spdProcessTemplate.ts`, wired in `payload.config.ts` `onInit`.
 
