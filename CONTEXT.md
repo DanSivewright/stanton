@@ -1,277 +1,139 @@
-# Stanton / PIMMS Ecosystem
+# Stanton Asset Management
 
-Shared language for the Stanton Group and PIMMS operational hub built on Payload CMS. One integrated data model organized by module for admin, documentation, and delivery.
+Bespoke asset registry and maintenance ticket system for the Stanton group and its subsidiaries, replacing FIX.
 
 ## Language
 
-### Organisation
-
-**Group**:
-The top-level umbrella entity for Stanton Group / PIMMS operating companies.
-_Avoid_: client, account (when meaning organisation)
-
 **Company**:
-A legal or reporting entity within the Group (e.g. PIMMS Group JHB, Stanton Global).
-_Avoid_: organisation (generic)
+A legal or operating entity within the Stanton group (e.g. Stanton, PIMMS). May optionally belong to a parent **Company** (Stanton is the group root).
+_Avoid_: Operating unit, subsidiary (as field names), tenant
 
-**Site**:
-A physical operating location or factory within a Company.
-_Avoid_: factory (as the canonical term — use Site; factory is UI copy)
-
-**Department**:
-An organisational unit within a Company or Site used for reporting and access scope.
-_Avoid_: team (when meaning department)
-
-**Team**:
-A working group within a Department, often used for operational or sales rollups.
-_Avoid_: department
-
-### People
-
-**Employee**:
-The business person record — identity, role, manager chain, Employee ID, and HR/performance data.
-_Avoid_: user, staff member (ambiguous)
-
-**User**:
-The Payload login account used to access the admin UI; may link to one Employee.
-_Avoid_: employee (when meaning login only)
-
-**Employee ID**:
-The durable cross-module identifier tying Manufacturing, HR, Sales, and other modules to one person.
-_Avoid_: user id, staff code (unless client-standardised)
-
-**Contact**:
-An external person linked to a Customer or Company (client stakeholders, finance recipients).
-_Avoid_: employee
-
-### Assets and production
-
-**Machine**:
-Factory equipment that runs production (injection moulding lines, etc.).
-_Avoid_: asset (when meaning machine only)
-
-**Mould**:
-Manufacturing-floor injection moulding tool; shot counts and service thresholds attach here (Maintenance, production snapshots).
-_Avoid_: tool (unless SPD tooling context)
-
-**Product**:
-The canonical item or offering designed, manufactured, sold, or reported on across modules.
-_Avoid_: SKU (as primary term — SKU/stock code may be a field on Product)
+**Location**:
+A physical site, building, floor, or zone where assets sit and tickets are raised.
+_Avoid_: Site (unless spoken informally), facility
 
 **Asset**:
-Broad umbrella term only when a generic cross-module label is required.
-_Avoid_: using Asset instead of Machine, Mould, Product, or Tooling Asset
+A tracked piece of equipment or infrastructure with a known location and category.
+_Avoid_: Item (reserved for catalog templates), equipment (too generic)
 
-**Tooling Asset**:
-SPD project deliverable — versioned tool/product output with change-request lineage; distinct lifecycle from floor **Mould** (project versioning vs shot-count maintenance).
-_Avoid_: asset (alone), project (when meaning the physical tool)
+**Asset Category**:
+A simple admin-defined label classifying an **Asset** (e.g. Injection Machines, HVAC, Molds). Chosen from a predefined list or created on the fly.
+_Avoid_: Kind, type (as field names), item group
 
-When the same physical tool is both an SPD deliverable and a floor mould, link via optional `tooling-assets.relatedMould` → `moulds` (nullable, single-direction). Do not merge collections until client confirms sameness.
+**Asset Status**:
+An admin-defined label for an **Asset**'s operational state (e.g. Active, Out of Service, Disposed). Chosen from a predefined list or created on the fly.
+_Avoid_: State, condition
 
-### Customers and documents
+**Item**:
+A catalog template describing a class of assets (model, SKU, default specs) — not a physical unit.
+_Avoid_: Product, stock item, SKU (as a noun for the physical thing)
 
-**Customer**:
-An external organisation or account involved in SPD, Sales, or finance reporting — lightweight, not a full CRM.
-_Avoid_: client (in data model), account
+**Ticket**:
+A maintenance request or work record with a work lifecycle and a separate review lifecycle.
+_Avoid_: Work order, job, case, repair
 
-**Document**:
-A PDF, Office file, or generated report stored via Payload upload collections with metadata.
-_Avoid_: file (generic)
+**Ticket activity**:
+A timestamped entry on a **Ticket** recording who did what — comment, photo, completion, or review — forming a chronological log.
+_Avoid_: Note, update, message
 
-**Media**:
-Images, photos, logos, and visual uploads (setter photos, branding).
-_Avoid_: document (when meaning image only)
+**Maintenance Team**:
+A crew of **Employees** grouped by function (e.g. Facilities, Machine Shop). Used for routing and filtering tickets — not a strict ownership boundary.
+_Avoid_: Department, squad
 
-### Performance and metrics
+**Ticket Type**:
+An admin-defined label classifying a **Ticket**'s nature (e.g. Breakdown, Inspection, General). Chosen from a predefined list or created on the fly. Labels only — does not change workflow.
+_Avoid_: Category, kind
 
-**Performance KPI**:
-A measurable goal row on an HR performance contract (under a KPA).
-_Avoid_: KPI (alone in HR specs)
+**Priority**:
+A fixed urgency level on a **Ticket** (`low`, `medium`, `high`, `urgent`). Hard-coded select — not a collection.
+_Avoid_: Severity, urgency (as field names)
 
-**Sales KPI**:
-A sales goal or target structure in the Sales module (often alongside KPA 1–4).
-_Avoid_: KPI (alone in Sales specs)
+**Asset Movement**:
+A recorded transfer of an **Asset** from one **Location** to another; the canonical audit trail for placement changes.
+_Avoid_: Transfer, relocation, stock movement
 
-**Operational Metric**:
-A quantified factory or dashboard measure (OEE, cycle variance, reject rate, output).
-_Avoid_: KPI (in Manufacturing operational docs)
+**Portal**:
+A separate worker-facing frontend (not Payload admin) for logging tickets without login.
+_Avoid_: Public form (too vague)
 
-**Financial Metric**:
-A ratio or margin derived from finance reporting data (gross margin %, current ratio, etc.).
-_Avoid_: KPI (in Finance docs)
+**Employee**:
+A person in the organisation — technician, manager, or worker — whether or not they log in.
+_Avoid_: User, staff member, worker (as collection names)
 
-**KPA**:
-Key Performance Area — weighted area grouping KPIs (HR contracts, Sales SMART structure).
-_Avoid_: goal area (informal)
+**User**:
+A person with login access to Payload admin (or future portal with auth). Every **User** has a corresponding **Employee**.
+_Avoid_: Account
 
-### SPD
+**Role**:
+A permission label on a **User** (`admin`, `manager`, `technician`, `staff`). Enforcement deferred — client confirmation pending.
+_Avoid_: Permission, access level
 
-**SPD Project**:
-A product development initiative following the 6-phase SPD process with gates and deliverables.
-_Avoid_: product (when meaning the project), job
+**Location group**:
+A non-physical node in the location tree used only for organisation (e.g. region, building).
+_Avoid_: Folder, category
 
-**Gate**:
-A sign-off checkpoint between SPD phases that unlocks the next phase when approved.
-_Avoid_: milestone (informal), approval (generic)
+**Location leaf**:
+A physical place where assets sit and tickets are raised — always at the bottom of a branch.
+_Avoid_: Site (informal OK), endpoint
 
-**Gate Sign-Off**:
-An explicit approval event with approver, role, timestamp, evidence, and decision.
-_Avoid_: checkbox, status tick
-
-**Change Request**:
-A scoped change to an SPD project — in-scope redo or out-of-scope (costed, client sign-off).
-_Avoid_: CR (in client-facing copy without definition)
-
-### Maintenance
-
-**Maintenance Job**:
-A service or repair work record for a Machine (and related Parts/POs).
-_Avoid_: ticket, fix (legacy app name)
-
-**Part**:
-A catalogued machine part used on maintenance jobs — structured catalog, no stock/inventory in v1.
-_Avoid_: inventory item, SKU (unless aligned with Product)
-
-### Finance and sales time
-
-**Finance Reporting Period**:
-The time box for normalized finance report lines and metrics in Payload.
-_Avoid_: period (alone)
-
-**Period Lock**:
-Finance Reporting Period status that forbids mutation of child lines and Financial Metrics.
-_Avoid_: closed period (ambiguous with Sales)
-
-**Process Snapshot**:
-The frozen copy of an SPD Process Template embedded on an SPD Project at creation; template updates do not retroactively change active projects.
-_Avoid_: project template
-
-**Adjustment Line**:
-A Finance report line posted to correct locked-period data without rewriting history.
-_Avoid_: correction entry (informal)
-
-**Deferred Phase**:
-An intake capability scheduled after the current milestone; still in product backlog, not rejected.
-_Avoid_: out of scope (when intake still requires it)
-
-**Intake Brief**:
-An immutable source document in `docs/intake/` capturing what a client/stakeholder asked for. It is **spec evidence**, not canonical product spec and not CMS content — Payload never stores it as a record.
-_Avoid_: requirement (alone), spec (it is evidence the spec is derived from)
-
-**Operational Requirement**:
-A concrete capability the Payload app must implement to satisfy an Intake Brief (a collection, hook, workflow, or report). The audit measures these — not whether the brief itself is stored anywhere.
-_Avoid_: brief, feature (vague)
-
-**POC Gate**:
-Conrad review validating SPD process template accuracy (~75%) before custom UI or integration investment.
-_Avoid_: go-live (generic)
-
-**WhatsApp Replacement Milestone**:
-Minimum Manufacturing delivery: imported plan + round entry + stoppage capture; excludes TV dashboard and CR 2026-06-01 features.
-_Avoid_: factory MVP (vague)
-
-**Downstream Report Consumer**:
-External app or job that reads Payload finance data to render PPT/PDF; not part of core schema.
-_Avoid_: report generator (ambiguous)
-
-**Sales Performance Period**:
-The monthly (or agreed) window for targets, actuals, and activities per rep/team.
-_Avoid_: period (alone)
-
-**HR Contract Period** / **Review Period**:
-The performance contract or quarterly review time box for an Employee.
-_Avoid_: period (alone)
-
-**Manufacturing Production Day**:
-Operational time boundary for factory reporting (rounds, 3-hourly snapshots).
-_Avoid_: shift (unless explicitly shift-based)
-
-**Production Snapshot**:
-Immutable operational fact record for a machine/MO at a point in time (round or 3-hourly submission); `submitted` status prevents overwrite.
-_Avoid_: round, hourly entry
-
-**Production Round**:
-One line-manager submission cycle covering assigned machines; maps to Production Snapshot records.
-_Avoid_: shift report
-
-**Planning Import**:
-Bulk load of manufacturing orders from Excel/CSV via import-export plugin; not live Excel-as-database.
-_Avoid_: plan upload (informal)
-
-**Planning Snapshot**:
-Frozen copy of plan/MO state when planning changes — deferred phase collection; MVP uses re-import + Document attachment.
-_Avoid_: plan version
-
-**Company Scope**:
-Access-control dimension limiting User visibility to selected Companies.
-_Avoid_: tenant (generic)
-
-**Composite Performance Score**:
-HR-owned rollup of 1-on-1 scores and quarterly review for a Review Period — Phase 2.
-_Avoid_: overall KPI
-
-**Service Cycle**:
-Ordinal count of mould service completions used for idempotent maintenance triggers.
-_Avoid_: shot reset count
-
-**Trigger Type**:
-Classification of how a Maintenance Job was created (manual, shot_threshold, machine_stopped).
-_Avoid_: source (overloaded)
-
-**Submitted**:
-Operational status indicating an immutable fact record (Production Snapshots, Gate Sign-Offs).
-_Avoid_: final, complete
-
-**In-Scope Change**:
-SPD change request classification: redo without client cost approval.
-_Avoid_: internal change (vague)
-
-**Out-of-Scope Change**:
-SPD change request requiring cost and client sign-off before work proceeds.
-_Avoid_: paid change (informal)
-
-**Reporting Snapshot**:
-A point-in-time finance (or module-specific) data package for one Company and Finance Reporting Period.
-_Avoid_: period data (generic)
-
-### System
-
-**Canonical Record**:
-The authoritative Payload document for a business entity (Employee, Product, Customer, etc.). Integrations read/write through this record — they do not create parallel copies.
-_Avoid_: mirror record, shadow copy
-
-**External Reference**:
-A row in `externalRefs` linking a Canonical Record to an ID in Odoo, Pipedrive, SharePoint, or a legacy manual source. Carries `syncStatus` and `lastSyncedAt` for future connector jobs.
-_Avoid_: duplicate entity, integration-only record
-
-**Ecosystem**:
-The single Payload application housing all modules and shared foundations.
-_Avoid_: ERP (unless client-facing), platform (generic)
+**Location kind**:
+An optional label describing what a node represents in the hierarchy (region, building, floor, zone).
+_Avoid_: Level, type (too generic)
 
 ## Relationships
 
-- A **Group** has many **Companies**
-- A **Company** has many **Sites**, **Departments**, and **Teams**
-- An **Employee** belongs to a **Company** (and optionally **Site** / **Department** / **Team**)
-- A **User** may link to exactly one **Employee**
-- A **Machine** belongs to a **Site**; a **Mould** may relate to one or more **Products** (cardinality TBD from client data)
-- A **Maintenance Job** belongs to a **Machine** and may reference **Parts** and **Documents**
-- An **SPD Project** snapshots an **SPD Process Template** and may link **Customers**, **Contacts**, and **Tooling Assets**
-- A **Tooling Asset** may optionally link to a **Mould** (`relatedMould`) when SPD tooling and floor tooling are the same physical tool
-- **Finance Reporting Period** and **Sales Performance Period** are module-specific — not one universal Period entity
+- A **Company** may have a parent **Company** (Stanton is the group parent; PIMMS is a child)
+- A **Location** belongs to exactly one **Company**
+- An **Asset** belongs to one **Company** and sits at one **Location**
+- A **Ticket** is raised against a **Location**; it may optionally reference an **Asset**
+- An **Asset** has its own **Company** (owner) independent of its **Location**'s **Company** (placement)
+- A **Ticket**'s **Company** is derived from its **Location** at creation (or from **Asset** when one is linked); admins may override in Payload admin
+- A **Location** belongs to exactly one **Company**
+- A **Location** may have a parent **Location**, forming a tree up to **three levels** deep (depth is optional — a branch may be one, two, or three nodes)
+- Only **Location leaf** nodes hold **Assets** and receive **Tickets**; **Location group** nodes organise the tree above them
+- All **Locations** in a branch share the same **Company** as their root ancestor
+- An **Asset Movement** updates the **Asset**'s **Location**; editing an **Asset**'s **Location** in admin also creates an **Asset Movement** — both paths stay in sync
+- Every **User** has exactly one **Employee**; an **Employee** may optionally link to a **User** (most workers have no login)
+- **Ticket** assignment fields reference **Employees**, not **Users**
+- A **Ticket** has two independent state fields: **status** (work: `open` | `in_progress` | `completed` | `cancelled`) and **reviewStatus** (audit: `none` | `pending` | `verified` | `rejected`)
+- When work is marked **completed**, **reviewStatus** becomes `pending`; a fully closed **Ticket** has **reviewStatus** `verified`
+- A **Ticket** has one or more **Ticket activity** entries forming its log
+- An **Asset** belongs to exactly one **Asset Category** and exactly one **Asset Status**
+- A **Maintenance Team** belongs to one **Company** and has many **Employee** members
+- A **Ticket** may reference a **Maintenance Team** (`assignedTeam`) and an individual **Employee** (`assignedTo`) — both optional; loose validation, used for defaults and filtering
+- An **Asset** may have a `defaultTeam` that pre-fills **Ticket** assignment when linked
+- A **Ticket** belongs to exactly one **Ticket Type**
 
 ## Example dialogue
 
-> **Dev:** "When a line manager submits a **Production Snapshot**, does that update the employee's **Performance KPI**?"
-> **Domain expert:** "No — it feeds **Operational Metrics** by **Employee ID**. HR rolls those into the quarterly composite alongside the formal **Review Period** scores."
+> **Dev:** "Worker logs 'aircon broken at PIMMS Gauteng' — do we store Company separately or infer it from Location?"
+> **Domain expert:** "Infer from Location. The location already belongs to PIMMS. But managers must be able to filter all PIMMS tickets across every PIMMS site."
 
-> **Dev:** "Is the **Tooling Asset** the same as the **Mould** on the factory floor?"
-> **Domain expert:** "Usually different things — **Tooling Asset** is the SPD deliverable with version history; **Mould** is what we track shots and service on. When it's the same physical tool, we link them; we haven't merged the records yet."
+> **Dev:** "Can a Stanton group manager see PIMMS tickets?"
+> **Domain expert:** "Yes — parent-level company sees everything. A PIMMS-only user sees PIMMS."
+
+> **Dev:** "Worker on the portal — do they pick a location?"
+> **Domain expert:** "Location and company are inferred by the portal context. Admins editing in Payload can change anything."
 
 ## Flagged ambiguities
 
-- **KPI** in client briefs is overloaded — resolved: disambiguate in canonical docs as Performance KPI, Sales KPI, Operational Metric, or Financial Metric; UI may still say "KPI" where the client expects it.
-- **SPD brief** says standalone with no cross-platform integration — resolved: SPD lives in the shared Payload ecosystem with shared foundations; cross-module workflow automation is phased.
-- **Asset** in SPD brief means project/tool output — resolved: use **Tooling Asset** in glossary; **Machine** / **Mould** / **Product** remain distinct.
-- **Mould ↔ Product** cardinality — unresolved; validate against real tool/mould/product data before locking schema.
-- **Access control** — Phase 1a skeleton (`users.roles`, optional `companyScope`); full manager/direct-report matrix deferred to Phase 1.5+.
+- Initially considered a lightweight operating-unit select on Location (option B) vs a full Company entity. **Resolved: full Company entity** — every company in the group is queryable and filterable.
+- Company-scoped access control: deferred — pending client confirmation.
+- Role-based access control: **deferred for MVP** — `role` field on **User** (`admin` | `manager` | `technician` | `staff`); logged-in users have broad access for now. Strict per-role rules come later.
+- User ↔ Employee: **resolved** — optional `employee.user` link; every **User** must have an **Employee**; not every **Employee** has a **User**.
+- Ticket activity log: **resolved** — `activity` array on **Ticket** (author, kind, body, photos, timestamp). Replaces flat work/review notes fields; log is the single source of truth for comments and attachments.
+- Asset Category: **resolved** — simple collection (`name`, optional `description`); **Asset** → one category. No finance fields, no fixed `kind` enum. Admins pick from list or create new.
+- Item / Item Group: **deferred post-MVP** — assets are created directly without catalog templates for now.
+- Maintenance Teams: **resolved** — light model (`name`, `company`, `members`). Tickets support team + individual assignment; filter by team or responsible person. No strict validation.
+- Asset Movements: **resolved** — in MVP with bidirectional sync to **Asset** location.
+- Ticket Type: **resolved** — simple collection (`name`, optional `description`); **Ticket** → one type. Seed: Breakdown, Inspection, General. Same pattern as **Asset Category**.
+- Company hierarchy: **resolved** — optional `parent` on **Company**; Stanton is root (`parent: null`), subsidiaries (e.g. PIMMS) reference Stanton.
+- Ticket reporter: **resolved** — `reportedBy` → **Employee** required. No free-text reporter name. Worker portal deferred until reporters exist as employees.
+- Portal vs employee-only reporter: portal routing deferred; when built, reporters must map to an **Employee** (e.g. kiosk picker, not anonymous text).
+- Asset Status: **resolved** — simple collection (`name`, optional `description`); **Asset** → one status. Seed: Active, Out of Service, Disposed. Same lookup pattern as **Asset Category** and **Ticket Type**.
+- Ticket Priority: **resolved** — fixed select on **Ticket** (`low` | `medium` | `high` | `urgent`), not a collection.
+- Ticket creation UX: **resolved** — company auto-set from location; Payload admin exposes all fields for override. Worker portal is a separate frontend (routing details deferred).
+- Location tree depth: **resolved** — flexible 1–3 levels (region → building → floor/zone as needed, not all branches require all levels).
+- Group vs leaf: **resolved** — explicit `isGroup` toggle; only non-group locations hold assets and receive tickets.
+- Asset company vs location company: **resolved** — may differ (ownership vs placement). Cross-company placement details deferred.
+- Asset location changes: **resolved** — always produce an **Asset Movement**; creating a movement updates the **Asset**'s **Location**. Either entry point (asset edit or movement create) keeps both in sync.
