@@ -1,0 +1,80 @@
+.page {
+  max-width: 720px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.description {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--el-text-secondary);
+}
+
+.panel {
+  background: var(--el-surface);
+  border: 1px solid var(--el-border);
+  border-radius: var(--el-radius);
+  padding: 24px;
+}
+
+.panelTitle {
+  margin: 0 0 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--el-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.fields {
+  margin: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--el-border);
+}
+
+.field:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--el-text-secondary);
+}
+
+.value {
+  margin: 0;
+  font-size: 14px;
+  color: var(--el-text);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+@media (max-width: 540px) {
+  .field {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

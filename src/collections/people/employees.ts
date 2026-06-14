@@ -1,11 +1,12 @@
 import type { CollectionConfig } from 'payload'
 import { authenticated } from '../../access/authenticated'
+import { generateEmployeeId } from '../../hooks/employees/generateEmployeeId'
 
 export const Employees: CollectionConfig = {
   slug: 'employees',
   admin: {
     useAsTitle: 'fullName',
-    defaultColumns: ['fullName', 'company', 'jobTitle', 'team'],
+    defaultColumns: ['employeeId', 'fullName', 'company', 'jobTitle', 'team'],
   },
   access: {
     create: authenticated,
@@ -13,7 +14,21 @@ export const Employees: CollectionConfig = {
     update: authenticated,
     delete: authenticated,
   },
+  hooks: {
+    beforeChange: [generateEmployeeId],
+  },
   fields: [
+    {
+      name: 'employeeId',
+      type: 'text',
+      unique: true,
+      index: true,
+      label: 'Employee ID',
+      admin: {
+        readOnly: true,
+        description: 'Auto-generated on create.',
+      },
+    },
     {
       name: 'fullName',
       type: 'text',

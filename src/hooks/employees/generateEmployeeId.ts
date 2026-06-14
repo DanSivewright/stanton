@@ -1,14 +1,14 @@
 import type { CollectionBeforeChangeHook } from 'payload'
 
-export const generateTicketNumber: CollectionBeforeChangeHook = async ({
+export const generateEmployeeId: CollectionBeforeChangeHook = async ({
   data,
   operation,
   req,
 }) => {
-  if (operation !== 'create' || data?.ticketNumber) return data
+  if (operation !== 'create' || data?.employeeId) return data
 
   const { docs } = await req.payload.find({
-    collection: 'tickets',
+    collection: 'employees',
     sort: '-createdAt',
     limit: 100,
     overrideAccess: true,
@@ -16,13 +16,12 @@ export const generateTicketNumber: CollectionBeforeChangeHook = async ({
 
   let max = 0
   for (const doc of docs) {
-    const match =
-      typeof doc.ticketNumber === 'string' ? doc.ticketNumber.match(/^TKT-(\d+)$/) : null
+    const match = typeof doc.employeeId === 'string' ? doc.employeeId.match(/^EMP-(\d+)$/) : null
     if (match) max = Math.max(max, Number(match[1]))
   }
 
   return {
     ...data,
-    ticketNumber: `TKT-${String(max + 1).padStart(5, '0')}`,
+    employeeId: `EMP-${String(max + 1).padStart(5, '0')}`,
   }
 }

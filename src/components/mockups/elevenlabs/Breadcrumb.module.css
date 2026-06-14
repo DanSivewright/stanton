@@ -1,0 +1,33 @@
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sep {
+  color: var(--el-text-muted);
+}
+
+.link {
+  color: var(--el-text-secondary);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--el-text);
+  text-decoration: underline;
+}
+
+.current {
+  color: var(--el-text);
+  font-weight: 500;
+}

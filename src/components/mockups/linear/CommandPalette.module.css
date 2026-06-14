@@ -1,0 +1,113 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.dialog {
+  width: 560px;
+  max-width: calc(100vw - 32px);
+  border-radius: 10px;
+  border: 1px solid var(--linear-border-strong);
+  background: var(--linear-bg-elevated);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--linear-border);
+}
+
+.searchIcon {
+  color: var(--linear-text-muted);
+  font-size: 14px;
+}
+
+.input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--linear-text);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--linear-text-muted);
+}
+
+.results {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.sectionLabel {
+  padding: 8px 10px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--linear-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.resultItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: var(--linear-radius);
+  background: transparent;
+  color: var(--linear-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.resultItem:hover,
+.resultItemHighlighted {
+  background: var(--linear-bg-hover);
+}
+
+.resultIcon {
+  width: 16px;
+  text-align: center;
+  color: var(--linear-text-muted);
+  font-size: 12px;
+}
+
+.resultMeta {
+  margin-left: auto;
+  font-family: var(--linear-mono);
+  font-size: 11px;
+  color: var(--linear-text-muted);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--linear-border);
+  color: var(--linear-text-muted);
+  font-size: 11px;
+}
+
+.footerHint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

@@ -1,0 +1,35 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+  padding: 0 14px;
+  height: 40px;
+  background: var(--el-surface);
+  border: 1px solid var(--el-border);
+  border-radius: var(--el-radius);
+}
+
+.icon {
+  color: var(--el-text-muted);
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  color: var(--el-text);
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--el-text-muted);
+}
+
+.input::-webkit-search-cancel-button {
+  cursor: pointer;
+}

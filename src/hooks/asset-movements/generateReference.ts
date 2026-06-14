@@ -7,13 +7,21 @@ export const generateMovementReference: CollectionBeforeChangeHook = async ({
 }) => {
   if (operation !== 'create' || data?.reference) return data
 
-  const { totalDocs } = await req.payload.count({
+  const { docs } = await req.payload.find({
     collection: 'asset-movements',
-    req,
+    sort: '-createdAt',
+    limit: 100,
+    overrideAccess: true,
   })
+
+  let max = 0
+  for (const doc of docs) {
+    const match = typeof doc.reference === 'string' ? doc.reference.match(/^MOV-(\d+)$/) : null
+    if (match) max = Math.max(max, Number(match[1]))
+  }
 
   return {
     ...data,
-    reference: `MOV-${String(totalDocs + 1).padStart(5, '0')}`,
+    reference: `MOV-${String(max + 1).padStart(5, '0')}`,
   }
 }

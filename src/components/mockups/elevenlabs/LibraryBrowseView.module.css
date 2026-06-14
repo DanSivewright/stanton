@@ -1,0 +1,40 @@
+.toolbar {
+  margin-bottom: 16px;
+}
+
+.tabsFallback {
+  height: 36px;
+  width: 240px;
+  background: var(--el-pill-bg);
+  border-radius: var(--el-radius-full);
+}
+
+.filters {
+  margin-bottom: 12px;
+}
+
+.count {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--el-text-muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty {
+  padding: 48px 24px;
+  text-align: center;
+  background: var(--el-surface);
+  border: 1px dashed var(--el-border);
+  border-radius: var(--el-radius);
+  color: var(--el-text-secondary);
+  font-size: 14px;
+}
+
+.empty p {
+  margin: 0;
+}

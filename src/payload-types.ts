@@ -180,6 +180,10 @@ export interface User {
  */
 export interface Employee {
   id: string;
+  /**
+   * Auto-generated on create.
+   */
+  employeeId?: string | null;
   fullName: string;
   company: string | Company;
   jobTitle?: string | null;
@@ -609,6 +613,7 @@ export interface TicketTypesSelect<T extends boolean = true> {
  * via the `definition` "employees_select".
  */
 export interface EmployeesSelect<T extends boolean = true> {
+  employeeId?: T;
   fullName?: T;
   company?: T;
   jobTitle?: T;
