@@ -1,11 +1,14 @@
 'use client'
 
 import type { MockupCollectionSlug } from '@/lib/mockups/navigation'
-import { qatalog } from './tokens'
+import { relLabel, statusLabel } from '@/lib/mockups/helpers'
 import { COLLECTION_COLUMNS } from './collection-config'
-import { Avatar, AvatarStack } from './ui'
-import { IconChevronRight } from './icons'
-import { relLabel } from '@/lib/mockups/helpers'
+import { QatalogAvatar } from './QatalogAvatar'
+import * as AvatarGroupCompact from '@/components/ui/avatar-group-compact'
+import * as StatusBadge from '@/components/ui/status-badge'
+import * as Table from '@/components/ui/table'
+import { RiArrowRightSLine } from '@remixicon/react'
+import { cn } from '@/utils/cn'
 
 type Doc = Record<string, unknown> & { id: string }
 
@@ -26,6 +29,19 @@ function getAvatarNames(slug: MockupCollectionSlug, doc: Doc): string[] | null {
   return null
 }
 
+function ticketStatus(status: string): 'completed' | 'pending' | 'failed' | 'disabled' {
+  switch (status) {
+    case 'completed':
+      return 'completed'
+    case 'cancelled':
+      return 'disabled'
+    case 'in_progress':
+      return 'pending'
+    default:
+      return 'pending'
+  }
+}
+
 export function DataTable({
   slug,
   docs,
@@ -40,40 +56,25 @@ export function DataTable({
 
   if (docs.length === 0) {
     return (
-      <div style={{ padding: 48, textAlign: 'center', color: qatalog.textSecondary }}>
-        No records yet. Seed demo data to populate this view.
+      <div className="rounded-xl border border-stroke-soft-200 px-6 py-12 text-center text-paragraph-md text-text-sub-600">
+        No records yet.
       </div>
     )
   }
 
   return (
-    <div style={{ border: `1px solid ${qatalog.border}`, borderRadius: 12, overflow: 'hidden' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
-        <thead>
-          <tr style={{ background: qatalog.bgMuted, borderBottom: `1px solid ${qatalog.border}` }}>
-            {showAvatars ? (
-              <th style={{ width: 100, padding: '12px 20px' }} />
-            ) : null}
+    <div className="overflow-hidden rounded-xl ring-1 ring-stroke-soft-200">
+      <Table.Root>
+        <Table.Header>
+          <tr>
+            {showAvatars ? <Table.Head className="w-24" /> : null}
             {columns.map((col) => (
-              <th
-                key={col.key}
-                style={{
-                  textAlign: 'left',
-                  padding: '12px 20px',
-                  fontWeight: 500,
-                  fontSize: 12,
-                  color: qatalog.textMuted,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                }}
-              >
-                {col.label}
-              </th>
+              <Table.Head key={col.key}>{col.label}</Table.Head>
             ))}
-            <th style={{ width: 40, padding: '12px 20px' }} />
+            <Table.Head className="w-10" />
           </tr>
-        </thead>
-        <tbody>
+        </Table.Header>
+        <Table.Body>
           {docs.map((doc, rowIndex) => {
             const avatarNames = getAvatarNames(slug, doc)
             const primaryName =
@@ -84,50 +85,60 @@ export function DataTable({
                   : String(doc.name ?? doc.title ?? '')
 
             return (
-              <tr
+              <Table.Row
                 key={doc.id}
                 onClick={() => onSelect?.(doc.id)}
-                style={{
-                  borderBottom: `1px solid ${qatalog.border}`,
-                  cursor: onSelect ? 'pointer' : 'default',
-                  transition: 'background 0.12s',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = qatalog.bgHover
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent'
-                }}
+                className={cn(onSelect && 'cursor-pointer')}
               >
                 {showAvatars ? (
-                  <td style={{ padding: '14px 20px' }}>
+                  <Table.Cell>
                     {avatarNames ? (
-                      <AvatarStack names={avatarNames} size={28} />
+                      <AvatarGroupCompact.Root size="32" variant="stroke">
+                        <AvatarGroupCompact.Stack>
+                          {avatarNames.slice(0, 4).map((name, i) => (
+                            <QatalogAvatar key={`${name}-${i}`} name={name} size="32" index={i} />
+                          ))}
+                        </AvatarGroupCompact.Stack>
+                        {avatarNames.length > 4 ? (
+                          <AvatarGroupCompact.Overflow>+{avatarNames.length - 4}</AvatarGroupCompact.Overflow>
+                        ) : null}
+                      </AvatarGroupCompact.Root>
                     ) : primaryName ? (
-                      <Avatar name={primaryName} size={28} index={rowIndex} />
+                      <QatalogAvatar name={primaryName} size="32" index={rowIndex} />
                     ) : null}
-                  </td>
+                  </Table.Cell>
                 ) : null}
                 {columns.map((col) => (
-                  <td
+                  <Table.Cell
                     key={col.key}
-                    style={{
-                      padding: '14px 20px',
-                      color: col.key === 'name' || col.key === 'fullName' || col.key === 'title' ? qatalog.text : qatalog.textSecondary,
-                      fontWeight: col.key === 'name' || col.key === 'fullName' || col.key === 'title' ? 500 : 400,
-                    }}
+                    className={cn(
+                      col.key === 'name' ||
+                        col.key === 'fullName' ||
+                        col.key === 'title' ||
+                        col.key === 'ticketNumber'
+                        ? 'font-medium text-text-strong-950'
+                        : 'text-text-sub-600',
+                    )}
                   >
-                    {col.render(doc)}
-                  </td>
+                    {col.key === 'status' && slug === 'tickets' ? (
+                      <StatusBadge.Root variant="light" status={ticketStatus(String(doc.status ?? ''))}>
+                        <StatusBadge.Dot />
+                        {statusLabel(String(doc.status ?? ''))}
+                      </StatusBadge.Root>
+                    ) : (
+                      col.render(doc)
+                    )}
+                  </Table.Cell>
                 ))}
-                <td style={{ padding: '14px 20px', color: qatalog.textMuted }}>
-                  <IconChevronRight size={16} />
-                </td>
-              </tr>
+                <Table.Cell className="text-text-soft-400">
+                  <RiArrowRightSLine className="size-5" />
+                </Table.Cell>
+                {rowIndex < docs.length - 1 ? <Table.RowDivider /> : null}
+              </Table.Row>
             )
           })}
-        </tbody>
-      </table>
+        </Table.Body>
+      </Table.Root>
     </div>
   )
 }

@@ -2,10 +2,12 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { RiArrowDownSLine, RiArrowRightSLine, RiMapPinLine } from '@remixicon/react'
 import { relLabel } from '@/lib/mockups/helpers'
 import type { Location } from '@/payload-types'
-import { IconChevron, IconMapPin } from './icons'
-import { cardStyle } from './tokens'
+import * as Badge from '@/components/ui/badge'
+import * as CompactButton from '@/components/ui/compact-button'
+import { cn } from '@/utils/cn'
 
 type LocationNode = Location & { id: string }
 
@@ -46,75 +48,55 @@ function TreeNode({
   const hasChildren = node.children.length > 0
 
   return (
-    <div style={{ marginLeft: depth > 0 ? 20 : 0 }}>
+    <div className={cn(depth > 0 && 'ml-5')}>
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '10px 12px',
-          borderRadius: 10,
-          marginBottom: 4,
-          background: depth === 0 ? 'var(--sana-surface-hover)' : 'transparent',
-        }}
+        className={cn(
+          'mb-1 flex items-center gap-2 rounded-xl px-3 py-2.5 transition',
+          depth === 0 ? 'bg-bg-weak-50' : 'hover:bg-bg-weak-50',
+        )}
       >
         {hasChildren ? (
-          <button
-            type="button"
-            onClick={() => setOpen((o) => !o)}
-            style={{
-              border: 'none',
-              background: 'transparent',
-              padding: 0,
-              cursor: 'pointer',
-              display: 'flex',
-            }}
-            aria-expanded={open}
-          >
-            <IconChevron direction={open ? 'down' : 'right'} />
-          </button>
+          <CompactButton.Root variant="ghost" size="medium" onClick={() => setOpen((o) => !o)}>
+            <CompactButton.Icon as={open ? RiArrowDownSLine : RiArrowRightSLine} />
+          </CompactButton.Root>
         ) : (
-          <span style={{ width: 16 }} />
+          <span className="size-8 shrink-0" />
         )}
-        <IconMapPin size={16} color={node.isGroup ? 'var(--sana-accent)' : 'var(--sana-text-subtle)'} />
+
+        <RiMapPinLine
+          className={cn('size-4 shrink-0', node.isGroup ? 'text-feature-base' : 'text-text-soft-400')}
+        />
+
         <Link
           href={`${basePath}/locations/${node.id}`}
-          style={{
-            flex: 1,
-            textDecoration: 'none',
-            color: 'var(--sana-text)',
-            fontWeight: node.isGroup ? 600 : 400,
-            fontSize: 14,
-          }}
+          className={cn(
+            'flex-1 text-label-sm text-text-strong-950 transition hover:text-feature-base',
+            node.isGroup && 'font-semibold',
+          )}
         >
           {node.name}
         </Link>
-        {node.kind && (
-          <span
-            style={{
-              fontSize: 11,
-              padding: '2px 8px',
-              borderRadius: 999,
-              background: 'var(--sana-accent-soft)',
-              color: 'var(--sana-accent)',
-              textTransform: 'capitalize',
-            }}
-          >
+
+        {node.kind ? (
+          <Badge.Root variant="lighter" color="purple" size="small">
             {node.kind}
-          </span>
-        )}
-        {node.isGroup && (
-          <span style={{ fontSize: 11, color: 'var(--sana-text-subtle)' }}>Group</span>
-        )}
-        <span style={{ fontSize: 12, color: 'var(--sana-text-subtle)' }}>
+          </Badge.Root>
+        ) : null}
+
+        {node.isGroup ? (
+          <span className="text-paragraph-xs text-text-soft-400">Group</span>
+        ) : null}
+
+        <span className="hidden text-paragraph-xs text-text-soft-400 sm:inline">
           {relLabel(node.company)}
         </span>
       </div>
-      {open &&
-        hasChildren &&
-        node.children.map((child) => (
-          <TreeNode key={child.id} node={child} depth={depth + 1} basePath={basePath} />
-        ))}
+
+      {open && hasChildren
+        ? node.children.map((child) => (
+            <TreeNode key={child.id} node={child} depth={depth + 1} basePath={basePath} />
+          ))
+        : null}
     </div>
   )
 }
@@ -129,14 +111,14 @@ export function LocationTree({ locations, basePath = '/mockups/sana' }: Location
 
   if (roots.length === 0) {
     return (
-      <div style={{ ...cardStyle, padding: 32, textAlign: 'center', color: 'var(--sana-text-subtle)' }}>
+      <div className="rounded-2xl bg-bg-white-0 px-8 py-12 text-center text-paragraph-sm text-text-soft-400 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
         No locations found.
       </div>
     )
   }
 
   return (
-    <div style={{ ...cardStyle, padding: 16 }}>
+    <div className="rounded-2xl bg-bg-white-0 p-4 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
       {roots.map((root) => (
         <TreeNode key={root.id} node={root} basePath={basePath} />
       ))}

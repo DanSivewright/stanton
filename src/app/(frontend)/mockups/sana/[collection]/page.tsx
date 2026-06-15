@@ -42,7 +42,7 @@ export default async function SanaCollectionPage({ params }: PageProps) {
       title={nav.item.label}
       subtitle={`${result.totalDocs} records · ${nav.item.description}`}
     >
-      <DataTable slug={slug} rows={rows} />
+      <DataTable slug={slug} rows={rows} totalDocs={result.totalDocs} />
     </Shell>
   )
 }

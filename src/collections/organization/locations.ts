@@ -80,6 +80,28 @@ export const Locations: CollectionConfig = {
       },
     },
     {
+      name: 'assets',
+      type: 'join',
+      collection: 'assets',
+      on: 'location',
+      admin: {
+        allowCreate: false,
+        description: 'Assets assigned to this location.',
+        defaultColumns: ['name', 'assetTag', 'status'],
+      },
+    },
+    {
+      name: 'tickets',
+      type: 'join',
+      collection: 'tickets',
+      on: 'location',
+      admin: {
+        allowCreate: false,
+        description: 'Maintenance tickets for this location.',
+        defaultColumns: ['ticketNumber', 'title', 'type', 'status'],
+      },
+    },
+    {
       name: 'notes',
       type: 'textarea',
       label: 'Notes',

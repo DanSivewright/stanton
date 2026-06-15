@@ -2,14 +2,15 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import type { MockupCollectionSlug } from '@/lib/mockups/navigation'
-import { priorityColor, statusLabel } from '@/lib/mockups/helpers'
+import { RiArrowLeftLine } from '@remixicon/react'
+import type { MockupCollectionSlug, MockupVariantSlug } from '@/lib/mockups/navigation'
+import { statusLabel } from '@/lib/mockups/helpers'
 import { getDetailFields, getMetaFields } from './detail-config'
 import { TicketActivityLog } from './TicketActivityLog'
-import { MobileDrawer } from './MobileDrawer'
-import { IconArrow } from './icons'
-import styles from './sana.module.css'
-import { cardStyle, pillStyle } from './tokens'
+import * as Badge from '@/components/ui/badge'
+import * as Button from '@/components/ui/button'
+import * as Drawer from '@/components/ui/drawer'
+import * as LinkButton from '@/components/ui/link-button'
 import type { Ticket } from '@/payload-types'
 
 type DetailPanelProps = {
@@ -17,9 +18,20 @@ type DetailPanelProps = {
   doc: Record<string, unknown>
   backHref: string
   title: string
+  variant?: MockupVariantSlug
+  identifier?: string
+  authorOptions?: { id: string; name: string }[]
 }
 
-export function DetailPanel({ slug, doc, backHref, title }: DetailPanelProps) {
+export function DetailPanel({
+  slug,
+  doc,
+  backHref,
+  title,
+  variant = 'sana',
+  identifier,
+  authorOptions,
+}: DetailPanelProps) {
   const fields = getDetailFields(slug, doc)
   const meta = getMetaFields(doc)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -28,84 +40,51 @@ export function DetailPanel({ slug, doc, backHref, title }: DetailPanelProps) {
 
   return (
     <>
-      <div style={{ marginBottom: 24 }}>
-        <Link
-          href={backHref}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            fontSize: 13,
-            color: 'var(--sana-text-muted)',
-            textDecoration: 'none',
-            marginBottom: 16,
-          }}
-        >
-          <IconArrow size={14} />
-          Back to list
-        </Link>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-          <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, lineHeight: 1.2 }}>{title}</h1>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <div className="mb-6">
+        <LinkButton.Root variant="gray" size="medium" asChild className="mb-4 inline-flex">
+          <Link href={backHref}>
+            <LinkButton.Icon as={RiArrowLeftLine} />
+            Back to list
+          </Link>
+        </LinkButton.Root>
+
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <h1 className="text-title-h4 font-bold text-text-strong-950">{title}</h1>
+          <div className="flex flex-wrap gap-2">
             {slug === 'tickets' &&
               statusFields.map((key) => {
                 const val = doc[key] as string | undefined
                 if (!val) return null
-                const color = key === 'priority' ? priorityColor(val) : 'var(--sana-accent)'
-                const bg = key === 'priority' ? `${color}18` : 'var(--sana-accent-soft)'
+                const isPriority = key === 'priority'
+                const color = isPriority
+                  ? val === 'critical'
+                    ? 'red'
+                    : val === 'high'
+                      ? 'orange'
+                      : val === 'medium'
+                        ? 'yellow'
+                        : 'gray'
+                  : 'purple'
                 return (
-                  <span key={key} style={pillStyle(color, bg)}>
+                  <Badge.Root key={key} variant="lighter" color={color} size="medium">
                     {key === 'status' || key === 'reviewStatus' ? statusLabel(val) : val}
-                  </span>
+                  </Badge.Root>
                 )
               })}
           </div>
         </div>
       </div>
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: slug === 'tickets' ? '1fr' : '1fr',
-          gap: 24,
-        }}
-      >
-        <div style={{ ...cardStyle, padding: 24 }}>
-          <h2 style={{ margin: '0 0 20px', fontSize: 15, fontWeight: 600 }}>Details</h2>
-          <dl
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-              gap: '20px 32px',
-              margin: 0,
-            }}
-          >
+      <div className="grid gap-6">
+        <div className="rounded-2xl bg-bg-white-0 p-6 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
+          <h2 className="mb-5 text-label-md font-semibold text-text-strong-950">Details</h2>
+          <dl className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-x-8 gap-y-5">
             {[...fields, ...meta].map((field) => (
-              <div
-                key={field.label}
-                style={field.wide ? { gridColumn: '1 / -1' } : undefined}
-              >
-                <dt
-                  style={{
-                    margin: 0,
-                    fontSize: 11,
-                    fontWeight: 600,
-                    letterSpacing: '0.06em',
-                    textTransform: 'uppercase',
-                    color: 'var(--sana-text-subtle)',
-                  }}
-                >
+              <div key={field.label} className={field.wide ? 'col-span-full' : undefined}>
+                <dt className="text-subheading-2xs uppercase tracking-wide text-text-soft-400">
                   {field.label}
                 </dt>
-                <dd
-                  style={{
-                    margin: '6px 0 0',
-                    fontSize: 15,
-                    color: 'var(--sana-text)',
-                    lineHeight: 1.5,
-                    whiteSpace: field.wide ? 'pre-wrap' : undefined,
-                  }}
-                >
+                <dd className="mt-1.5 text-paragraph-sm leading-relaxed text-text-strong-950 whitespace-pre-wrap">
                   {field.value}
                 </dd>
               </div>
@@ -113,48 +92,46 @@ export function DetailPanel({ slug, doc, backHref, title }: DetailPanelProps) {
           </dl>
         </div>
 
-        {slug === 'tickets' && (
-          <TicketActivityLog activity={(doc as unknown as Ticket).activity} />
-        )}
+        {slug === 'tickets' && identifier ? (
+          <TicketActivityLog
+            activity={(doc as unknown as Ticket).activity}
+            variant={variant}
+            identifier={identifier}
+            authorOptions={authorOptions}
+          />
+        ) : null}
       </div>
 
-      <div className={styles.mobileFab}>
-        <button
+      <div className="fixed bottom-6 right-6 lg:hidden">
+        <Button.Root
           type="button"
+          variant="primary"
+          mode="filled"
+          size="medium"
+          className="rounded-full shadow-regular-md"
           onClick={() => setDrawerOpen(true)}
-          style={{
-            position: 'fixed',
-            bottom: 24,
-            right: 24,
-            padding: '12px 20px',
-            borderRadius: 999,
-            border: 'none',
-            background: 'var(--sana-accent)',
-            color: '#fff',
-            font: 'inherit',
-            fontSize: 14,
-            fontWeight: 500,
-            boxShadow: 'var(--sana-shadow-lg)',
-            cursor: 'pointer',
-            zIndex: 50,
-          }}
         >
           Quick view
-        </button>
+        </Button.Root>
       </div>
 
-      <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title={title}>
-        <dl style={{ margin: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {fields.map((field) => (
-            <div key={field.label}>
-              <dt style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--sana-text-subtle)' }}>
-                {field.label}
-              </dt>
-              <dd style={{ margin: '4px 0 0', fontSize: 14 }}>{field.value}</dd>
-            </div>
-          ))}
-        </dl>
-      </MobileDrawer>
+      <Drawer.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <Drawer.Content>
+          <Drawer.Header>
+            <Drawer.Title>{title}</Drawer.Title>
+          </Drawer.Header>
+          <Drawer.Body className="px-5 pb-6">
+            <dl className="flex flex-col gap-4">
+              {fields.map((field) => (
+                <div key={field.label}>
+                  <dt className="text-subheading-2xs uppercase text-text-soft-400">{field.label}</dt>
+                  <dd className="mt-1 text-paragraph-sm text-text-strong-950">{field.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </Drawer.Body>
+        </Drawer.Content>
+      </Drawer.Root>
     </>
   )
 }

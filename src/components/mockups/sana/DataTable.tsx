@@ -1,30 +1,50 @@
 import Link from 'next/link'
-import type { MockupCollectionSlug } from '@/lib/mockups/navigation'
-import { priorityColor, statusLabel } from '@/lib/mockups/helpers'
+import type { MockupCollectionSlug, MockupVariantSlug } from '@/lib/mockups/navigation'
+import { statusLabel } from '@/lib/mockups/helpers'
+import { detailHref, newHref } from '@/lib/mockups/links'
+import { getDocIdentifier } from '@/lib/mockups/identifiers'
 import { COLLECTION_COLUMNS, type ColumnDef } from './columns'
-import styles from './sana.module.css'
-import { pillStyle } from './tokens'
+import { PaginationHint } from '@/components/mockups/shared/PaginationHint'
+import * as Badge from '@/components/ui/badge'
+import * as Button from '@/components/ui/button'
+import * as Table from '@/components/ui/table'
 
 type DataTableProps = {
   slug: MockupCollectionSlug
   rows: Record<string, unknown>[]
-  basePath?: string
+  variant?: MockupVariantSlug
+  totalDocs?: number
+  limit?: number
+}
+
+const STATUS_BADGE_COLOR: Record<string, 'purple' | 'blue' | 'green' | 'gray'> = {
+  open: 'purple',
+  in_progress: 'blue',
+  completed: 'green',
+  cancelled: 'gray',
 }
 
 function StatusPill({ value }: { value: string }) {
-  const colors: Record<string, { fg: string; bg: string }> = {
-    open: { fg: '#6b4ae8', bg: '#ede9fe' },
-    in_progress: { fg: '#2563eb', bg: '#dbeafe' },
-    completed: { fg: '#059669', bg: '#d1fae5' },
-    cancelled: { fg: '#64748b', bg: '#f1f5f9' },
-  }
-  const c = colors[value] ?? { fg: '#6b6578', bg: '#f3f2f7' }
-  return <span style={pillStyle(c.fg, c.bg)}>{statusLabel(value)}</span>
+  const color = STATUS_BADGE_COLOR[value] ?? 'gray'
+  return (
+    <Badge.Root variant="lighter" color={color} size="medium">
+      {statusLabel(value)}
+    </Badge.Root>
+  )
 }
 
 function PriorityPill({ value }: { value: string }) {
-  const color = priorityColor(value)
-  return <span style={pillStyle(color, `${color}18`)}>{value}</span>
+  const colorMap: Record<string, 'red' | 'orange' | 'yellow' | 'gray'> = {
+    critical: 'red',
+    high: 'orange',
+    medium: 'yellow',
+    low: 'gray',
+  }
+  return (
+    <Badge.Root variant="lighter" color={colorMap[value] ?? 'gray'} size="medium">
+      {value}
+    </Badge.Root>
+  )
 }
 
 function renderCell(col: ColumnDef, row: Record<string, unknown>) {
@@ -35,58 +55,63 @@ function renderCell(col: ColumnDef, row: Record<string, unknown>) {
   return String(val ?? '—')
 }
 
-export function DataTable({ slug, rows, basePath = '/mockups/sana' }: DataTableProps) {
+export function DataTable({ slug, rows, variant = 'sana', totalDocs, limit = 100 }: DataTableProps) {
   const columns = COLLECTION_COLUMNS[slug]
 
   return (
-    <div className={styles.tableWrap}>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            {columns.map((col) => (
-              <th key={col.key} style={col.width ? { width: col.width } : undefined}>
-                {col.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.length === 0 ? (
+    <>
+      <div className="mb-4 flex justify-end">
+        <Button.Root variant="primary" mode="filled" size="small" asChild>
+          <Link href={newHref(variant, slug)}>+ New</Link>
+        </Button.Root>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl bg-bg-white-0 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
+        <Table.Root>
+          <Table.Header>
             <tr>
-              <td colSpan={columns.length} style={{ textAlign: 'center', color: 'var(--sana-text-subtle)', padding: 32 }}>
-                No records found. Seed demo data to populate this view.
-              </td>
+              {columns.map((col) => (
+                <Table.Head key={col.key} style={col.width ? { width: col.width } : undefined}>
+                  {col.label}
+                </Table.Head>
+              ))}
             </tr>
-          ) : (
-            rows.map((row) => {
-              const id = String(row.id)
-              const href = `${basePath}/${slug}/${id}`
-              return (
-                <tr key={id} className={styles.tableRow}>
-                  {columns.map((col, i) => (
-                    <td key={col.key}>
-                      {i === 0 ? (
-                        <Link
-                          href={href}
-                          style={{
-                            color: 'var(--sana-text)',
-                            textDecoration: 'none',
-                            fontWeight: 500,
-                          }}
-                        >
-                          {renderCell(col, row)}
-                        </Link>
-                      ) : (
-                        renderCell(col, row)
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              )
-            })
-          )}
-        </tbody>
-      </table>
-    </div>
+          </Table.Header>
+          <Table.Body>
+            {rows.length === 0 ? (
+              <Table.Row>
+                <Table.Cell colSpan={columns.length} className="py-12 text-center text-text-soft-400">
+                  No records yet.
+                </Table.Cell>
+              </Table.Row>
+            ) : (
+              rows.map((row) => {
+                const href = detailHref(variant, slug, getDocIdentifier(row, slug))
+                return (
+                  <Table.Row key={String(row.id)}>
+                    {columns.map((col, i) => (
+                      <Table.Cell key={col.key}>
+                        {i === 0 ? (
+                          <Link
+                            href={href}
+                            className="font-medium text-text-strong-950 transition hover:text-feature-base"
+                          >
+                            {renderCell(col, row)}
+                          </Link>
+                        ) : (
+                          renderCell(col, row)
+                        )}
+                      </Table.Cell>
+                    ))}
+                  </Table.Row>
+                )
+              })
+            )}
+          </Table.Body>
+        </Table.Root>
+      </div>
+
+      {totalDocs != null ? <PaginationHint totalDocs={totalDocs} limit={limit} /> : null}
+    </>
   )
 }

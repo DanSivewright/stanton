@@ -87,6 +87,8 @@ export interface Config {
   collectionsJoins: {
     locations: {
       children: 'locations';
+      assets: 'assets';
+      tickets: 'tickets';
     };
   };
   collectionsSelect: {
@@ -274,40 +276,23 @@ export interface Location {
     hasNextPage?: boolean;
     totalDocs?: number;
   };
+  /**
+   * Assets assigned to this location.
+   */
+  assets?: {
+    docs?: (string | Asset)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  /**
+   * Maintenance tickets for this location.
+   */
+  tickets?: {
+    docs?: (string | Ticket)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   notes?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "asset-categories".
- */
-export interface AssetCategory {
-  id: string;
-  name: string;
-  description?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "asset-statuses".
- */
-export interface AssetStatus {
-  id: string;
-  name: string;
-  description?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "ticket-types".
- */
-export interface TicketType {
-  id: string;
-  name: string;
-  description?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -339,21 +324,23 @@ export interface Asset {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "asset-movements".
+ * via the `definition` "asset-categories".
  */
-export interface AssetMovement {
+export interface AssetCategory {
   id: string;
-  /**
-   * Auto-generated on create.
-   */
-  reference?: string | null;
-  asset: string | Asset;
-  company: string | Company;
-  fromLocation?: (string | null) | Location;
-  toLocation: string | Location;
-  movedBy?: (string | null) | Employee;
-  movedAt: string;
-  reason?: string | null;
+  name: string;
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "asset-statuses".
+ */
+export interface AssetStatus {
+  id: string;
+  name: string;
+  description?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -393,6 +380,37 @@ export interface Ticket {
         id?: string | null;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ticket-types".
+ */
+export interface TicketType {
+  id: string;
+  name: string;
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "asset-movements".
+ */
+export interface AssetMovement {
+  id: string;
+  /**
+   * Auto-generated on create.
+   */
+  reference?: string | null;
+  asset: string | Asset;
+  company: string | Company;
+  fromLocation?: (string | null) | Location;
+  toLocation: string | Location;
+  movedBy?: (string | null) | Employee;
+  movedAt: string;
+  reason?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -574,6 +592,8 @@ export interface LocationsSelect<T extends boolean = true> {
   parent?: T;
   kind?: T;
   children?: T;
+  assets?: T;
+  tickets?: T;
   notes?: T;
   updatedAt?: T;
   createdAt?: T;

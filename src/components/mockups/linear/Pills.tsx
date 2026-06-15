@@ -1,62 +1,66 @@
-import pillStyles from './Pills.module.css'
+import * as Badge from '@/components/ui/badge'
 import { statusLabel } from '@/lib/mockups/helpers'
 
-const STATUS_CLASS: Record<string, string> = {
-  open: pillStyles.statusOpen,
-  in_progress: pillStyles.statusInProgress,
-  completed: pillStyles.statusCompleted,
-  cancelled: pillStyles.statusCancelled,
-  pending: pillStyles.statusReviewPending,
-  approved: pillStyles.statusReviewApproved,
-  rejected: pillStyles.statusReviewRejected,
+type BadgeColor =
+  | 'gray'
+  | 'blue'
+  | 'orange'
+  | 'red'
+  | 'green'
+  | 'yellow'
+  | 'purple'
+
+const STATUS_COLOR: Record<string, BadgeColor> = {
+  open: 'blue',
+  in_progress: 'orange',
+  completed: 'green',
+  cancelled: 'gray',
+  pending: 'yellow',
+  approved: 'green',
+  rejected: 'red',
+}
+
+const PRIORITY_COLOR: Record<string, string> = {
+  urgent: 'bg-error-base',
+  high: 'bg-warning-base',
+  medium: 'bg-yellow-500',
+  low: 'bg-text-soft-400',
 }
 
 export function StatusPill({ status }: { status: string }) {
-  const className = STATUS_CLASS[status] ?? pillStyles.statusDefault
-  return <span className={`${pillStyles.pill} ${className}`}>{statusLabel(status)}</span>
+  return (
+    <Badge.Root
+      variant="lighter"
+      color={STATUS_COLOR[status] ?? 'gray'}
+      size="small"
+      className="capitalize"
+    >
+      {statusLabel(status)}
+    </Badge.Root>
+  )
 }
 
 export function GroupBadge({ isGroup }: { isGroup: boolean }) {
-  const className = isGroup ? pillStyles.groupYes : pillStyles.groupNo
   return (
-    <span className={`${pillStyles.groupBadge} ${className}`}>
+    <Badge.Root variant="lighter" color={isGroup ? 'purple' : 'gray'} size="small">
       {isGroup ? 'Group' : 'Leaf'}
-    </span>
+    </Badge.Root>
   )
 }
 
 export function PriorityIndicator({ priority }: { priority: string }) {
-  const colors: Record<string, string> = {
-    urgent: '#ef4444',
-    high: '#f97316',
-    medium: '#eab308',
-    low: '#5c6370',
-  }
   return (
     <span
-      className={pillStyles.priorityDot}
-      style={{ background: colors[priority] ?? colors.low }}
+      className={`inline-block size-2 shrink-0 rounded-full ${PRIORITY_COLOR[priority] ?? PRIORITY_COLOR.low}`}
       title={priority}
     />
   )
 }
 
 export function PriorityBar({ priority }: { priority: string }) {
-  const colors: Record<string, string> = {
-    urgent: '#ef4444',
-    high: '#f97316',
-    medium: '#eab308',
-    low: 'transparent',
-  }
   return (
     <span
-      style={{
-        width: 3,
-        height: 16,
-        borderRadius: 2,
-        background: colors[priority] ?? colors.low,
-        display: 'block',
-      }}
+      className={`block h-4 w-0.5 shrink-0 rounded-sm ${PRIORITY_COLOR[priority] ?? 'bg-transparent'}`}
     />
   )
 }

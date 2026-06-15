@@ -3,21 +3,25 @@ import { relLabel } from '@/lib/mockups/helpers'
 
 type Doc = Record<string, unknown>
 
-const AVATAR_GRADIENTS = [
-  'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
-  'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)',
-  'linear-gradient(135deg, #f97316 0%, #fb923c 100%)',
-  'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-  'linear-gradient(135deg, #ec4899 0%, #f472b6 100%)',
-  'linear-gradient(135deg, #64748b 0%, #94a3b8 100%)',
-]
+const AVATAR_COLORS = ['gray', 'yellow', 'blue', 'sky', 'purple', 'red'] as const
 
-export function avatarGradient(seed: string): string {
+export type AvatarColor = (typeof AVATAR_COLORS)[number]
+
+export function avatarColor(seed: string): AvatarColor {
   let hash = 0
   for (let i = 0; i < seed.length; i++) {
     hash = seed.charCodeAt(i) + ((hash << 5) - hash)
   }
-  return AVATAR_GRADIENTS[Math.abs(hash) % AVATAR_GRADIENTS.length]
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
+}
+
+export function avatarInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('')
 }
 
 export function docId(doc: Doc): string {

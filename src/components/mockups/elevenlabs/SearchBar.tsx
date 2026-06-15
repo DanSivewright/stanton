@@ -2,7 +2,8 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useTransition } from 'react'
-import styles from './SearchBar.module.css'
+import { RiSearchLine } from '@remixicon/react'
+import * as Input from '@/components/ui/input'
 
 type SearchBarProps = {
   placeholder?: string
@@ -31,25 +32,17 @@ export function SearchBar({ placeholder = 'Search…' }: SearchBarProps) {
   )
 
   return (
-    <div className={styles.wrap}>
-      <SearchIcon />
-      <input
-        type="search"
-        className={styles.input}
-        placeholder={placeholder}
-        defaultValue={value}
-        onChange={(e) => updateQuery(e.target.value)}
-        aria-label="Search"
-      />
-    </div>
-  )
-}
-
-function SearchIcon() {
-  return (
-    <svg className={styles.icon} width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.25" />
-      <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-    </svg>
+    <Input.Root size="medium" className="rounded-xl">
+      <Input.Wrapper>
+        <Input.Icon as={RiSearchLine} />
+        <Input.Input
+          type="search"
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => updateQuery(e.target.value)}
+          aria-label="Search"
+        />
+      </Input.Wrapper>
+    </Input.Root>
   )
 }

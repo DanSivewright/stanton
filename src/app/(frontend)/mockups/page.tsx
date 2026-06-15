@@ -3,7 +3,7 @@ import { MOCKUP_VARIANTS } from '@/lib/mockups/navigation'
 
 export const metadata = {
   title: 'Stanton UI Mockups',
-  description: 'Four UI variants for Stanton asset management',
+  description: 'Five UI variants for Stanton asset management',
 }
 
 export default function MockupsIndexPage() {
@@ -13,7 +13,7 @@ export default function MockupsIndexPage() {
         <p style={styles.eyebrow}>Stanton Asset Management</p>
         <h1 style={styles.title}>UI mockup variants</h1>
         <p style={styles.subtitle}>
-          Four full-application explorations connected to Payload demo data. Each route mirrors
+          Five full-application explorations connected to Payload demo data. Each route mirrors
           admin collections with a distinct visual language.
         </p>
       </header>

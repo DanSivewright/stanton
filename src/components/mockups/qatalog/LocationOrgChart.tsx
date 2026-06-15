@@ -2,8 +2,8 @@
 
 import type { Location } from '@/payload-types'
 import { relLabel } from '@/lib/mockups/helpers'
-import { qatalog } from './tokens'
-import { IconChevronRight } from './icons'
+import { RiArrowRightSLine } from '@remixicon/react'
+import { cn } from '@/utils/cn'
 
 type LocationDoc = Location & { id: string }
 
@@ -45,36 +45,19 @@ function LocationBox({
     <button
       type="button"
       onClick={() => onSelect?.(location.id)}
-      style={{
-        padding: '14px 18px',
-        minWidth: 160,
-        maxWidth: 220,
-        border: `1px solid ${qatalog.border}`,
-        borderRadius: qatalog.radius,
-        background: isGroup ? qatalog.bgMuted : qatalog.bg,
-        cursor: onSelect ? 'pointer' : 'default',
-        textAlign: 'left',
-        fontFamily: 'inherit',
-        transition: 'border-color 0.15s, box-shadow 0.15s',
-      }}
-      onMouseEnter={(e) => {
-        if (onSelect) {
-          e.currentTarget.style.borderColor = qatalog.borderStrong
-          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'
-        }
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = qatalog.border
-        e.currentTarget.style.boxShadow = 'none'
-      }}
+      className={cn(
+        'min-w-40 max-w-56 rounded-xl border border-stroke-soft-200 p-4 text-left transition duration-200',
+        isGroup ? 'bg-bg-weak-50' : 'bg-bg-white-0',
+        onSelect && 'cursor-pointer hover:border-stroke-strong-950 hover:shadow-regular-sm',
+      )}
     >
-      <div style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{location.name}</div>
-      <div style={{ fontSize: 12, color: qatalog.textSecondary, display: 'flex', gap: 6, alignItems: 'center' }}>
-        {location.kind ? <span style={{ textTransform: 'capitalize' }}>{location.kind}</span> : null}
+      <div className="text-label-sm font-medium text-text-strong-950">{location.name}</div>
+      <div className="mt-1 flex items-center gap-1.5 text-paragraph-xs text-text-sub-600">
+        {location.kind ? <span className="capitalize">{location.kind}</span> : null}
         {location.kind ? <span>·</span> : null}
         <span>{isGroup ? 'Group' : 'Leaf'}</span>
       </div>
-      <div style={{ fontSize: 11, color: qatalog.textMuted, marginTop: 6 }}>{company}</div>
+      <div className="mt-2 text-paragraph-xs text-text-soft-400">{company}</div>
     </button>
   )
 }
@@ -92,33 +75,23 @@ function OrgBranch({
 
   if (children.length === 0) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div className="flex flex-col items-center">
         <LocationBox location={location} onSelect={onSelect} />
       </div>
     )
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div className="flex flex-col items-center">
       <LocationBox location={location} onSelect={onSelect} />
-      <div style={{ width: 1, height: 28, background: qatalog.borderStrong }} />
-      <div style={{ position: 'relative', display: 'flex', gap: 24, alignItems: 'flex-start' }}>
-        {children.length > 1 && (
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              height: 1,
-              width: `calc(100% - ${160 / children.length}px)`,
-              background: qatalog.borderStrong,
-            }}
-          />
-        )}
+      <div className="h-7 w-px bg-stroke-soft-200" />
+      <div className="relative flex items-start gap-6">
+        {children.length > 1 ? (
+          <div className="absolute left-1/2 top-0 h-px w-[calc(100%-4rem)] -translate-x-1/2 bg-stroke-soft-200" />
+        ) : null}
         {children.map((child) => (
-          <div key={child.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ width: 1, height: 20, background: qatalog.borderStrong }} />
+          <div key={child.id} className="flex flex-col items-center">
+            <div className="h-5 w-px bg-stroke-soft-200" />
             <OrgBranch location={child} allLocations={allLocations} onSelect={onSelect} />
           </div>
         ))}
@@ -134,11 +107,9 @@ export function LocationOrgChart({
   locations: LocationDoc[]
   onSelect?: (id: string) => void
 }) {
-  const roots = buildTree(locations)
-
   if (locations.length === 0) {
     return (
-      <div style={{ padding: 48, textAlign: 'center', color: qatalog.textSecondary }}>
+      <div className="rounded-xl border border-stroke-soft-200 px-6 py-12 text-center text-paragraph-md text-text-sub-600">
         No locations yet. Seed demo data to populate the org chart.
       </div>
     )
@@ -153,36 +124,24 @@ export function LocationOrgChart({
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 48 }}>
+    <div className="flex flex-col gap-12">
       {[...byCompany.entries()].map(([companyName, companyLocs]) => {
         const companyRoots = buildTree(companyLocs)
         return (
           <section key={companyName}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                marginBottom: 32,
-                fontSize: 13,
-                fontWeight: 500,
-                color: qatalog.textSecondary,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-              }}
-            >
-              <IconChevronRight size={14} />
+            <div className="mb-8 flex items-center gap-2 text-subheading-xs uppercase tracking-[0.08em] text-text-sub-600">
+              <RiArrowRightSLine className="size-4" />
               {companyName}
             </div>
-            <div
-              style={{
-                overflowX: 'auto',
-                paddingBottom: 16,
-              }}
-            >
-              <div style={{ display: 'flex', gap: 48, justifyContent: 'center', minWidth: 'min-content', padding: '0 24px' }}>
+            <div className="overflow-x-auto rounded-2xl bg-bg-weak-50 p-6 pb-4">
+              <div className="flex min-w-min justify-center gap-12 px-6">
                 {companyRoots.map((root) => (
-                  <OrgBranch key={root.id} location={root} allLocations={companyLocs} onSelect={onSelect} />
+                  <OrgBranch
+                    key={root.id}
+                    location={root}
+                    allLocations={companyLocs}
+                    onSelect={onSelect}
+                  />
                 ))}
               </div>
             </div>

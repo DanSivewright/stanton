@@ -1,4 +1,4 @@
-type RelValue = string | number | { id?: string | number; name?: string; fullName?: string; title?: string; assetTag?: string; reference?: string; ticketNumber?: string; code?: string; email?: string } | null | undefined
+type RelValue = string | number | { id?: string | number; name?: string | null; fullName?: string | null; title?: string | null; assetTag?: string | null; reference?: string | null; ticketNumber?: string | null; code?: string | null; email?: string | null } | null | undefined
 
 export function relId(value: RelValue): string | undefined {
   if (value == null) return undefined

@@ -2,11 +2,13 @@ import Link from 'next/link'
 import { Shell } from '@/components/mockups/sana/Shell'
 import { SearchHero } from '@/components/mockups/sana/SearchHero'
 import { StatCard } from '@/components/mockups/sana/StatCard'
-import { formatDateTime, priorityColor, relLabel, statusLabel } from '@/lib/mockups/helpers'
+import { formatDateTime, relLabel, statusLabel } from '@/lib/mockups/helpers'
 import { getDashboardStats, getRecentTickets } from '@/lib/mockups/queries'
-import { cardStyle, pillStyle } from '@/components/mockups/sana/tokens'
-import styles from '@/components/mockups/sana/sana.module.css'
+import { detailHref } from '@/lib/mockups/links'
 import type { Ticket } from '@/payload-types'
+import * as Badge from '@/components/ui/badge'
+import * as LinkButton from '@/components/ui/link-button'
+import { cn } from '@/utils/cn'
 
 const BASE = '/mockups/sana'
 
@@ -19,10 +21,24 @@ export default async function SanaDashboardPage() {
   const statCards = [
     { label: 'Companies', value: stats.counts.companies ?? 0, href: `${BASE}/companies` },
     { label: 'Locations', value: stats.counts.locations ?? 0, href: `${BASE}/locations` },
-    { label: 'Assets', value: stats.counts.assets ?? 0, href: `${BASE}/assets`, accent: '#6b4ae8' },
-    { label: 'Open Tickets', value: stats.openTickets, href: `${BASE}/tickets`, accent: '#d97706' },
-    { label: 'Pending Review', value: stats.pendingReview, accent: '#dc2626' },
-    { label: 'Teams', value: stats.counts['maintenance-teams'] ?? 0, href: `${BASE}/maintenance-teams` },
+    {
+      label: 'Assets',
+      value: stats.counts.assets ?? 0,
+      href: `${BASE}/assets`,
+      accentClassName: 'text-feature-base',
+    },
+    {
+      label: 'Open Tickets',
+      value: stats.openTickets,
+      href: `${BASE}/tickets`,
+      accentClassName: 'text-warning-base',
+    },
+    { label: 'Pending Review', value: stats.pendingReview, accentClassName: 'text-error-base' },
+    {
+      label: 'Teams',
+      value: stats.counts['maintenance-teams'] ?? 0,
+      href: `${BASE}/maintenance-teams`,
+    },
   ]
 
   const quickActions = [
@@ -36,63 +52,52 @@ export default async function SanaDashboardPage() {
     <Shell title="Workspace" subtitle="Stanton Asset Management overview">
       <SearchHero />
 
-      <section style={{ marginBottom: 32 }}>
-        <h2 style={{ margin: '0 0 16px', fontSize: 14, fontWeight: 600, color: 'var(--sana-text-muted)' }}>
-          Overview
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16 }}>
+      <section className="mb-8">
+        <h2 className="mb-4 text-label-sm font-semibold text-text-sub-600">Overview</h2>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-4">
           {statCards.map((s) => (
             <StatCard key={s.label} {...s} />
           ))}
         </div>
       </section>
 
-      <div className={styles.dashboardGrid}>
+      <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
         <section>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>Recent tickets</h2>
-            <Link href={`${BASE}/tickets`} style={{ fontSize: 13, color: 'var(--sana-accent)', textDecoration: 'none' }}>
-              View all →
-            </Link>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-label-md font-semibold text-text-strong-950">Recent tickets</h2>
+            <LinkButton.Root variant="primary" size="medium" asChild>
+              <Link href={`${BASE}/tickets`}>View all →</Link>
+            </LinkButton.Root>
           </div>
-          <div style={{ ...cardStyle, overflow: 'hidden' }}>
+          <div className="overflow-hidden rounded-2xl bg-bg-white-0 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
             {recentTickets.length === 0 ? (
-              <p style={{ padding: 24, margin: 0, color: 'var(--sana-text-subtle)', fontSize: 14 }}>
-                No tickets yet. Run{' '}
-                <code style={{ background: 'var(--sana-bg-soft)', padding: '2px 6px', borderRadius: 4 }}>
-                  POST /api/seed-demo
-                </code>{' '}
-                to populate demo data.
-              </p>
+              <p className="px-6 py-8 text-paragraph-sm text-text-soft-400">No tickets yet.</p>
             ) : (
               recentTickets.map((ticket, i) => {
                 const t = ticket as Ticket
-                const href = `${BASE}/tickets/${t.id}`
+                const href = detailHref('sana', 'tickets', t as unknown as Record<string, unknown>)
                 return (
                   <Link
                     key={t.id}
                     href={href}
-                    style={{
-                      display: 'block',
-                      padding: '16px 20px',
-                      textDecoration: 'none',
-                      color: 'inherit',
-                      borderBottom: i < recentTickets.length - 1 ? '1px solid var(--sana-border)' : undefined,
-                    }}
+                    className={cn(
+                      'block px-5 py-4 transition hover:bg-bg-weak-50',
+                      i < recentTickets.length - 1 && 'border-b border-stroke-soft-200',
+                    )}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--sana-text-subtle)' }}>
+                    <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                      <span className="text-paragraph-xs font-semibold text-text-soft-400">
                         {t.ticketNumber}
                       </span>
-                      <span style={pillStyle(priorityColor(t.priority), `${priorityColor(t.priority)}18`)}>
+                      <Badge.Root variant="lighter" color="orange" size="small">
                         {t.priority}
-                      </span>
-                      <span style={pillStyle('var(--sana-accent)', 'var(--sana-accent-soft)')}>
+                      </Badge.Root>
+                      <Badge.Root variant="lighter" color="purple" size="small">
                         {statusLabel(t.status)}
-                      </span>
+                      </Badge.Root>
                     </div>
-                    <p style={{ margin: 0, fontWeight: 500, fontSize: 15 }}>{t.title}</p>
-                    <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--sana-text-subtle)' }}>
+                    <p className="text-label-sm font-medium text-text-strong-950">{t.title}</p>
+                    <p className="mt-1 text-paragraph-sm text-text-soft-400">
                       {relLabel(t.location)} · {formatDateTime(t.reportedAt)}
                     </p>
                   </Link>
@@ -103,23 +108,18 @@ export default async function SanaDashboardPage() {
         </section>
 
         <aside>
-          <h2 style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 600 }}>Quick actions</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <h2 className="mb-4 text-label-md font-semibold text-text-strong-950">Quick actions</h2>
+          <div className="flex flex-col gap-2.5">
             {quickActions.map((action) => (
               <Link
                 key={action.href}
                 href={action.href}
-                style={{
-                  ...cardStyle,
-                  padding: '16px 18px',
-                  textDecoration: 'none',
-                  color: 'inherit',
-                }}
+                className="block rounded-2xl bg-bg-white-0 px-4 py-4 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200 transition hover:-translate-y-0.5 hover:shadow-regular-sm"
               >
-                <span style={{ fontWeight: 600, fontSize: 14, display: 'block' }}>{action.label}</span>
-                <span style={{ fontSize: 12, color: 'var(--sana-text-subtle)', marginTop: 4, display: 'block' }}>
-                  {action.desc}
+                <span className="block text-label-sm font-semibold text-text-strong-950">
+                  {action.label}
                 </span>
+                <span className="mt-1 block text-paragraph-xs text-text-soft-400">{action.desc}</span>
               </Link>
             ))}
           </div>

@@ -62,5 +62,5 @@ export default async function CollectionPage({ params, searchParams }: PageProps
     )
   }
 
-  return <CollectionListView slug={collection} docs={docs} query={sp.q} />
+  return <CollectionListView slug={collection} docs={docs} query={sp.q} totalDocs={result.totalDocs} />
 }

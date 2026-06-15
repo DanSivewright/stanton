@@ -1,40 +1,10 @@
 import { QatalogSidebar } from './QatalogSidebar'
-import { qatalog, qatalogStyles } from './tokens'
 
 export function QatalogShell({ children }: { children: React.ReactNode }) {
   return (
-    <div style={qatalogStyles.page}>
+    <div className="flex min-h-screen bg-bg-white-0 text-text-strong-950">
       <QatalogSidebar />
-      <div style={qatalogStyles.main}>{children}</div>
-    </div>
-  )
-}
-
-export function QatalogTopBar({
-  count,
-  action,
-}: {
-  count?: number
-  action?: React.ReactNode
-}) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 24,
-        gap: 16,
-      }}
-    >
-      {count != null ? (
-        <span style={{ fontSize: 14, color: qatalog.textSecondary }}>
-          {count} {count === 1 ? 'record' : 'records'}
-        </span>
-      ) : (
-        <span />
-      )}
-      {action}
+      <main className="min-w-0 flex-1">{children}</main>
     </div>
   )
 }

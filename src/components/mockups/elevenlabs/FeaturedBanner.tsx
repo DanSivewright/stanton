@@ -1,5 +1,7 @@
 import Link from 'next/link'
-import styles from './FeaturedBanner.module.css'
+import * as Badge from '@/components/ui/badge'
+import * as Button from '@/components/ui/button'
+import { cn } from '@/utils/cn'
 
 type FeaturedBannerProps = {
   title: string
@@ -11,29 +13,29 @@ type FeaturedBannerProps = {
 
 export function FeaturedBanner({ title, description, ctaLabel, ctaHref, tags = [] }: FeaturedBannerProps) {
   return (
-    <section className={styles.banner}>
-      <div className={styles.content}>
-        <span className={styles.eyebrow}>Featured collections</span>
-        <h2 className={styles.title}>{title}</h2>
-        <p className={styles.description}>{description}</p>
-        {tags.length > 0 && (
-          <div className={styles.tags}>
+    <section className="relative mb-8 overflow-hidden rounded-2xl bg-bg-weak-50 p-8 ring-1 ring-inset ring-stroke-soft-200">
+      <div className="relative z-10 max-w-xl">
+        <Badge.Root size="small" variant="lighter" color="purple" className="mb-4">
+          Featured collections
+        </Badge.Root>
+        <h2 className="text-title-h5 text-text-strong-950">{title}</h2>
+        <p className="mt-2 text-paragraph-sm text-text-sub-600">{description}</p>
+        {tags.length > 0 ? (
+          <div className="mt-4 flex flex-wrap gap-2">
             {tags.map((tag) => (
-              <span key={tag} className={styles.tag}>
+              <Badge.Root key={tag} size="medium" variant="stroke" color="gray">
                 {tag}
-              </span>
+              </Badge.Root>
             ))}
           </div>
-        )}
-        <Link href={ctaHref} className={styles.cta}>
-          {ctaLabel}
-        </Link>
+        ) : null}
+        <Button.Root variant="primary" mode="filled" size="medium" className="mt-6" asChild>
+          <Link href={ctaHref}>{ctaLabel}</Link>
+        </Button.Root>
       </div>
-      <div className={styles.visual} aria-hidden>
-        <div className={styles.orb1} />
-        <div className={styles.orb2} />
-        <div className={styles.orb3} />
-      </div>
+      <div className="pointer-events-none absolute -right-8 top-1/2 size-56 -translate-y-1/2 rounded-full bg-primary-base/10 blur-3xl" />
+      <div className="pointer-events-none absolute right-16 top-8 size-32 rounded-full bg-purple-200/60 blur-2xl" />
+      <div className="pointer-events-none absolute bottom-0 right-24 size-40 rounded-full bg-sky-200/50 blur-2xl" />
     </section>
   )
 }

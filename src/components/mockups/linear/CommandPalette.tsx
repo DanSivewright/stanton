@@ -1,11 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
+import { useEffect, useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
+import { RiFileListLine, RiSearchLine } from '@remixicon/react'
+import * as CommandMenu from '@/components/ui/command-menu'
+import * as Kbd from '@/components/ui/kbd'
 import { MOCKUP_NAV } from '@/lib/mockups/navigation'
+import { searchMockupRecords } from '@/lib/mockups/actions'
+import { detailHref } from '@/lib/mockups/links'
+import { getDocTitle } from '@/lib/mockups/identifiers'
+import type { SearchHit } from '@/lib/mockups/queries'
 import { NAV_ICONS } from './collection-config'
-import styles from './CommandPalette.module.css'
-import linearStyles from './linear.module.css'
 
 type CommandPaletteProps = {
   open: boolean
@@ -13,24 +18,35 @@ type CommandPaletteProps = {
 }
 
 export function CommandPalette({ open, onClose }: CommandPaletteProps) {
+  const router = useRouter()
   const [query, setQuery] = useState('')
+  const [records, setRecords] = useState<SearchHit[]>([])
+  const [isPending, startTransition] = useTransition()
 
   useEffect(() => {
     if (!open) {
       setQuery('')
+      setRecords([])
       return
     }
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [open, onClose])
+  }, [open])
 
-  if (!open) return null
+  useEffect(() => {
+    if (!query.trim()) {
+      setRecords([])
+      return
+    }
+    const timer = setTimeout(() => {
+      startTransition(async () => {
+        const hits = await searchMockupRecords(query)
+        setRecords(hits)
+      })
+    }, 200)
+    return () => clearTimeout(timer)
+  }, [query])
 
   const q = query.toLowerCase()
-  const filtered = MOCKUP_NAV.flatMap((group) =>
+  const collections = MOCKUP_NAV.flatMap((group) =>
     group.items
       .filter(
         (item) =>
@@ -39,62 +55,91 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
           item.slug.includes(q) ||
           group.label.toLowerCase().includes(q),
       )
-      .map((item) => ({ ...item, group: group.label })),
+      .map((item) => ({
+        href: `/mockups/linear/${item.slug}`,
+        label: item.label,
+        meta: group.label,
+        icon: NAV_ICONS[item.slug],
+      })),
   )
+
+  function navigate(href: string) {
+    onClose()
+    router.push(href)
+  }
 
   return (
-    <div className={styles.overlay} onClick={onClose} role="presentation">
-      <div
-        className={styles.dialog}
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-label="Command palette"
-      >
-        <div className={styles.inputRow}>
-          <span className={styles.searchIcon}>⌕</span>
-          <input
-            className={styles.input}
-            placeholder="Search collections, jump to view…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            autoFocus
-          />
-          <span className={linearStyles.kbd}>esc</span>
-        </div>
-        <div className={styles.results}>
-          {filtered.length === 0 ? (
-            <div className={styles.sectionLabel}>No results</div>
-          ) : (
-            <>
-              <div className={styles.sectionLabel}>Collections</div>
-              {filtered.map((item) => (
-                <Link
-                  key={item.slug}
-                  href={`/mockups/linear/${item.slug}`}
-                  className={styles.resultItem}
-                  onClick={onClose}
-                >
-                  <span className={styles.resultIcon}>{NAV_ICONS[item.slug]}</span>
-                  <span>{item.label}</span>
-                  <span className={styles.resultMeta}>{item.group}</span>
-                </Link>
-              ))}
-            </>
-          )}
-        </div>
-        <div className={styles.footer}>
-          <span className={styles.footerHint}>
-            <span className={linearStyles.kbd}>↑↓</span> navigate
-          </span>
-          <span className={styles.footerHint}>
-            <span className={linearStyles.kbd}>↵</span> open
-          </span>
-          <span className={styles.footerHint}>
-            <span className={linearStyles.kbd}>esc</span> close
-          </span>
-        </div>
+    <CommandMenu.Dialog open={open} onOpenChange={(next) => !next && onClose()}>
+      <div className="group/cmd-input flex items-center gap-3 border-b border-stroke-soft-200 px-5 py-4">
+        <RiSearchLine className="size-5 shrink-0 text-text-soft-400" />
+        <CommandMenu.Input
+          placeholder="Search collections and records…"
+          value={query}
+          onValueChange={setQuery}
+        />
+        <Kbd.Root>esc</Kbd.Root>
       </div>
-    </div>
+
+      <CommandMenu.List className="max-h-[min(420px,60vh)]">
+        {collections.length === 0 && records.length === 0 && !isPending ? (
+          <div className="px-5 py-8 text-center text-paragraph-sm text-text-soft-400">
+            No results
+          </div>
+        ) : null}
+
+        {collections.length > 0 ? (
+          <CommandMenu.Group heading="Collections">
+            {collections.map((item) => (
+              <CommandMenu.Item
+                key={item.href}
+                value={`${item.label} ${item.meta}`}
+                onSelect={() => navigate(item.href)}
+              >
+                <CommandMenu.ItemIcon className="text-subheading-xs">{item.icon}</CommandMenu.ItemIcon>
+                <span className="flex-1">{item.label}</span>
+                <span className="text-label-xs text-text-soft-400">{item.meta}</span>
+              </CommandMenu.Item>
+            ))}
+          </CommandMenu.Group>
+        ) : null}
+
+        {records.length > 0 ? (
+          <CommandMenu.Group heading="Records">
+            {records.map(({ slug, doc }) => {
+              const href = detailHref('linear', slug, doc)
+              return (
+                <CommandMenu.Item
+                  key={href}
+                  value={`${getDocTitle(doc, slug)} ${slug}`}
+                  onSelect={() => navigate(href)}
+                >
+                  <CommandMenu.ItemIcon as={RiFileListLine} />
+                  <span className="flex-1 truncate">{getDocTitle(doc, slug)}</span>
+                  <span className="text-label-xs text-text-soft-400">
+                    {slug.replace(/-/g, ' ')}
+                  </span>
+                </CommandMenu.Item>
+              )
+            })}
+          </CommandMenu.Group>
+        ) : null}
+
+        {isPending ? (
+          <div className="px-5 py-3 text-paragraph-sm text-text-soft-400">Searching…</div>
+        ) : null}
+      </CommandMenu.List>
+
+      <CommandMenu.Footer className="border-t border-stroke-soft-200 text-label-xs text-text-soft-400">
+        <span className="flex items-center gap-1.5">
+          <Kbd.Root>↑↓</Kbd.Root> navigate
+        </span>
+        <span className="flex items-center gap-1.5">
+          <Kbd.Root>↵</Kbd.Root> open
+        </span>
+        <span className="flex items-center gap-1.5">
+          <Kbd.Root>esc</Kbd.Root> close
+        </span>
+      </CommandMenu.Footer>
+    </CommandMenu.Dialog>
   )
 }
-

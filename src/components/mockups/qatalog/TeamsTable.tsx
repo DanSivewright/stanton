@@ -2,9 +2,11 @@
 
 import type { MaintenanceTeam } from '@/payload-types'
 import { relLabel } from '@/lib/mockups/helpers'
-import { qatalog } from './tokens'
-import { AvatarStack } from './ui'
-import { IconChevronRight } from './icons'
+import { QatalogAvatar } from './QatalogAvatar'
+import * as AvatarGroupCompact from '@/components/ui/avatar-group-compact'
+import * as Table from '@/components/ui/table'
+import { RiArrowRightSLine } from '@remixicon/react'
+import { cn } from '@/utils/cn'
 
 type TeamDoc = MaintenanceTeam & { id: string }
 
@@ -23,79 +25,64 @@ export function TeamsTable({
 }) {
   if (teams.length === 0) {
     return (
-      <div style={{ padding: 48, textAlign: 'center', color: qatalog.textSecondary }}>
+      <div className="rounded-xl border border-stroke-soft-200 px-6 py-12 text-center text-paragraph-md text-text-sub-600">
         No maintenance teams yet. Seed demo data to populate teams.
       </div>
     )
   }
 
   return (
-    <div style={{ border: `1px solid ${qatalog.border}`, borderRadius: 12, overflow: 'hidden' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
-        <thead>
-          <tr style={{ background: qatalog.bgMuted, borderBottom: `1px solid ${qatalog.border}` }}>
-            {['Team', 'Company', 'Members', ''].map((h) => (
-              <th
-                key={h}
-                style={{
-                  textAlign: 'left',
-                  padding: '12px 20px',
-                  fontWeight: 500,
-                  fontSize: 12,
-                  color: qatalog.textMuted,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.06em',
-                  width: h === '' ? 40 : undefined,
-                }}
-              >
-                {h}
-              </th>
-            ))}
+    <div className="overflow-hidden rounded-xl ring-1 ring-stroke-soft-200">
+      <Table.Root>
+        <Table.Header>
+          <tr>
+            <Table.Head>Team</Table.Head>
+            <Table.Head>Company</Table.Head>
+            <Table.Head>Members</Table.Head>
+            <Table.Head className="w-10" />
           </tr>
-        </thead>
-        <tbody>
-          {teams.map((team) => {
+        </Table.Header>
+        <Table.Body>
+          {teams.map((team, rowIndex) => {
             const names = memberNames(team)
             return (
-              <tr
+              <Table.Row
                 key={team.id}
                 onClick={() => onSelect?.(team.id)}
-                style={{
-                  borderBottom: `1px solid ${qatalog.border}`,
-                  cursor: onSelect ? 'pointer' : 'default',
-                  transition: 'background 0.12s',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = qatalog.bgHover
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent'
-                }}
+                className={cn(onSelect && 'cursor-pointer')}
               >
-                <td style={{ padding: '16px 20px', fontWeight: 500 }}>{team.name}</td>
-                <td style={{ padding: '16px 20px', color: qatalog.textSecondary }}>
-                  {relLabel(team.company)}
-                </td>
-                <td style={{ padding: '16px 20px' }}>
+                <Table.Cell className="font-medium text-text-strong-950">{team.name}</Table.Cell>
+                <Table.Cell className="text-text-sub-600">{relLabel(team.company)}</Table.Cell>
+                <Table.Cell>
                   {names.length > 0 ? (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
-                      <AvatarStack names={names} />
-                      <span style={{ color: qatalog.textSecondary, fontSize: 13 }}>
+                    <span className="inline-flex items-center gap-3">
+                      <AvatarGroupCompact.Root size="32" variant="stroke">
+                        <AvatarGroupCompact.Stack>
+                          {names.slice(0, 4).map((name, i) => (
+                            <QatalogAvatar key={`${name}-${i}`} name={name} size="32" index={i} />
+                          ))}
+                        </AvatarGroupCompact.Stack>
+                        {names.length > 4 ? (
+                          <AvatarGroupCompact.Overflow>+{names.length - 4}</AvatarGroupCompact.Overflow>
+                        ) : null}
+                      </AvatarGroupCompact.Root>
+                      <span className="text-paragraph-sm text-text-sub-600">
                         {names.length} {names.length === 1 ? 'member' : 'members'}
                       </span>
                     </span>
                   ) : (
-                    <span style={{ color: qatalog.textMuted }}>No members</span>
+                    <span className="text-text-soft-400">No members</span>
                   )}
-                </td>
-                <td style={{ padding: '16px 20px', color: qatalog.textMuted }}>
-                  <IconChevronRight size={16} />
-                </td>
-              </tr>
+                </Table.Cell>
+                <Table.Cell className="text-text-soft-400">
+                  <RiArrowRightSLine className="size-5" />
+                </Table.Cell>
+                {rowIndex < teams.length - 1 ? <Table.RowDivider /> : null}
+              </Table.Row>
             )
           })}
-        </tbody>
-      </table>
+        </Table.Body>
+      </Table.Root>
     </div>
   )
 }

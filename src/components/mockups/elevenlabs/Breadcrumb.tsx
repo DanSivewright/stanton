@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import styles from './Breadcrumb.module.css'
+import * as BreadcrumbUI from '@/components/ui/breadcrumb'
+import { RiArrowRightSLine } from '@remixicon/react'
 
 type Crumb = {
   label: string
@@ -12,19 +13,19 @@ type BreadcrumbProps = {
 
 export function Breadcrumb({ items }: BreadcrumbProps) {
   return (
-    <nav className={styles.breadcrumb} aria-label="Breadcrumb">
-      {items.map((item, i) => (
-        <span key={item.label} className={styles.segment}>
-          {i > 0 && <span className={styles.sep}>/</span>}
+    <BreadcrumbUI.Root aria-label="Breadcrumb">
+      {items.map((item, index) => (
+        <span key={item.label} className="contents">
+          {index > 0 ? <BreadcrumbUI.ArrowIcon as={RiArrowRightSLine} /> : null}
           {item.href ? (
-            <Link href={item.href} className={styles.link}>
-              {item.label}
-            </Link>
+            <BreadcrumbUI.Item asChild>
+              <Link href={item.href}>{item.label}</Link>
+            </BreadcrumbUI.Item>
           ) : (
-            <span className={styles.current}>{item.label}</span>
+            <BreadcrumbUI.Item active>{item.label}</BreadcrumbUI.Item>
           )}
         </span>
       ))}
-    </nav>
+    </BreadcrumbUI.Root>
   )
 }

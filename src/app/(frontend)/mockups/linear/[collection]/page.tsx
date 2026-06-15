@@ -4,6 +4,7 @@ import { CollectionList } from '@/components/mockups/linear/CollectionList'
 import { getCollectionConfig } from '@/components/mockups/linear/collection-config'
 import { getNavItem } from '@/lib/mockups/navigation'
 import { findCollection } from '@/lib/mockups/queries'
+import { newHref as buildNewHref } from '@/lib/mockups/links'
 
 type PageProps = {
   params: Promise<{ collection: string }>
@@ -37,11 +38,13 @@ export default async function LinearCollectionPage({ params }: PageProps) {
           { label: nav.item.label },
         ]}
         count={result.totalDocs}
+        newHref={buildNewHref('linear', collection as typeof config.slug)}
       />
       <CollectionList
         config={config}
         docs={result.docs as Record<string, unknown>[]}
-        basePath={`/mockups/linear/${collection}`}
+        variant="linear"
+        totalDocs={result.totalDocs}
       />
     </>
   )

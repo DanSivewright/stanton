@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import styles from './FilterChips.module.css'
+import * as Tag from '@/components/ui/tag'
+import { cn } from '@/utils/cn'
 
 type Chip = {
   id: string
@@ -22,44 +23,49 @@ export function FilterChips({ chips, paramKey = 'chip' }: FilterChipsProps) {
   if (chips.length === 0) return null
 
   return (
-    <div className={styles.row} role="group" aria-label="Filters">
-      <AllChip pathname={pathname} searchParams={searchParams} paramKey={paramKey} active={!active} />
-      {chips.map((chip) => {
-        const params = new URLSearchParams(searchParams.toString())
-        params.set(paramKey, chip.id)
-        const href = `${pathname}?${params.toString()}`
-        return (
-          <Link
-            key={chip.id}
-            href={href}
-            className={`${styles.chip} ${active === chip.id ? styles.active : ''}`}
-          >
-            {chip.label}
-          </Link>
-        )
-      })}
+    <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filters">
+      <FilterChip
+        label="All"
+        href={buildHref(pathname, searchParams, paramKey, null)}
+        active={!active}
+      />
+      {chips.map((chip) => (
+        <FilterChip
+          key={chip.id}
+          label={chip.label}
+          href={buildHref(pathname, searchParams, paramKey, chip.id)}
+          active={active === chip.id}
+        />
+      ))}
     </div>
   )
 }
 
-function AllChip({
-  pathname,
-  searchParams,
-  paramKey,
-  active,
-}: {
-  pathname: string
-  searchParams: URLSearchParams
-  paramKey: string
-  active: boolean
-}) {
-  const params = new URLSearchParams(searchParams.toString())
-  params.delete(paramKey)
-  const href = params.toString() ? `${pathname}?${params.toString()}` : pathname
-
+function FilterChip({ label, href, active }: { label: string; href: string; active: boolean }) {
   return (
-    <Link href={href} className={`${styles.chip} ${active ? styles.active : ''}`}>
-      All
-    </Link>
+    <Tag.Root
+      variant={active ? 'gray' : 'stroke'}
+      asChild
+      className={cn(
+        active && 'bg-text-strong-950 text-static-white ring-transparent hover:bg-text-strong-950',
+      )}
+    >
+      <Link href={href}>{label}</Link>
+    </Tag.Root>
   )
+}
+
+function buildHref(
+  pathname: string,
+  searchParams: URLSearchParams,
+  paramKey: string,
+  value: string | null,
+): string {
+  const params = new URLSearchParams(searchParams.toString())
+  if (value) {
+    params.set(paramKey, value)
+  } else {
+    params.delete(paramKey)
+  }
+  return params.toString() ? `${pathname}?${params.toString()}` : pathname
 }

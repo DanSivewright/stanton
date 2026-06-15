@@ -1,7 +1,4 @@
-import type { CSSProperties } from 'react'
 import { DM_Sans } from 'next/font/google'
-import { SANA_CSS_VARS } from '@/components/mockups/sana/tokens'
-import styles from '@/components/mockups/sana/sana.module.css'
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -17,8 +14,7 @@ export const metadata = {
 export default function SanaLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className={`${styles.sanaRoot} ${dmSans.variable}`}
-      style={SANA_CSS_VARS as CSSProperties}
+      className={`${dmSans.variable} min-h-screen bg-[#f6f5fb] font-[family-name:var(--font-dm-sans)] text-text-strong-950 antialiased`}
     >
       {children}
     </div>

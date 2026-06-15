@@ -1,6 +1,10 @@
 import { formatDateTime, initials, relLabel } from '@/lib/mockups/helpers'
+import type { MockupVariantSlug } from '@/lib/mockups/navigation'
 import type { Ticket } from '@/payload-types'
-import { cardStyle } from './tokens'
+import { TicketActivityComposer } from '@/components/mockups/shared/TicketActivityComposer'
+import * as Avatar from '@/components/ui/avatar'
+import * as Badge from '@/components/ui/badge'
+import * as Divider from '@/components/ui/divider'
 
 type ActivityEntry = NonNullable<Ticket['activity']>[number]
 
@@ -11,115 +15,99 @@ const KIND_LABELS: Record<string, string> = {
   review: 'Review',
 }
 
-const KIND_COLORS: Record<string, string> = {
-  comment: '#7c5cfc',
-  photo: '#2563eb',
-  completion: '#059669',
-  review: '#d97706',
+const KIND_COLORS: Record<string, 'purple' | 'blue' | 'green' | 'orange'> = {
+  comment: 'purple',
+  photo: 'blue',
+  completion: 'green',
+  review: 'orange',
 }
 
 type TicketActivityLogProps = {
   activity: ActivityEntry[] | null | undefined
+  variant?: MockupVariantSlug
+  identifier?: string
+  authorOptions?: { id: string; name: string }[]
 }
 
-export function TicketActivityLog({ activity }: TicketActivityLogProps) {
+export function TicketActivityLog({
+  activity,
+  variant = 'sana',
+  identifier,
+  authorOptions,
+}: TicketActivityLogProps) {
   const entries = [...(activity ?? [])].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   )
 
-  if (entries.length === 0) {
+  if (entries.length === 0 && !identifier) {
     return (
-      <div style={{ ...cardStyle, padding: 24, color: 'var(--sana-text-subtle)', fontSize: 14 }}>
+      <div className="rounded-2xl bg-bg-white-0 px-6 py-8 text-paragraph-sm text-text-soft-400 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
         No activity yet on this ticket.
       </div>
     )
   }
 
   return (
-    <div style={{ ...cardStyle, padding: 0, overflow: 'hidden' }}>
-      <div
-        style={{
-          padding: '16px 20px',
-          borderBottom: '1px solid var(--sana-border)',
-          fontWeight: 600,
-          fontSize: 15,
-        }}
-      >
-        Activity log
+    <div className="overflow-hidden rounded-2xl bg-bg-white-0 shadow-regular-xs ring-1 ring-inset ring-stroke-soft-200">
+      <div className="border-b border-stroke-soft-200 px-5 py-4">
+        <h2 className="text-label-md font-semibold text-text-strong-950">Activity log</h2>
       </div>
-      <div style={{ padding: '8px 0' }}>
-        {entries.map((entry, i) => {
-          const authorName = relLabel(entry.author as Parameters<typeof relLabel>[0])
-          const kindColor = KIND_COLORS[entry.kind] ?? '#6b6578'
-          return (
-            <div
-              key={entry.id ?? i}
-              style={{
-                display: 'flex',
-                gap: 14,
-                padding: '16px 20px',
-                borderBottom: i < entries.length - 1 ? '1px solid var(--sana-border)' : undefined,
-              }}
-            >
-              <div
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 999,
-                  background: 'var(--sana-accent-soft)',
-                  color: 'var(--sana-accent)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  flexShrink: 0,
-                }}
-              >
-                {initials(authorName)}
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                  <span style={{ fontWeight: 600, fontSize: 14 }}>{authorName}</span>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 500,
-                      padding: '2px 8px',
-                      borderRadius: 999,
-                      background: `${kindColor}18`,
-                      color: kindColor,
-                    }}
-                  >
-                    {KIND_LABELS[entry.kind] ?? entry.kind}
-                  </span>
-                  <span style={{ fontSize: 12, color: 'var(--sana-text-subtle)' }}>
-                    {formatDateTime(entry.createdAt)}
-                  </span>
+
+      {entries.length === 0 ? (
+        <p className="px-5 py-4 text-paragraph-sm text-text-soft-400">
+          No activity yet — add the first comment below.
+        </p>
+      ) : (
+        <div className="py-2">
+          {entries.map((entry, i) => {
+            const authorName = relLabel(entry.author as Parameters<typeof relLabel>[0])
+            const kindColor = KIND_COLORS[entry.kind] ?? 'purple'
+            return (
+              <div key={entry.id ?? i}>
+                <div className="flex gap-3.5 px-5 py-4">
+                  <Avatar.Root size="32" color="purple">
+                    {initials(authorName)}
+                  </Avatar.Root>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-label-sm font-semibold text-text-strong-950">
+                        {authorName}
+                      </span>
+                      <Badge.Root variant="lighter" color={kindColor} size="small">
+                        {KIND_LABELS[entry.kind] ?? entry.kind}
+                      </Badge.Root>
+                      <span className="text-paragraph-xs text-text-soft-400">
+                        {formatDateTime(entry.createdAt)}
+                      </span>
+                    </div>
+                    {entry.body ? (
+                      <p className="mt-2 whitespace-pre-wrap text-paragraph-sm leading-relaxed text-text-sub-600">
+                        {entry.body}
+                      </p>
+                    ) : null}
+                    {entry.photos && entry.photos.length > 0 ? (
+                      <p className="mt-2 text-paragraph-xs text-text-soft-400">
+                        {entry.photos.length} photo{entry.photos.length !== 1 ? 's' : ''} attached
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
-                {entry.body && (
-                  <p
-                    style={{
-                      margin: '8px 0 0',
-                      fontSize: 14,
-                      lineHeight: 1.55,
-                      color: 'var(--sana-text-muted)',
-                      whiteSpace: 'pre-wrap',
-                    }}
-                  >
-                    {entry.body}
-                  </p>
-                )}
-                {entry.photos && entry.photos.length > 0 && (
-                  <p style={{ margin: '8px 0 0', fontSize: 12, color: 'var(--sana-text-subtle)' }}>
-                    {entry.photos.length} photo{entry.photos.length !== 1 ? 's' : ''} attached
-                  </p>
-                )}
+                {i < entries.length - 1 ? <Divider.Root className="mx-5" /> : null}
               </div>
-            </div>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
+      )}
+
+      {identifier ? (
+        <TicketActivityComposer
+          variant={variant}
+          identifier={identifier}
+          authorId={authorOptions?.[0]?.id ?? ''}
+          authorOptions={authorOptions}
+          useAlignUI
+        />
+      ) : null}
     </div>
   )
 }

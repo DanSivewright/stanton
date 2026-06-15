@@ -64,6 +64,7 @@ export const MOCKUP_VARIANTS = [
   { slug: 'linear', label: 'Linear', reference: 'Dark dense issue tracker' },
   { slug: 'qatalog', label: 'Qatalog', reference: 'Airy directory and teams' },
   { slug: 'elevenlabs', label: 'ElevenLabs', reference: 'Light sidebar library browse' },
+  { slug: 'atlas', label: 'Atlas', reference: 'Operations command center — dashboard, ⌘K, split detail' },
 ] as const
 
 export type MockupVariantSlug = (typeof MOCKUP_VARIANTS)[number]['slug']
