@@ -3,6 +3,7 @@ import type React from "react";
 
 import "@/globals.css";
 import "./styles.css";
+import { AppShell } from "@/components/app/AppShell";
 import { Providers } from "@/components/providers";
 import { cn } from "@/utils/cn";
 
@@ -26,7 +27,9 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
       suppressHydrationWarning
     >
       <body className="bg-bg-white-0 text-text-strong-950">
-        <Providers>{children}</Providers>
+        <Providers>
+          <AppShell>{children}</AppShell>
+        </Providers>
       </body>
     </html>
   );
