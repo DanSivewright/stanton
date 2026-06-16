@@ -1,9 +1,10 @@
 import type { RemixiconComponentType } from "@remixicon/react";
 import {
-  RiDonutChartLine,
-  RiExchangeLine,
+  // RiDonutChartLine,
+  // RiExchangeLine,
+  RiDashboardLine,
   RiHomeLine,
-  RiListCheck2,
+  // RiListCheck2,
   RiMapLine,
   RiTeamLine,
   RiTicketLine,
@@ -28,7 +29,7 @@ export const MR_NAV: MrNavGroup[] = [
   {
     label: "Organization",
     items: [
-      { label: "Home", href: "/mockups/mr", icon: RiHomeLine },
+      { label: "Home", href: "/mockups/mr", icon: RiDashboardLine },
       {
         label: "Companies",
         href: "/mockups/mr/companies" as Route,
@@ -37,30 +38,31 @@ export const MR_NAV: MrNavGroup[] = [
       { label: "Locations", href: "/mockups/mr/locations", icon: RiMapLine },
     ],
   },
-  {
-    label: "Assets",
-    items: [
-      { label: "Assets", href: "/mockups/mr/assets", icon: RiToolsLine },
-      {
-        label: "Asset Movements",
-        href: "/mockups/mr/asset-movements",
-        icon: RiExchangeLine,
-      },
-      {
-        label: "Asset Categories",
-        href: "/mockups/mr/asset-categories",
-        icon: RiListCheck2,
-      },
-      {
-        label: "Asset Statuses",
-        href: "/mockups/mr/asset-statuses",
-        icon: RiDonutChartLine,
-      },
-    ],
-  },
+  // {
+  //   label: "Assets",
+  //   items: [
+  //     { label: "Assets", href: "/mockups/mr/assets", icon: RiToolsLine },
+  //     {
+  //       label: "Asset Movements",
+  //       href: "/mockups/mr/asset-movements",
+  //       icon: RiExchangeLine,
+  //     },
+  //     {
+  //       label: "Asset Categories",
+  //       href: "/mockups/mr/asset-categories",
+  //       icon: RiListCheck2,
+  //     },
+  //     {
+  //       label: "Asset Statuses",
+  //       href: "/mockups/mr/asset-statuses",
+  //       icon: RiDonutChartLine,
+  //     },
+  //   ],
+  // },
   {
     label: "Maintenance",
     items: [
+      { label: "Assets", href: "/mockups/mr/assets", icon: RiToolsLine },
       { label: "Tickets", href: "/mockups/mr/tickets", icon: RiTicketLine },
       {
         label: "Maintenance Teams",
