@@ -1,4 +1,5 @@
 import type { Payload } from 'payload'
+import { seedManufacturingWorkbook } from './manufacturing-workbook'
 
 const DEMO_MARKER = 'stanton-demo-seed'
 
@@ -583,6 +584,10 @@ export async function seedStantonDemo(payload: Payload) {
     })
   }
 
+  const manufacturing = await seedManufacturingWorkbook(payload, {
+    companyId: String(stanton.id),
+  })
+
   return {
     marker: DEMO_MARKER,
     companies: 2,
@@ -591,5 +596,6 @@ export async function seedStantonDemo(payload: Payload) {
     teams: 3,
     assets: assetSpecs.length,
     tickets: ticketSpecs.length,
+    manufacturing,
   }
 }

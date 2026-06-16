@@ -30,10 +30,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <div className="flex w-[172px] shrink-0 items-center gap-3 transition duration-300">
                   <div className="flex-1 space-y-1">
                     <div className="text-label-sm text-text-strong-950">
-                      Catalyst
+                      Stanton Group
                     </div>
                     <div className="text-paragraph-xs text-text-sub-600">
-                      Marketing &amp; Sales
+                      Asset Management
                     </div>
                   </div>
                   <div className="flex size-6 items-center justify-center rounded-md border border-stroke-soft-200 bg-bg-white-0 shadow-regular-xs">

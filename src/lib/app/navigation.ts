@@ -36,6 +36,7 @@ export const APP_NAV: AppNavGroup[] = [
         icon: RiHomeLine,
       },
       { label: "Locations", href: "/locations", icon: RiMapLine },
+      { label: "Manufacturing", href: "/manufacturing", icon: RiToolsLine },
     ],
   },
   // {
