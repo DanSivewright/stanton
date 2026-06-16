@@ -16,7 +16,7 @@ import {
 } from "@remixicon/react";
 import * as d3 from "d3";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -30,8 +30,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { DottedRule } from "@/components/app/DottedRule";
-import { RecentActivitiesPanel, RecentTicketsPanel } from "@/components/app/HubSidePanels";
+import {
+  RecentActivitiesPanel,
+  RecentTicketsPanel,
+} from "@/components/app/HubSidePanels";
 import * as Alert from "@/components/ui/alert";
 import * as Avatar from "@/components/ui/avatar";
 import * as Breadcrumb from "@/components/ui/breadcrumb";
@@ -40,15 +42,14 @@ import * as CompactButton from "@/components/ui/compact-button";
 import * as LinkButton from "@/components/ui/link-button";
 import * as ProgressBar from "@/components/ui/progress-bar";
 import * as StatusBadge from "@/components/ui/status-badge";
-import { formatDate } from "@/lib/app/helpers";
 import {
-  formatDurationHours,
   type BreakdownItem,
+  formatDurationHours,
 } from "@/lib/app/drawer-stats";
-import {
-  type HubOverviewData,
-  type HubRankedEntity,
-  type HubTeamPerformance,
+import type {
+  HubOverviewData,
+  HubRankedEntity,
+  HubTeamPerformance,
 } from "@/lib/app/hub-overview-types";
 import { APP_NAV } from "@/lib/app/navigation";
 import { cn } from "@/utils/cn";
@@ -154,11 +155,7 @@ function SegmentedProgressBar({
   }, [color, mounted, percentage, segments]);
 
   return (
-    <div
-      className="h-7 w-full"
-      ref={ref}
-      suppressHydrationWarning
-    >
+    <div className="h-7 w-full" ref={ref} suppressHydrationWarning>
       {mounted ? null : (
         <div className="h-full w-full animate-pulse rounded-lg bg-bg-weak-50" />
       )}
@@ -178,9 +175,9 @@ function HubHeader() {
             <Breadcrumb.ArrowIcon as={RiArrowRightSLine} />
             <Breadcrumb.Item active>Home</Breadcrumb.Item>
           </Breadcrumb.Root>
-          <p className="mt-1 text-paragraph-sm text-text-sub-600">
+          {/* <p className="mt-1 text-paragraph-sm text-text-sub-600">
             Maintenance operations across the Catalyst portfolio
-          </p>
+          </p> */}
         </div>
       </div>
       <div className="flex items-center justify-end gap-3">
@@ -240,8 +237,11 @@ function StatsRow({ data }: { data: HubOverviewData }) {
         <div
           className={cn(
             "w-full pb-4 first:pl-0 last:pr-0 sm:w-1/2 sm:px-7 sm:pb-0 xl:w-1/3 xl:pb-0",
-            index > 0 && index % 2 === 1 && "border-stroke-soft-200 border-t pt-4 sm:border-transparent sm:pt-0",
-            index >= 2 && "border-stroke-soft-200 border-t pt-4 xl:border-transparent xl:pt-0"
+            index > 0 &&
+              index % 2 === 1 &&
+              "border-stroke-soft-200 border-t pt-4 sm:border-transparent sm:pt-0",
+            index >= 2 &&
+              "border-stroke-soft-200 border-t pt-4 xl:border-transparent xl:pt-0"
           )}
           key={stat.label}
         >
@@ -546,11 +546,7 @@ function TicketTypesDonut({ items }: { items: BreakdownItem[] }) {
   );
 }
 
-function AssetStatusCard({
-  topItem,
-}: {
-  topItem: BreakdownItem | null;
-}) {
+function AssetStatusCard({ topItem }: { topItem: BreakdownItem | null }) {
   const coverage = topItem?.percentage ?? 0;
 
   return (
@@ -907,7 +903,6 @@ function QuickNavCard({ data }: { data: HubOverviewData }) {
   );
 }
 
-
 function AlertBanner({ data }: { data: HubOverviewData }) {
   if (data.openTickets === 0 && data.pendingReview === 0) {
     return null;
@@ -941,9 +936,9 @@ export function HubDashboard({ data }: HubDashboardProps) {
       <HubHeader />
 
       <div className="px-4 pb-8 lg:px-8">
-        <DottedRule />
+        {/* <DottedRule />
         <StatsRow data={data} />
-        <DottedRule />
+        <DottedRule /> */}
 
         <div className="py-6">
           <AlertBanner data={data} />

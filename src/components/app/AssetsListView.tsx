@@ -1,16 +1,17 @@
 import { Suspense } from "react";
 import type { Where } from "payload";
+import { AssetsDataTable } from "@/components/app/AssetsDataTable";
 import { CollectionToolbar } from "@/components/app/CollectionToolbar";
-import { MaintenanceTeamsDataTable } from "@/components/app/MaintenanceTeamsDataTable";
 import { NAME_SORT_OPTIONS } from "@/lib/app/company-filters";
 import {
   type ListSearchParams,
   parseListParams,
 } from "@/lib/app/pagination";
 import { getEntityFormOptions } from "@/lib/app/entity-form-options";
-import { fetchMaintenanceTeamsListData } from "@/lib/app/teams-list";
+import { findCollection } from "@/lib/app/queries";
+import type { Asset } from "@/payload-types";
 
-interface MaintenanceTeamsListViewProps {
+interface AssetsListViewProps {
   placeholder?: string;
   searchParams: ListSearchParams;
   where?: Where;
@@ -24,15 +25,22 @@ function TableFallback() {
   );
 }
 
-export async function MaintenanceTeamsListView({
+export async function AssetsListView({
   where,
   searchParams,
-  placeholder = "Search maintenance teams...",
-}: MaintenanceTeamsListViewProps) {
+  placeholder = "Search assets...",
+}: AssetsListViewProps) {
   const listParams = parseListParams(searchParams);
-  const { result, ticketTypes, ticketCountsByTeam, pageCount, currentPage } =
-    await fetchMaintenanceTeamsListData(where, listParams);
+  const result = await findCollection<Asset>("assets", {
+    page: listParams.page,
+    limit: listParams.limit,
+    sort: listParams.sort,
+    where,
+  });
   const formOptions = await getEntityFormOptions();
+
+  const pageCount = Math.max(result.totalPages ?? 1, 1);
+  const currentPage = Math.min(result.page ?? listParams.page, pageCount);
 
   return (
     <>
@@ -51,14 +59,12 @@ export async function MaintenanceTeamsListView({
       </Suspense>
 
       <Suspense fallback={<TableFallback />}>
-        <MaintenanceTeamsDataTable
+        <AssetsDataTable
           data={result.docs}
           formOptions={formOptions}
           limit={listParams.limit}
           page={currentPage}
           pageCount={pageCount}
-          ticketCountsByTeam={ticketCountsByTeam}
-          ticketTypes={ticketTypes}
           totalDocs={result.totalDocs}
         />
       </Suspense>

@@ -9,10 +9,13 @@ import {
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { DataTablePagination } from "@/components/app/DataTablePagination";
+import { LocationFormModal } from "@/components/app/forms/locations/LocationFormModal";
 import { LocationTypeBadge } from "@/components/app/LocationTypeBadge";
 import * as Avatar from "@/components/ui/avatar";
+import * as Button from "@/components/ui/button";
 import * as Checkbox from "@/components/ui/checkbox";
 import * as Table from "@/components/ui/table";
+import type { EntityFormOptions } from "@/lib/app/entity-form-options";
 import { formatDate, relLabel } from "@/lib/app/helpers";
 import { getLocationBasePath } from "@/lib/app/location-tabs";
 import {
@@ -25,6 +28,7 @@ import { cn } from "@/utils/cn";
 
 interface LocationsDataTableProps {
   data: Location[];
+  formOptions: EntityFormOptions;
   limit: number;
   page: number;
   pageCount: number;
@@ -35,6 +39,7 @@ interface LocationsDataTableProps {
 
 export function LocationsDataTable({
   data,
+  formOptions,
   limit,
   page,
   pageCount,
@@ -43,6 +48,8 @@ export function LocationsDataTable({
   totalDocs,
 }: LocationsDataTableProps) {
   const [rowSelection, setRowSelection] = useState({});
+  const [editingLocation, setEditingLocation] = useState<Location | undefined>();
+  const [formOpen, setFormOpen] = useState(false);
 
   const columns = useMemo<ColumnDef<Location>[]>(() => {
     const ticketTypeColumns: ColumnDef<Location>[] = ticketTypes.map(
@@ -142,6 +149,24 @@ export function LocationsDataTable({
           </span>
         ),
       },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <Button.Root
+            mode="ghost"
+            onClick={() => {
+              setEditingLocation(row.original);
+              setFormOpen(true);
+            }}
+            size="xsmall"
+            type="button"
+            variant="neutral"
+          >
+            Edit
+          </Button.Root>
+        ),
+      },
     ];
   }, [ticketCountsByLocation, ticketTypes]);
 
@@ -173,6 +198,17 @@ export function LocationsDataTable({
             : `Showing ${rangeStart}–${rangeEnd} of ${totalDocs}`}
           {selectedCount > 0 ? ` · ${selectedCount} selected` : null}
         </p>
+        <Button.Root
+          onClick={() => {
+            setEditingLocation(undefined);
+            setFormOpen(true);
+          }}
+          size="small"
+          type="button"
+          variant="primary"
+        >
+          Create Location
+        </Button.Root>
       </div>
 
       <Table.Root>
@@ -229,6 +265,14 @@ export function LocationsDataTable({
       </Table.Root>
 
       <DataTablePagination page={page} pageCount={pageCount} />
+      <LocationFormModal
+        companies={formOptions.companies}
+        location={editingLocation}
+        locations={formOptions.locations}
+        mode={editingLocation ? "edit" : "create"}
+        onOpenChange={setFormOpen}
+        open={formOpen}
+      />
     </div>
   );
 }

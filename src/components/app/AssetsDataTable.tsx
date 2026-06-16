@@ -8,15 +8,19 @@ import {
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { DataTablePagination } from "@/components/app/DataTablePagination";
+import { AssetFormModal } from "@/components/app/forms/assets/AssetFormModal";
 import * as Avatar from "@/components/ui/avatar";
+import * as Button from "@/components/ui/button";
 import * as Checkbox from "@/components/ui/checkbox";
 import * as Table from "@/components/ui/table";
+import type { EntityFormOptions } from "@/lib/app/entity-form-options";
 import { formatDate, relLabel } from "@/lib/app/helpers";
 import type { Asset } from "@/payload-types";
 import { cn } from "@/utils/cn";
 
 interface AssetsDataTableProps {
   data: Asset[];
+  formOptions: EntityFormOptions;
   limit: number;
   page: number;
   pageCount: number;
@@ -25,12 +29,15 @@ interface AssetsDataTableProps {
 
 export function AssetsDataTable({
   data,
+  formOptions,
   limit,
   page,
   pageCount,
   totalDocs,
 }: AssetsDataTableProps) {
   const [rowSelection, setRowSelection] = useState({});
+  const [editingAsset, setEditingAsset] = useState<Asset | undefined>();
+  const [formOpen, setFormOpen] = useState(false);
 
   const columns = useMemo<ColumnDef<Asset>[]>(
     () => [
@@ -110,6 +117,24 @@ export function AssetsDataTable({
           </span>
         ),
       },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <Button.Root
+            mode="ghost"
+            onClick={() => {
+              setEditingAsset(row.original);
+              setFormOpen(true);
+            }}
+            size="xsmall"
+            type="button"
+            variant="neutral"
+          >
+            Edit
+          </Button.Root>
+        ),
+      },
     ],
     []
   );
@@ -142,6 +167,17 @@ export function AssetsDataTable({
             : `Showing ${rangeStart}–${rangeEnd} of ${totalDocs}`}
           {selectedCount > 0 ? ` · ${selectedCount} selected` : null}
         </p>
+        <Button.Root
+          onClick={() => {
+            setEditingAsset(undefined);
+            setFormOpen(true);
+          }}
+          size="small"
+          type="button"
+          variant="primary"
+        >
+          Create Asset
+        </Button.Root>
       </div>
 
       <Table.Root>
@@ -195,6 +231,18 @@ export function AssetsDataTable({
       </Table.Root>
 
       <DataTablePagination page={page} pageCount={pageCount} />
+      <AssetFormModal
+        asset={editingAsset}
+        assetCategories={formOptions.assetCategories}
+        assetStatuses={formOptions.assetStatuses}
+        companies={formOptions.companies}
+        employees={formOptions.employees}
+        locations={formOptions.locations}
+        maintenanceTeams={formOptions.maintenanceTeams}
+        mode={editingAsset ? "edit" : "create"}
+        onOpenChange={setFormOpen}
+        open={formOpen}
+      />
     </div>
   );
 }

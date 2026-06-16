@@ -8,12 +8,15 @@ import {
 } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
 import { DataTablePagination } from "@/components/app/DataTablePagination";
+import { MaintenanceTeamFormModal } from "@/components/app/forms/maintenance-teams/MaintenanceTeamFormModal";
 import {
   MaintenanceTeamDetailDrawer,
   TeamRowTrigger,
 } from "@/components/app/MaintenanceTeamDetailDrawer";
+import * as Button from "@/components/ui/button";
 import * as Checkbox from "@/components/ui/checkbox";
 import * as Table from "@/components/ui/table";
+import type { EntityFormOptions } from "@/lib/app/entity-form-options";
 import { formatDate } from "@/lib/app/helpers";
 import type { TeamTicketCounts } from "@/lib/app/queries";
 import type { MaintenanceTeam, TicketType } from "@/payload-types";
@@ -21,6 +24,7 @@ import { cn } from "@/utils/cn";
 
 interface MaintenanceTeamsDataTableProps {
   data: MaintenanceTeam[];
+  formOptions: EntityFormOptions;
   limit: number;
   page: number;
   pageCount: number;
@@ -31,6 +35,7 @@ interface MaintenanceTeamsDataTableProps {
 
 export function MaintenanceTeamsDataTable({
   data,
+  formOptions,
   limit,
   page,
   pageCount,
@@ -41,6 +46,8 @@ export function MaintenanceTeamsDataTable({
   const [rowSelection, setRowSelection] = useState({});
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTeamId, setDrawerTeamId] = useState<string | null>(null);
+  const [editingTeam, setEditingTeam] = useState<MaintenanceTeam | undefined>();
+  const [formOpen, setFormOpen] = useState(false);
 
   const openTeamDrawer = useCallback((teamId: string) => {
     setDrawerTeamId(teamId);
@@ -113,6 +120,24 @@ export function MaintenanceTeamsDataTable({
           </span>
         ),
       },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <Button.Root
+            mode="ghost"
+            onClick={() => {
+              setEditingTeam(row.original);
+              setFormOpen(true);
+            }}
+            size="xsmall"
+            type="button"
+            variant="neutral"
+          >
+            Edit
+          </Button.Root>
+        ),
+      },
     ];
   }, [openTeamDrawer, ticketCountsByTeam, ticketTypes]);
 
@@ -144,6 +169,17 @@ export function MaintenanceTeamsDataTable({
             : `Showing ${rangeStart}–${rangeEnd} of ${totalDocs}`}
           {selectedCount > 0 ? ` · ${selectedCount} selected` : null}
         </p>
+        <Button.Root
+          onClick={() => {
+            setEditingTeam(undefined);
+            setFormOpen(true);
+          }}
+          size="small"
+          type="button"
+          variant="primary"
+        >
+          Create Team
+        </Button.Root>
       </div>
 
       <Table.Root>
@@ -209,6 +245,14 @@ export function MaintenanceTeamsDataTable({
         }}
         open={drawerOpen}
         teamId={drawerTeamId}
+      />
+      <MaintenanceTeamFormModal
+        companies={formOptions.companies}
+        employees={formOptions.employees}
+        mode={editingTeam ? "edit" : "create"}
+        onOpenChange={setFormOpen}
+        open={formOpen}
+        team={editingTeam}
       />
     </div>
   );

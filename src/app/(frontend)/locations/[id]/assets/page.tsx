@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { AssetsDataTable } from "@/components/app/AssetsDataTable";
 import { CollectionToolbar } from "@/components/app/CollectionToolbar";
 import { NAME_SORT_OPTIONS } from "@/lib/app/company-filters";
+import { getEntityFormOptions } from "@/lib/app/entity-form-options";
 import { relId } from "@/lib/app/helpers";
 import { buildLocationListWhere } from "@/lib/app/location-filters";
 import { parseListParams } from "@/lib/app/pagination";
@@ -57,6 +58,7 @@ export default async function LocationAssetsPage({
     sort: listParams.sort,
     where,
   });
+  const formOptions = await getEntityFormOptions();
 
   const pageCount = Math.max(result.totalPages ?? 1, 1);
   const currentPage = Math.min(result.page ?? listParams.page, pageCount);
@@ -80,6 +82,7 @@ export default async function LocationAssetsPage({
       <Suspense fallback={<TableFallback />}>
         <AssetsDataTable
           data={result.docs}
+          formOptions={formOptions}
           limit={listParams.limit}
           page={currentPage}
           pageCount={pageCount}

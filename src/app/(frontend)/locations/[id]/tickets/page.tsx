@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { CollectionToolbar } from "@/components/app/CollectionToolbar";
 import { TicketsDataTable } from "@/components/app/TicketsDataTable";
 import { TICKET_SORT_OPTIONS } from "@/lib/app/company-filters";
+import { getEntityFormOptions } from "@/lib/app/entity-form-options";
 import { relId } from "@/lib/app/helpers";
 import { buildLocationListWhere } from "@/lib/app/location-filters";
 import { parseListParams } from "@/lib/app/pagination";
@@ -59,6 +60,7 @@ export default async function LocationTicketsPage({
     sort,
     where,
   });
+  const formOptions = await getEntityFormOptions();
 
   const pageCount = Math.max(result.totalPages ?? 1, 1);
   const currentPage = Math.min(result.page ?? listParams.page, pageCount);
@@ -82,6 +84,7 @@ export default async function LocationTicketsPage({
       <Suspense fallback={<TableFallback />}>
         <TicketsDataTable
           data={result.docs}
+          formOptions={formOptions}
           limit={listParams.limit}
           page={currentPage}
           pageCount={pageCount}

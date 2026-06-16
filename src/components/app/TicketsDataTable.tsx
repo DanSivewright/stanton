@@ -12,15 +12,19 @@ import {
   TicketDetailDrawer,
   TicketRowTrigger,
 } from "@/components/app/TicketDetailDrawer";
+import { TicketFormModal } from "@/components/app/forms/tickets/TicketFormModal";
+import * as Button from "@/components/ui/button";
 import { TicketStatusBadge } from "@/components/app/TicketStatusBadge";
 import * as Checkbox from "@/components/ui/checkbox";
 import * as Table from "@/components/ui/table";
+import type { EntityFormOptions } from "@/lib/app/entity-form-options";
 import { formatDate, relLabel } from "@/lib/app/helpers";
 import type { Ticket } from "@/payload-types";
 import { cn } from "@/utils/cn";
 
 interface TicketsDataTableProps {
   data: Ticket[];
+  formOptions: EntityFormOptions;
   limit: number;
   page: number;
   pageCount: number;
@@ -29,6 +33,7 @@ interface TicketsDataTableProps {
 
 export function TicketsDataTable({
   data,
+  formOptions,
   limit,
   page,
   pageCount,
@@ -37,6 +42,8 @@ export function TicketsDataTable({
   const [rowSelection, setRowSelection] = useState({});
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTicketId, setDrawerTicketId] = useState<string | null>(null);
+  const [editingTicket, setEditingTicket] = useState<Ticket | undefined>();
+  const [formOpen, setFormOpen] = useState(false);
 
   const openTicketDrawer = useCallback((ticketId: string) => {
     setDrawerTicketId(ticketId);
@@ -128,6 +135,24 @@ export function TicketsDataTable({
           </span>
         ),
       },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => (
+          <Button.Root
+            mode="ghost"
+            onClick={() => {
+              setEditingTicket(row.original);
+              setFormOpen(true);
+            }}
+            size="xsmall"
+            type="button"
+            variant="neutral"
+          >
+            Edit
+          </Button.Root>
+        ),
+      },
     ],
     [openTicketDrawer]
   );
@@ -160,6 +185,17 @@ export function TicketsDataTable({
             : `Showing ${rangeStart}–${rangeEnd} of ${totalDocs}`}
           {selectedCount > 0 ? ` · ${selectedCount} selected` : null}
         </p>
+        <Button.Root
+          onClick={() => {
+            setEditingTicket(undefined);
+            setFormOpen(true);
+          }}
+          size="small"
+          type="button"
+          variant="primary"
+        >
+          Create Ticket
+        </Button.Root>
       </div>
 
       <Table.Root>
@@ -227,6 +263,18 @@ export function TicketsDataTable({
         }}
         open={drawerOpen}
         ticketId={drawerTicketId}
+      />
+      <TicketFormModal
+        assets={formOptions.assets}
+        companies={formOptions.companies}
+        employees={formOptions.employees}
+        locations={formOptions.locations}
+        maintenanceTeams={formOptions.maintenanceTeams}
+        mode={editingTicket ? "edit" : "create"}
+        onOpenChange={setFormOpen}
+        open={formOpen}
+        ticket={editingTicket}
+        ticketTypes={formOptions.ticketTypes}
       />
     </div>
   );

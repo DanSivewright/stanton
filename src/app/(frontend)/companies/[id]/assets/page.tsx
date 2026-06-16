@@ -6,6 +6,7 @@ import {
   buildCompanyListWhere,
   NAME_SORT_OPTIONS,
 } from "@/lib/app/company-filters";
+import { getEntityFormOptions } from "@/lib/app/entity-form-options";
 import { parseListParams } from "@/lib/app/pagination";
 import { findById, findCollection } from "@/lib/app/queries";
 import type { Asset, Company } from "@/payload-types";
@@ -48,6 +49,7 @@ export default async function CompanyAssetsPage({
     sort: listParams.sort,
     where,
   });
+  const formOptions = await getEntityFormOptions();
 
   const pageCount = Math.max(result.totalPages ?? 1, 1);
   const currentPage = Math.min(result.page ?? listParams.page, pageCount);
@@ -71,6 +73,7 @@ export default async function CompanyAssetsPage({
       <Suspense fallback={<TableFallback />}>
         <AssetsDataTable
           data={result.docs}
+          formOptions={formOptions}
           limit={listParams.limit}
           page={currentPage}
           pageCount={pageCount}

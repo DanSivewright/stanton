@@ -7,6 +7,7 @@ import {
   type ListSearchParams,
   parseListParams,
 } from "@/lib/app/pagination";
+import { getEntityFormOptions } from "@/lib/app/entity-form-options";
 import { fetchLocationsListData } from "@/lib/app/locations-list";
 
 interface LocationsListViewProps {
@@ -31,6 +32,7 @@ export async function LocationsListView({
   const listParams = parseListParams(searchParams);
   const { result, ticketTypes, ticketCountsByLocation, pageCount, currentPage } =
     await fetchLocationsListData(where, listParams);
+  const formOptions = await getEntityFormOptions();
 
   return (
     <>
@@ -51,6 +53,7 @@ export async function LocationsListView({
       <Suspense fallback={<TableFallback />}>
         <LocationsDataTable
           data={result.docs}
+          formOptions={formOptions}
           limit={listParams.limit}
           page={currentPage}
           pageCount={pageCount}
