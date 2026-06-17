@@ -1,13 +1,10 @@
-import { Suspense } from "react";
 import type { Where } from "payload";
+import { Suspense } from "react";
 import { AssetsDataTable } from "@/components/app/AssetsDataTable";
 import { CollectionToolbar } from "@/components/app/CollectionToolbar";
 import { NAME_SORT_OPTIONS } from "@/lib/app/company-filters";
-import {
-  type ListSearchParams,
-  parseListParams,
-} from "@/lib/app/pagination";
 import { getEntityFormOptions } from "@/lib/app/entity-form-options";
+import { type ListSearchParams, parseListParams } from "@/lib/app/pagination";
 import { findCollection } from "@/lib/app/queries";
 import type { Asset } from "@/payload-types";
 

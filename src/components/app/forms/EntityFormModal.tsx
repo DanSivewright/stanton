@@ -32,7 +32,7 @@ export function EntityFormModal({
           <div className="space-y-4">
             {children}
             {error ? (
-              <p className="text-paragraph-sm text-error-base">{error}</p>
+              <p className="text-error-base text-paragraph-sm">{error}</p>
             ) : null}
           </div>
         </Modal.Body>

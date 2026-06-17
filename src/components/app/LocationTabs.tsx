@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as TabMenuHorizontal from "@/components/ui/tab-menu-horizontal";
 import {
-  LOCATION_TABS,
   getLocationTabHref,
   isLocationTabActive,
+  LOCATION_TABS,
 } from "@/lib/app/location-tabs";
 import { cn } from "@/utils/cn";
 

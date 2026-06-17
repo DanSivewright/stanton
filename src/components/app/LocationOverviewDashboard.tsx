@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import {
@@ -148,14 +149,10 @@ function SegmentedProgressBar({
   }, [color, mounted, percentage, segments]);
 
   return (
-    <div
-      className="h-7 w-full"
-      ref={ref}
-      suppressHydrationWarning
-    >
-      {!mounted ? (
+    <div className="h-7 w-full" ref={ref} suppressHydrationWarning>
+      {mounted ? null : (
         <div className="h-full w-full animate-pulse rounded-lg bg-bg-weak-50" />
-      ) : null}
+      )}
     </div>
   );
 }

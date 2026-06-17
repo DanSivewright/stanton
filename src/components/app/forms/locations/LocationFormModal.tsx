@@ -72,7 +72,7 @@ export function LocationFormModal({
       const result =
         mode === "create"
           ? await createLocation(payload)
-          : await updateLocation(location!.id, payload);
+          : await updateLocation(location?.id ?? "", payload);
 
       if (!result.ok) {
         setSubmitError(result.error);

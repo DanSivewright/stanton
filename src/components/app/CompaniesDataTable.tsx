@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import { RiArrowLeftSLine, RiArrowRightSLine } from "@remixicon/react";

@@ -88,7 +88,7 @@ export function TicketFormModal({
       const result =
         mode === "create"
           ? await createTicket(value)
-          : await updateTicket(ticket!.id, value);
+          : await updateTicket(ticket?.id ?? "", value);
 
       if (!result.ok) {
         setSubmitError(result.error);

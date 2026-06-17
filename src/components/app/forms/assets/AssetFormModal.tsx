@@ -73,7 +73,7 @@ export function AssetFormModal({
       const result =
         mode === "create"
           ? await createAsset(payload)
-          : await updateAsset(asset!.id, payload);
+          : await updateAsset(asset?.id ?? "", payload);
 
       if (!result.ok) {
         setSubmitError(result.error);
